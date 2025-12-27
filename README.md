@@ -289,7 +289,6 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 ## Links
 
-- [Documentation](https://docs.scrapebadger.com)
-- [API Reference](https://docs.scrapebadger.com/api)
+- [Documentation](https://scrapebadger.com/docs)
 - [GitHub](https://github.com/scrape-badger/scrapebadger-node)
 - [npm](https://www.npmjs.com/package/scrapebadger)
