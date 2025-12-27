@@ -69,6 +69,6 @@ jobs:
         run: |
           # Verify the built files exist
           test -f dist/index.js
-          test -f dist/index.cjs
+          test -f dist/index.mjs
           test -f dist/index.d.ts
           echo "Build outputs verified"
