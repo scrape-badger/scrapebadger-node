@@ -1,10 +1,16 @@
-# ScrapeBadger Node.js SDK
+<p align="center">
+  <img src="https://scrapebadger.com/logo-dark.png" alt="ScrapeBadger" width="400">
+</p>
 
-[![npm version](https://img.shields.io/npm/v/scrapebadger.svg)](https://www.npmjs.com/package/scrapebadger)
-[![npm downloads](https://img.shields.io/npm/dm/scrapebadger.svg)](https://www.npmjs.com/package/scrapebadger)
-[![Tests](https://github.com/scrape-badger/scrapebadger-node/actions/workflows/test.yml/badge.svg)](https://github.com/scrape-badger/scrapebadger-node/actions/workflows/test.yml)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue.svg)](https://www.typescriptlang.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+<h1 align="center">ScrapeBadger Node.js SDK</h1>
+
+<p align="center">
+  <a href="https://www.npmjs.com/package/scrapebadger"><img src="https://img.shields.io/npm/v/scrapebadger.svg" alt="npm version"></a>
+  <a href="https://www.npmjs.com/package/scrapebadger"><img src="https://img.shields.io/npm/dm/scrapebadger.svg" alt="npm downloads"></a>
+  <a href="https://github.com/scrape-badger/scrapebadger-node/actions/workflows/test.yml"><img src="https://github.com/scrape-badger/scrapebadger-node/actions/workflows/test.yml/badge.svg" alt="Tests"></a>
+  <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-5.0+-blue.svg" alt="TypeScript"></a>
+  <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
+</p>
 
 The official Node.js/TypeScript client library for the [ScrapeBadger](https://scrapebadger.com) API.
 
