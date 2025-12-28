@@ -103,7 +103,9 @@ export interface Url {
  */
 export interface Hashtag {
   /** The hashtag text (without #) */
-  tag: string;
+  text: string;
+  /** Character positions of the hashtag in the tweet text */
+  indices?: number[] | null;
 }
 
 /**
