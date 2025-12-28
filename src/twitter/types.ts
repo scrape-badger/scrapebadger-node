@@ -644,6 +644,10 @@ export interface PlaceTrends {
   name?: string;
   /** Country name */
   country?: string;
+  /** Timestamp when trends were retrieved */
+  as_of?: string;
+  /** Timestamp when the data was created */
+  created_at?: string;
   /** List of trends for this location */
   trends: Trend[];
 }
