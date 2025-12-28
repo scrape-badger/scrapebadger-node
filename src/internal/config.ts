@@ -5,7 +5,7 @@
 export interface ScrapeBadgerConfig {
   /** API key for authentication */
   apiKey: string;
-  /** Base URL for the API (default: https://api.scrapebadger.com) */
+  /** Base URL for the API (default: https://scrapebadger.com) */
   baseUrl?: string;
   /** Request timeout in milliseconds (default: 30000) */
   timeout?: number;
@@ -23,7 +23,7 @@ export interface ResolvedConfig {
   retryDelay: number;
 }
 
-const DEFAULT_BASE_URL = "https://api.scrapebadger.com";
+const DEFAULT_BASE_URL = "https://scrapebadger.com";
 const DEFAULT_TIMEOUT = 30000;
 const DEFAULT_MAX_RETRIES = 3;
 const DEFAULT_RETRY_DELAY = 1000;

@@ -197,8 +197,8 @@ export interface Tweet {
   bookmarked: boolean;
 
   // Tweet properties
-  /** Whether the tweet is marked as sensitive */
-  possibly_sensitive: boolean;
+  /** Whether the tweet is marked as sensitive (may be null/undefined) */
+  possibly_sensitive?: boolean;
   /** Whether this is a quote tweet */
   is_quote_status: boolean;
   /** Whether this is a retweet */
