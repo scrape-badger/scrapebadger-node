@@ -456,8 +456,8 @@ export interface List {
   name: string;
   /** List description */
   description?: string;
-  /** List creation timestamp */
-  created_at?: string;
+  /** List creation timestamp (may be string or Unix timestamp) */
+  created_at?: string | number;
   /** Number of members */
   member_count?: number;
   /** Number of subscribers */
