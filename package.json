@@ -1,6 +1,6 @@
 {
   "name": "scrapebadger",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Official Node.js SDK for ScrapeBadger - Async web scraping APIs for Twitter and more",
   "type": "module",
   "main": "./dist/index.js",
