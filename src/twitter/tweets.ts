@@ -194,6 +194,75 @@ export class TweetsClient {
   }
 
   /**
+   * Get tweets that quote a specific tweet.
+   *
+   * @param tweetId - The tweet ID to get quote tweets for.
+   * @param options - Pagination options.
+   * @returns Paginated response containing tweets that quote this tweet.
+   *
+   * @example
+   * ```typescript
+   * const quotes = await client.twitter.tweets.getQuotes("1234567890");
+   * for (const quote of quotes.data) {
+   *   console.log(`@${quote.username} quoted: ${quote.text.slice(0, 100)}...`);
+   * }
+   *
+   * // Get next page
+   * if (quotes.hasMore) {
+   *   const more = await client.twitter.tweets.getQuotes("1234567890", {
+   *     cursor: quotes.nextCursor
+   *   });
+   * }
+   * ```
+   */
+  async getQuotes(
+    tweetId: string,
+    options: PaginationOptions = {}
+  ): Promise<PaginatedResponse<Tweet>> {
+    const response = await this.client.request<{ data?: Tweet[]; next_cursor?: string }>(
+      `/v1/twitter/tweets/tweet/${tweetId}/quotes`,
+      { params: { cursor: options.cursor } }
+    );
+    return createPaginatedResponse(response.data ?? [], response.next_cursor);
+  }
+
+  /**
+   * Iterate through all quote tweets with automatic pagination.
+   *
+   * This is a convenience method that automatically handles pagination,
+   * yielding quote tweets one at a time.
+   *
+   * @param tweetId - The tweet ID to get quote tweets for.
+   * @param options - Iteration options.
+   * @yields Tweet objects that quote the specified tweet.
+   *
+   * @example
+   * ```typescript
+   * // Get all quote tweets (up to 500)
+   * for await (const quote of client.twitter.tweets.getQuotesAll("1234567890", {
+   *   maxItems: 500
+   * })) {
+   *   console.log(`@${quote.username}: ${quote.text}`);
+   * }
+   *
+   * // Collect into an array
+   * import { collectAll } from "scrapebadger";
+   * const quotes = await collectAll(
+   *   client.twitter.tweets.getQuotesAll("1234567890", { maxItems: 100 })
+   * );
+   * ```
+   */
+  async *getQuotesAll(
+    tweetId: string,
+    options: IteratorOptions = {}
+  ): AsyncGenerator<Tweet, void, undefined> {
+    const fetchPage = async (cursor?: string) => {
+      return this.getQuotes(tweetId, { ...options, cursor });
+    };
+    yield* paginate(fetchPage, options);
+  }
+
+  /**
    * Search for tweets.
    *
    * @param query - Search query string. Supports Twitter advanced search operators.
