@@ -11,6 +11,7 @@ import {
   getApiKeyFromEnv,
 } from "./internal/config.js";
 import { TwitterClient } from "./twitter/client.js";
+import { WebClient } from "./web/client.js";
 
 /**
  * ScrapeBadger API client.
@@ -49,6 +50,9 @@ export class ScrapeBadger {
 
   /** Twitter API client */
   readonly twitter: TwitterClient;
+
+  /** Web scraping API client */
+  readonly web: WebClient;
 
   /**
    * Create a new ScrapeBadger client.
@@ -90,5 +94,6 @@ export class ScrapeBadger {
 
     // Initialize sub-clients
     this.twitter = new TwitterClient(this.baseClient);
+    this.web = new WebClient(this.baseClient);
   }
 }

@@ -61,3 +61,6 @@ export { collectAll } from "./internal/pagination.js";
 
 // Re-export Twitter module
 export * from "./twitter/index.js";
+
+// Re-export Web module
+export * from "./web/index.js";
