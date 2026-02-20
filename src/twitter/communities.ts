@@ -11,7 +11,7 @@ import type {
   IteratorOptions,
 } from "../internal/pagination.js";
 import { createPaginatedResponse, paginate } from "../internal/pagination.js";
-import type { Community, CommunityMember, CommunityTweetType, Tweet, User } from "./types.js";
+import type { Community, CommunityMember, CommunityTweetType, Tweet } from "./types.js";
 
 /**
  * Client for Twitter communities endpoints.
@@ -39,6 +39,34 @@ export class CommunitiesClient {
 
   constructor(client: BaseClient) {
     this.client = client;
+  }
+
+  /**
+   * Parse a community member from the API response.
+   * Handles both flat format (user_id, username, role at top level)
+   * and nested format (user object with id, username).
+   */
+  private parseCommunityMember(item: Record<string, unknown>): CommunityMember {
+    if ("user" in item && item.user) {
+      return item as unknown as CommunityMember;
+    }
+    // Flat format: map user_id -> id for User interface
+    return {
+      user: {
+        id: (item.user_id as string) ?? "",
+        username: (item.username as string) ?? "",
+        name: (item.name as string) ?? "",
+        profile_image_url: item.profile_image_url as string | undefined,
+        verified: (item.verified as boolean) ?? false,
+        is_blue_verified: item.is_blue_verified as boolean | undefined,
+        followers_count: 0,
+        following_count: 0,
+        tweet_count: 0,
+        listed_count: 0,
+      },
+      role: item.role as string | undefined,
+      joined_at: item.joined_at as string | undefined,
+    };
   }
 
   /**
@@ -139,25 +167,15 @@ export class CommunitiesClient {
     options: PaginationOptions & { count?: number } = {}
   ): Promise<PaginatedResponse<CommunityMember>> {
     const response = await this.client.request<{
-      data?: (CommunityMember | User)[];
+      data?: Record<string, unknown>[];
       next_cursor?: string;
     }>(`/v1/twitter/communities/${communityId}/members`, {
       params: { count: options.count ?? 20, cursor: options.cursor },
     });
 
-    // Handle both nested and direct user structures
-    const data: CommunityMember[] = (response.data ?? []).map((item) => {
-      if ("user" in item && item.user) {
-        return item as CommunityMember;
-      }
-      // Wrap User in CommunityMember
-      const userItem = item as User & { role?: string; joined_at?: string };
-      return {
-        user: item as User,
-        role: userItem.role,
-        joined_at: userItem.joined_at,
-      };
-    });
+    const data: CommunityMember[] = (response.data ?? []).map((item) =>
+      this.parseCommunityMember(item)
+    );
 
     return createPaginatedResponse(data, response.next_cursor);
   }
@@ -174,25 +192,15 @@ export class CommunitiesClient {
     options: PaginationOptions & { count?: number } = {}
   ): Promise<PaginatedResponse<CommunityMember>> {
     const response = await this.client.request<{
-      data?: (CommunityMember | User)[];
+      data?: Record<string, unknown>[];
       next_cursor?: string;
     }>(`/v1/twitter/communities/${communityId}/moderators`, {
       params: { count: options.count ?? 20, cursor: options.cursor },
     });
 
-    // Handle both nested and direct user structures
-    const data: CommunityMember[] = (response.data ?? []).map((item) => {
-      if ("user" in item && item.user) {
-        return item as CommunityMember;
-      }
-      // Wrap User in CommunityMember
-      const userItem = item as User & { joined_at?: string };
-      return {
-        user: item as User,
-        role: "moderator",
-        joined_at: userItem.joined_at,
-      };
-    });
+    const data: CommunityMember[] = (response.data ?? []).map((item) =>
+      this.parseCommunityMember(item)
+    );
 
     return createPaginatedResponse(data, response.next_cursor);
   }
