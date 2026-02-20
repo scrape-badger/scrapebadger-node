@@ -296,13 +296,13 @@ export interface User {
 
   // Account metrics
   /** Number of followers */
-  followers_count: number;
+  followers_count?: number;
   /** Number of accounts followed */
-  following_count: number;
+  following_count?: number;
   /** Total tweets posted */
-  tweet_count: number;
+  tweet_count?: number;
   /** Number of lists the user is on */
-  listed_count: number;
+  listed_count?: number;
   /** Number of tweets liked */
   favourites_count?: number;
   /** Number of media posts */
