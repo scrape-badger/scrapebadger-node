@@ -11,6 +11,8 @@ export { ListsClient } from "./lists.js";
 export { CommunitiesClient } from "./communities.js";
 export { TrendsClient } from "./trends.js";
 export { GeoClient, type GeoSearchOptions } from "./geo.js";
+export { StreamClient, verifyWebhookSignature } from "./stream.js";
+export type { StreamEmitter } from "./stream.js";
 
 // Export all types
 export type {
@@ -44,3 +46,35 @@ export type {
   ApiResponse,
   ListResponse,
 } from "./types.js";
+
+// Stream types
+export type {
+  MonitorStatus,
+  StreamMonitor,
+  StreamMonitorList,
+  CreateMonitorParams,
+  UpdateMonitorParams,
+  StreamTweet,
+  ConnectedEvent,
+  PingEvent,
+  TweetEvent,
+  ErrorEvent,
+  StreamEvent,
+  StreamEventType,
+  DeliveryLog,
+  DeliveryLogList,
+  BillingLog,
+  BillingLogList,
+  ConnectOptions,
+  // Filter rule types
+  FilterRuleStatus,
+  FilterRuleResponse,
+  FilterRuleCreate,
+  FilterRuleUpdate,
+  FilterRulePricingTier,
+  FilterRuleListResponse,
+  FilterRuleValidateResponse,
+  FilterRuleDeliveryLog,
+  FilterRuleDeliveryLogListResponse,
+  FilterRulePricingTiersResponse,
+} from "./stream-types.js";

@@ -1,6 +1,6 @@
 {
   "name": "scrapebadger",
-  "version": "0.1.9",
+  "version": "0.2.0",
   "description": "Official Node.js SDK for ScrapeBadger - Async web scraping APIs for Twitter and more",
   "type": "module",
   "main": "./dist/index.js",
@@ -70,8 +70,12 @@
   "engines": {
     "node": ">=18.0.0"
   },
+  "dependencies": {
+    "ws": "^8.18.0"
+  },
   "devDependencies": {
     "@types/node": "^22.0.0",
+    "@types/ws": "^8.5.0",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",
     "@vitest/coverage-v8": "^2.0.0",
