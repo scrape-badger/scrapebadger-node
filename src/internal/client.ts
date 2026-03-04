@@ -12,6 +12,7 @@ import {
   TimeoutError,
   InsufficientCreditsError,
   AccountRestrictedError,
+  ConflictError,
   ScrapeBadgerError,
 } from "./exceptions.js";
 
@@ -37,7 +38,7 @@ interface ErrorResponse {
  * Base HTTP client for making API requests.
  */
 export class BaseClient {
-  private readonly config: ResolvedConfig;
+  readonly config: ResolvedConfig;
 
   constructor(config: ResolvedConfig) {
     this.config = config;
@@ -97,15 +98,7 @@ export class BaseClient {
 
         // Don't retry on client errors (4xx) except rate limits
         if (error instanceof ScrapeBadgerError && !(error instanceof RateLimitError)) {
-          if (
-            error instanceof AuthenticationError ||
-            error instanceof NotFoundError ||
-            error instanceof ValidationError ||
-            error instanceof InsufficientCreditsError ||
-            error instanceof AccountRestrictedError
-          ) {
-            throw error;
-          }
+          throw error;
         }
 
         // Don't retry after exhausting attempts
@@ -147,7 +140,10 @@ export class BaseClient {
       return response;
     } catch (error) {
       if (error instanceof Error && error.name === "AbortError") {
-        throw new TimeoutError(`Request timed out after ${this.config.timeout}ms`, this.config.timeout);
+        throw new TimeoutError(
+          `Request timed out after ${this.config.timeout}ms`,
+          this.config.timeout
+        );
       }
       throw error;
     } finally {
@@ -194,6 +190,9 @@ export class BaseClient {
 
       case 404:
         throw new NotFoundError(message);
+
+      case 409:
+        throw new ConflictError(message);
 
       case 422:
         throw new ValidationError(message, errorData.errors);

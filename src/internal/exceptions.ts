@@ -140,3 +140,69 @@ export class AccountRestrictedError extends ScrapeBadgerError {
     Object.setPrototypeOf(this, AccountRestrictedError.prototype);
   }
 }
+
+/**
+ * Raised when a resource conflict occurs (e.g. duplicate monitor name).
+ *
+ * Maps to HTTP 409 Conflict.
+ *
+ * @example
+ * ```typescript
+ * import { ConflictError } from "scrapebadger";
+ *
+ * try {
+ *   await client.twitter.stream.createMonitor({
+ *     name: "Existing Monitor",
+ *     usernames: ["elonmusk"],
+ *     pollIntervalSeconds: 10,
+ *   });
+ * } catch (err) {
+ *   if (err instanceof ConflictError) {
+ *     console.error("Monitor name already exists:", err.message);
+ *   }
+ * }
+ * ```
+ */
+export class ConflictError extends ScrapeBadgerError {
+  constructor(message = "Resource conflict.") {
+    super(message);
+    this.name = "ConflictError";
+    Object.setPrototypeOf(this, ConflictError.prototype);
+  }
+}
+
+/**
+ * Raised when the WebSocket stream connection fails or is terminated.
+ *
+ * Common codes:
+ * - 4001 -- Invalid or missing API key (auth failure)
+ * - 4003 -- Connection limit exceeded (max 5 per API key)
+ * - 1001 -- Server closed due to pong timeout
+ * - 0    -- Unknown/parse error
+ *
+ * @example
+ * ```typescript
+ * import { WebSocketStreamError } from "scrapebadger";
+ *
+ * try {
+ *   for await (const event of client.twitter.stream.connectIter()) {
+ *     // ...
+ *   }
+ * } catch (err) {
+ *   if (err instanceof WebSocketStreamError && err.code === 4001) {
+ *     console.error("API key rejected -- check your key");
+ *   }
+ * }
+ * ```
+ */
+export class WebSocketStreamError extends ScrapeBadgerError {
+  /** WebSocket close code or server error code */
+  readonly code: number | undefined;
+
+  constructor(message = "WebSocket stream error", code?: number) {
+    super(message);
+    this.name = "WebSocketStreamError";
+    this.code = code;
+    Object.setPrototypeOf(this, WebSocketStreamError.prototype);
+  }
+}

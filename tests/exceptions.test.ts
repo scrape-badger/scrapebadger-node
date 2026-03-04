@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import {
   ScrapeBadgerError,
   AuthenticationError,
@@ -9,6 +9,7 @@ import {
   TimeoutError,
   InsufficientCreditsError,
   AccountRestrictedError,
+  ConflictError,
 } from "../src/internal/exceptions.js";
 
 describe("Exceptions", () => {
@@ -109,6 +110,60 @@ describe("Exceptions", () => {
     it("stores restriction reason", () => {
       const error = new AccountRestrictedError("Restricted", "TOS violation");
       expect(error.reason).toBe("TOS violation");
+    });
+  });
+
+  describe("ConflictError", () => {
+    it("should be instance of ScrapeBadgerError", () => {
+      const err = new ConflictError("Monitor already exists");
+      expect(err).toBeInstanceOf(ScrapeBadgerError);
+      expect(err).toBeInstanceOf(ConflictError);
+      expect(err.name).toBe("ConflictError");
+    });
+
+    it("should have the correct message", () => {
+      const err = new ConflictError("Monitor already exists");
+      expect(err.message).toBe("Monitor already exists");
+    });
+
+    it("should use default message when none provided", () => {
+      const err = new ConflictError();
+      expect(err.message).toBe("Resource conflict.");
+    });
+
+    it("should be instance of Error", () => {
+      const err = new ConflictError("conflict");
+      expect(err).toBeInstanceOf(Error);
+    });
+
+    it("should be thrown on HTTP 409", async () => {
+      const { BaseClient } = await import("../src/internal/client.js");
+      const { resolveConfig } = await import("../src/internal/config.js");
+
+      const config = resolveConfig({ apiKey: "test-key" });
+      const client = new BaseClient(config);
+
+      // Mock fetch to return 409
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(JSON.stringify({ detail: "Monitor name already exists" }), {
+          status: 409,
+          headers: { "Content-Type": "application/json" },
+        })
+      );
+      vi.stubGlobal("fetch", mockFetch);
+
+      try {
+        await client.request("/v1/twitter/stream/monitors", {
+          method: "POST",
+          body: { name: "Existing Monitor" },
+        });
+        expect.fail("Should have thrown ConflictError");
+      } catch (err) {
+        expect(err).toBeInstanceOf(ConflictError);
+        expect((err as ConflictError).message).toBe("Monitor name already exists");
+      } finally {
+        vi.unstubAllGlobals();
+      }
     });
   });
 });

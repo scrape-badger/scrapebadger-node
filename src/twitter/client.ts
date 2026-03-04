@@ -11,6 +11,7 @@ import { ListsClient } from "./lists.js";
 import { CommunitiesClient } from "./communities.js";
 import { TrendsClient } from "./trends.js";
 import { GeoClient } from "./geo.js";
+import { StreamClient } from "./stream.js";
 
 /**
  * Twitter API client with access to all Twitter endpoints.
@@ -22,6 +23,7 @@ import { GeoClient } from "./geo.js";
  * - `communities` - Community operations (details, members, tweets, search, etc.)
  * - `trends` - Trending topics and locations
  * - `geo` - Geographic place information
+ * - `stream` - Real-time stream monitor management and WebSocket streaming
  *
  * @example
  * ```typescript
@@ -40,6 +42,10 @@ import { GeoClient } from "./geo.js";
  * for await (const tweet of client.twitter.tweets.searchAll("python")) {
  *   console.log(tweet.text);
  * }
+ *
+ * // Stream live tweets
+ * const stream = client.twitter.stream.connect();
+ * stream.on("tweet", (event) => console.log(event.authorUsername));
  * ```
  */
 export class TwitterClient {
@@ -61,6 +67,9 @@ export class TwitterClient {
   /** Client for geo/places operations */
   readonly geo: GeoClient;
 
+  /** Client for real-time stream monitor management and WebSocket streaming */
+  readonly stream: StreamClient;
+
   /**
    * Create a new Twitter client.
    *
@@ -73,5 +82,6 @@ export class TwitterClient {
     this.communities = new CommunitiesClient(client);
     this.trends = new TrendsClient(client);
     this.geo = new GeoClient(client);
+    this.stream = new StreamClient(client);
   }
 }

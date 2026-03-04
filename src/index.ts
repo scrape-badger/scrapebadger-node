@@ -49,6 +49,8 @@ export {
   TimeoutError,
   InsufficientCreditsError,
   AccountRestrictedError,
+  ConflictError,
+  WebSocketStreamError,
 } from "./internal/exceptions.js";
 
 // Pagination utilities

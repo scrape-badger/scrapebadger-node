@@ -202,6 +202,112 @@ const nearby = await client.twitter.geo.search({
 const place = await client.twitter.geo.getDetail("5a110d312052166f");
 ```
 
+### Stream Monitoring
+
+Real-time tweet monitoring with WebSocket streaming and webhook delivery.
+
+```typescript
+import { ScrapeBadger, WebSocketStreamError } from "scrapebadger";
+
+const client = new ScrapeBadger({ apiKey: "your-api-key" });
+
+// Create a monitor
+const monitor = await client.twitter.stream.createMonitor({
+  name: "Tech Leaders",
+  usernames: ["elonmusk", "naval", "sama"],
+  pollIntervalSeconds: 10,
+  webhookUrl: "https://example.com/webhook",
+});
+console.log(`Created: ${monitor.id}, tier: ${monitor.pricing_tier}`);
+console.log(`Credits/hr: ${monitor.estimated_credits_per_hour}`);
+
+// List monitors
+const { monitors, total } = await client.twitter.stream.listMonitors({ status: "active" });
+console.log(`${total} active monitors`);
+
+// Pause / resume
+await client.twitter.stream.pauseMonitor(monitor.id);
+await client.twitter.stream.resumeMonitor(monitor.id);
+
+// Delete
+await client.twitter.stream.deleteMonitor(monitor.id);
+```
+
+#### EventEmitter streaming
+
+```typescript
+const stream = client.twitter.stream.connect({
+  reconnect: true,
+  reconnectDelaySeconds: 90,
+});
+
+stream.on("connected", (e) => {
+  console.log("Connected, connection ID:", e.connectionId);
+});
+
+stream.on("tweet", (event) => {
+  console.log(`@${event.authorUsername}: ${event.tweet.text}`);
+  console.log(`  latency: ${event.latencyMs}ms`);
+});
+
+stream.on("error", (err) => {
+  if (err instanceof WebSocketStreamError && err.code === 4001) {
+    console.error("API key rejected");
+  } else {
+    console.error("Stream error:", err.message);
+  }
+});
+
+stream.on("close", () => console.log("Stream closed"));
+
+// Later: graceful disconnect
+stream.close();
+```
+
+#### AsyncIterator streaming
+
+```typescript
+import { WebSocketStreamError } from "scrapebadger";
+
+try {
+  for await (const event of client.twitter.stream.connectIter({
+    reconnect: true,
+    reconnectDelaySeconds: 90,
+  })) {
+    if (event.type === "tweet") {
+      console.log(`@${event.authorUsername}: ${event.latencyMs}ms latency`);
+    }
+  }
+} catch (err) {
+  if (err instanceof WebSocketStreamError) {
+    console.error("Stream failed:", err.message, err.code);
+  }
+}
+```
+
+#### Webhook signature verification
+
+```typescript
+import { verifyWebhookSignature } from "scrapebadger/twitter";
+import express from "express";
+
+const app = express();
+
+app.post(
+  "/webhook",
+  express.raw({ type: "application/json" }),
+  (req, res) => {
+    const sig = req.headers["x-scrapebadger-signature"] as string;
+    if (!verifyWebhookSignature("my-webhook-secret", req.body, sig)) {
+      return res.status(401).json({ error: "Invalid signature" });
+    }
+    const event = JSON.parse(req.body.toString());
+    console.log("Received tweet:", event.tweet_id);
+    res.sendStatus(200);
+  }
+);
+```
+
 ## Error Handling
 
 ```typescript
@@ -267,10 +373,26 @@ const client = new ScrapeBadger({
 - `client.twitter.communities` - Community operations
 - `client.twitter.trends` - Trend operations
 - `client.twitter.geo` - Geographic place operations
+- `client.twitter.stream` - Real-time stream monitor management and WebSocket streaming
+
+### Stream Client Methods
+
+- `createMonitor(params)` - Create a stream monitor
+- `listMonitors(options?)` - List monitors with optional status filter
+- `getMonitor(id)` - Get a monitor by ID
+- `updateMonitor(id, params)` - Partially update a monitor
+- `pauseMonitor(id)` - Pause an active monitor
+- `resumeMonitor(id)` - Resume a paused monitor
+- `deleteMonitor(id)` - Delete a monitor (irreversible)
+- `listDeliveryLogs(options?)` - List tweet delivery logs
+- `listBillingLogs(options?)` - List billing activity logs
+- `connect(options?)` - Connect via EventEmitter (`.on("tweet", handler)`)
+- `connectIter(options?)` - Connect via AsyncIterator (`for await`)
 
 ### Utilities
 
 - `collectAll(asyncIterator)` - Collect async iterator results into an array
+- `verifyWebhookSignature(secret, body, header)` - Verify incoming webhook HMAC signature
 
 ### Exceptions
 
@@ -283,6 +405,7 @@ const client = new ScrapeBadger({
 - `TimeoutError` - Request timeout
 - `InsufficientCreditsError` - Out of credits
 - `AccountRestrictedError` - Account restricted
+- `WebSocketStreamError` - WebSocket stream failure (auth, limit, or network)
 
 ## Requirements
 
