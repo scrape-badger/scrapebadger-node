@@ -175,6 +175,26 @@ export interface Tweet {
   username?: string;
   /** Author's display name */
   user_name?: string;
+  /** Author's profile image URL */
+  user_profile_image_url?: string;
+  /** Author's bio */
+  user_description?: string;
+  /** Author's location */
+  user_location?: string;
+  /** Author's website URL */
+  user_url?: string;
+  /** Author's follower count */
+  user_followers_count?: number;
+  /** Author's following count */
+  user_following_count?: number;
+  /** Author's tweet count */
+  user_tweet_count?: number;
+  /** Author's legacy verification status */
+  user_verified?: boolean;
+  /** Author's Twitter Blue verification status */
+  user_is_blue_verified?: boolean;
+  /** Author's account creation date */
+  user_created_at?: string;
 
   // Engagement metrics
   /** Number of likes */
