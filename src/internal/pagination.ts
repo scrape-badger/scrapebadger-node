@@ -2,6 +2,8 @@
  * Pagination utilities for the ScrapeBadger SDK.
  */
 
+import type { RateLimit } from "./client.js";
+
 /**
  * Response wrapper for paginated API responses.
  */
@@ -33,6 +35,14 @@ export interface IteratorOptions extends PaginationOptions {
 }
 
 /**
+ * Page result returned by fetchPage callbacks passed to paginate().
+ */
+export interface PageResult<T> {
+  response: PaginatedResponse<T>;
+  rateLimit?: RateLimit;
+}
+
+/**
  * Create a paginated response from API response data.
  */
 export function createPaginatedResponse<T>(
@@ -46,10 +56,15 @@ export function createPaginatedResponse<T>(
   };
 }
 
+const RATE_LIMIT_WARN_THRESHOLD = 0.2;
+
 /**
  * Async generator for paginating through API results.
  *
- * @param fetchPage - Function to fetch a single page
+ * Automatically throttles when fewer than 20% of rate limit requests remain,
+ * spreading requests across the remaining reset window.
+ *
+ * @param fetchPage - Function to fetch a single page; returns response + optional rate limit info
  * @param options - Pagination options
  * @yields Individual items from each page
  *
@@ -67,7 +82,7 @@ export function createPaginatedResponse<T>(
  * ```
  */
 export async function* paginate<T>(
-  fetchPage: (cursor?: string) => Promise<PaginatedResponse<T>>,
+  fetchPage: (cursor?: string) => Promise<PageResult<T>>,
   options: IteratorOptions = {}
 ): AsyncGenerator<T, void, undefined> {
   const { maxItems } = options;
@@ -75,7 +90,22 @@ export async function* paginate<T>(
   let totalYielded = 0;
 
   do {
-    const response = await fetchPage(cursor);
+    const { response, rateLimit } = await fetchPage(cursor);
+
+    // Throttle pagination when approaching rate limit
+    if (rateLimit) {
+      const { limit, remaining, reset } = rateLimit;
+      if (limit > 0 && remaining / limit < RATE_LIMIT_WARN_THRESHOLD) {
+        const nowSec = Date.now() / 1000;
+        const windowRemainingSec = Math.max(reset - nowSec, 1);
+        const delayMs = remaining > 0 ? (windowRemainingSec / remaining) * 1000 : windowRemainingSec * 1000;
+        const resetInSec = Math.round(windowRemainingSec);
+        console.warn(
+          `\x1b[33m⚠ ScrapeBadger: Rate limit: ${remaining}/${limit} remaining (resets in ${resetInSec}s), throttling pagination\x1b[0m`
+        );
+        await sleep(delayMs);
+      }
+    }
 
     for (const item of response.data) {
       yield item;
@@ -108,4 +138,8 @@ export async function collectAll<T>(generator: AsyncGenerator<T, void, undefined
     items.push(item);
   }
   return items;
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }

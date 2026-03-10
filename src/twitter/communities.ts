@@ -11,6 +11,7 @@ import type {
   IteratorOptions,
 } from "../internal/pagination.js";
 import { createPaginatedResponse, paginate } from "../internal/pagination.js";
+import type { PageResult } from "../internal/pagination.js";
 import type { Community, CommunityMember, CommunityTweetType, Tweet } from "./types.js";
 
 /**
@@ -137,8 +138,18 @@ export class CommunitiesClient {
     communityId: string,
     options: IteratorOptions & { tweetType?: CommunityTweetType } = {}
   ): AsyncGenerator<Tweet, void, undefined> {
-    const fetchPage = async (cursor?: string) => {
-      return this.getTweets(communityId, { ...options, cursor });
+    const fetchPage = async (cursor?: string): Promise<PageResult<Tweet>> => {
+      const { data, rateLimit } = await this.client.requestWithHeaders<{
+        data?: Tweet[];
+        next_cursor?: string;
+      }>(`/v1/twitter/communities/${communityId}/tweets`, {
+        params: {
+          tweet_type: options.tweetType ?? "Top",
+          count: options.count ?? 40,
+          cursor,
+        },
+      });
+      return { response: createPaginatedResponse(data.data ?? [], data.next_cursor), rateLimit };
     };
     yield* paginate(fetchPage, options);
   }

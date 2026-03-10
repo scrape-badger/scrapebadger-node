@@ -11,6 +11,7 @@ import type {
   IteratorOptions,
 } from "../internal/pagination.js";
 import { createPaginatedResponse, paginate } from "../internal/pagination.js";
+import type { PageResult } from "../internal/pagination.js";
 import type { Tweet, User, QueryType } from "./types.js";
 
 /**
@@ -256,8 +257,12 @@ export class TweetsClient {
     tweetId: string,
     options: IteratorOptions = {}
   ): AsyncGenerator<Tweet, void, undefined> {
-    const fetchPage = async (cursor?: string) => {
-      return this.getQuotes(tweetId, { ...options, cursor });
+    const fetchPage = async (cursor?: string): Promise<PageResult<Tweet>> => {
+      const { data, rateLimit } = await this.client.requestWithHeaders<{
+        data?: Tweet[];
+        next_cursor?: string;
+      }>(`/v1/twitter/tweets/tweet/${tweetId}/quotes`, { params: { cursor } });
+      return { response: createPaginatedResponse(data.data ?? [], data.next_cursor), rateLimit };
     };
     yield* paginate(fetchPage, options);
   }
@@ -331,8 +336,19 @@ export class TweetsClient {
     query: string,
     options: IteratorOptions & { queryType?: QueryType; count?: number } = {}
   ): AsyncGenerator<Tweet, void, undefined> {
-    const fetchPage = async (cursor?: string) => {
-      return this.search(query, { ...options, cursor });
+    const fetchPage = async (cursor?: string): Promise<PageResult<Tweet>> => {
+      const { data, rateLimit } = await this.client.requestWithHeaders<{
+        data?: Tweet[];
+        next_cursor?: string;
+      }>("/v1/twitter/tweets/advanced_search", {
+        params: {
+          query,
+          query_type: options.queryType ?? "Top",
+          count: options.count,
+          cursor,
+        },
+      });
+      return { response: createPaginatedResponse(data.data ?? [], data.next_cursor), rateLimit };
     };
     yield* paginate(fetchPage, options);
   }
@@ -383,8 +399,12 @@ export class TweetsClient {
     username: string,
     options: IteratorOptions = {}
   ): AsyncGenerator<Tweet, void, undefined> {
-    const fetchPage = async (cursor?: string) => {
-      return this.getUserTweets(username, { ...options, cursor });
+    const fetchPage = async (cursor?: string): Promise<PageResult<Tweet>> => {
+      const { data, rateLimit } = await this.client.requestWithHeaders<{
+        data?: Tweet[];
+        next_cursor?: string;
+      }>(`/v1/twitter/users/${username}/latest_tweets`, { params: { cursor } });
+      return { response: createPaginatedResponse(data.data ?? [], data.next_cursor), rateLimit };
     };
     yield* paginate(fetchPage, options);
   }

@@ -25,7 +25,7 @@ export interface ResolvedConfig {
 
 const DEFAULT_BASE_URL = "https://scrapebadger.com";
 const DEFAULT_TIMEOUT = 30000;
-const DEFAULT_MAX_RETRIES = 3;
+const DEFAULT_MAX_RETRIES = 10;
 const DEFAULT_RETRY_DELAY = 1000;
 
 /**

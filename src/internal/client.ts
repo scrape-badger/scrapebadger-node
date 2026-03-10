@@ -16,6 +16,17 @@ import {
   ScrapeBadgerError,
 } from "./exceptions.js";
 
+export interface RateLimit {
+  limit: number;
+  remaining: number;
+  reset: number; // unix timestamp
+}
+
+export interface ResponseWithHeaders<T> {
+  data: T;
+  rateLimit?: RateLimit;
+}
+
 export interface RequestOptions {
   method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
   params?: Record<string, string | number | boolean | undefined>;
@@ -48,6 +59,27 @@ export class BaseClient {
    * Make an HTTP request to the API.
    */
   async request<T>(path: string, options: RequestOptions = {}): Promise<T> {
+    const { data } = await this.requestRaw<T>(path, options);
+    return data;
+  }
+
+  /**
+   * Make an HTTP request and return both data and rate limit headers.
+   */
+  async requestWithHeaders<T>(
+    path: string,
+    options: RequestOptions = {}
+  ): Promise<ResponseWithHeaders<T>> {
+    return this.requestRaw<T>(path, options);
+  }
+
+  /**
+   * Internal method that builds the request and executes it, returning data and rate limit info.
+   */
+  private async requestRaw<T>(
+    path: string,
+    options: RequestOptions = {}
+  ): Promise<ResponseWithHeaders<T>> {
     const { method = "GET", params, body, headers = {} } = options;
 
     // Build URL with query parameters
@@ -65,7 +97,7 @@ export class BaseClient {
       "Content-Type": "application/json",
       Accept: "application/json",
       "X-API-Key": this.config.apiKey,
-      "User-Agent": "scrapebadger-node/0.1.0",
+      "User-Agent": "scrapebadger-node/0.3.1",
       ...headers,
     };
 
@@ -86,13 +118,18 @@ export class BaseClient {
   /**
    * Execute request with exponential backoff retry logic.
    */
-  private async executeWithRetry<T>(url: string, options: RequestInit): Promise<T> {
+  private async executeWithRetry<T>(
+    url: string,
+    options: RequestInit
+  ): Promise<ResponseWithHeaders<T>> {
     let lastError: Error | undefined;
 
     for (let attempt = 0; attempt <= this.config.maxRetries; attempt++) {
       try {
-        const response = await this.fetchWithTimeout(url, options);
-        return await this.handleResponse<T>(response);
+        const httpResponse = await this.fetchWithTimeout(url, options);
+        const data = await this.handleResponse<T>(httpResponse);
+        const rateLimit = this.parseRateLimitHeaders(httpResponse.headers);
+        return { data, rateLimit };
       } catch (error) {
         lastError = error as Error;
 
@@ -108,14 +145,35 @@ export class BaseClient {
 
         // Calculate delay with exponential backoff
         const delay = this.config.retryDelay * Math.pow(2, attempt);
+        const delaySec = Math.round(delay / 1000);
+        const attemptNum = attempt + 1;
+        const maxRetries = this.config.maxRetries;
 
-        // For rate limits, use retry-after if available
-        if (error instanceof RateLimitError && error.retryAfter) {
-          const retryDelay = (error.retryAfter - Date.now() / 1000) * 1000;
-          if (retryDelay > 0 && retryDelay < 60000) {
-            await this.sleep(retryDelay);
-            continue;
+        // Warn with ANSI yellow coloring
+        if (error instanceof RateLimitError) {
+          console.warn(
+            `\x1b[33m⚠ ScrapeBadger: 429 Rate Limited — retrying in ${delaySec}s (attempt ${attemptNum}/${maxRetries})\x1b[0m`
+          );
+          // For rate limits, use retry-after if available
+          if (error.retryAfter) {
+            const retryDelay = (error.retryAfter - Date.now() / 1000) * 1000;
+            if (retryDelay > 0 && retryDelay < 60000) {
+              await this.sleep(retryDelay);
+              continue;
+            }
           }
+        } else if (error instanceof TimeoutError) {
+          console.warn(
+            `\x1b[33m⚠ ScrapeBadger: TimeoutError — retrying in ${delaySec}s (attempt ${attemptNum}/${maxRetries})\x1b[0m`
+          );
+        } else if (error instanceof ServerError) {
+          console.warn(
+            `\x1b[33m⚠ ScrapeBadger: ${error.statusCode} ${error.message} — retrying in ${delaySec}s (attempt ${attemptNum}/${maxRetries})\x1b[0m`
+          );
+        } else {
+          console.warn(
+            `\x1b[33m⚠ ScrapeBadger: ${(error as Error).name} — retrying in ${delaySec}s (attempt ${attemptNum}/${maxRetries})\x1b[0m`
+          );
         }
 
         await this.sleep(delay);
@@ -123,6 +181,29 @@ export class BaseClient {
     }
 
     throw lastError ?? new ScrapeBadgerError("Request failed after retries");
+  }
+
+  /**
+   * Parse rate limit headers from an HTTP response.
+   */
+  private parseRateLimitHeaders(headers: Headers): RateLimit | undefined {
+    const limit = headers.get("X-RateLimit-Limit");
+    const remaining = headers.get("X-RateLimit-Remaining");
+    const reset = headers.get("X-RateLimit-Reset");
+
+    if (limit === null || remaining === null || reset === null) {
+      return undefined;
+    }
+
+    const parsedLimit = parseInt(limit, 10);
+    const parsedRemaining = parseInt(remaining, 10);
+    const parsedReset = parseInt(reset, 10);
+
+    if (isNaN(parsedLimit) || isNaN(parsedRemaining) || isNaN(parsedReset)) {
+      return undefined;
+    }
+
+    return { limit: parsedLimit, remaining: parsedRemaining, reset: parsedReset };
   }
 
   /**
