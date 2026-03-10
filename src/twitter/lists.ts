@@ -11,6 +11,7 @@ import type {
   IteratorOptions,
 } from "../internal/pagination.js";
 import { createPaginatedResponse, paginate } from "../internal/pagination.js";
+import type { PageResult } from "../internal/pagination.js";
 import type { List, Tweet, User } from "./types.js";
 
 /**
@@ -96,8 +97,12 @@ export class ListsClient {
     listId: string,
     options: IteratorOptions = {}
   ): AsyncGenerator<Tweet, void, undefined> {
-    const fetchPage = async (cursor?: string) => {
-      return this.getTweets(listId, { ...options, cursor });
+    const fetchPage = async (cursor?: string): Promise<PageResult<Tweet>> => {
+      const { data, rateLimit } = await this.client.requestWithHeaders<{
+        data?: Tweet[];
+        next_cursor?: string;
+      }>(`/v1/twitter/lists/${listId}/tweets`, { params: { cursor } });
+      return { response: createPaginatedResponse(data.data ?? [], data.next_cursor), rateLimit };
     };
     yield* paginate(fetchPage, options);
   }
@@ -139,8 +144,12 @@ export class ListsClient {
     listId: string,
     options: IteratorOptions = {}
   ): AsyncGenerator<User, void, undefined> {
-    const fetchPage = async (cursor?: string) => {
-      return this.getMembers(listId, { ...options, cursor });
+    const fetchPage = async (cursor?: string): Promise<PageResult<User>> => {
+      const { data, rateLimit } = await this.client.requestWithHeaders<{
+        data?: User[];
+        next_cursor?: string;
+      }>(`/v1/twitter/lists/${listId}/members`, { params: { cursor } });
+      return { response: createPaginatedResponse(data.data ?? [], data.next_cursor), rateLimit };
     };
     yield* paginate(fetchPage, options);
   }

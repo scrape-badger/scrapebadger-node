@@ -19,7 +19,8 @@ The official Node.js/TypeScript client library for the [ScrapeBadger](https://sc
 - **Full TypeScript Support** - Complete type definitions for all API endpoints
 - **Modern ESM & CommonJS** - Works with both module systems
 - **Async Iterators** - Automatic pagination with `for await...of` syntax
-- **Retry Logic** - Built-in exponential backoff for reliability
+- **Smart Rate Limit Handling** - Reads API rate limit headers and automatically throttles pagination to avoid hitting limits
+- **Resilient Retries** - 10 automatic retries with exponential backoff on server errors, with colored console warnings on each retry
 - **Error Handling** - Typed exceptions for different error scenarios
 - **Tree Shakeable** - Import only what you need
 
@@ -345,18 +346,43 @@ const client = new ScrapeBadger({
   // Required: Your API key (or use SCRAPEBADGER_API_KEY env var)
   apiKey: "your-api-key",
 
-  // Optional: Custom base URL (default: https://api.scrapebadger.com)
-  baseUrl: "https://api.scrapebadger.com",
+  // Optional: Custom base URL (default: https://scrapebadger.com)
+  baseUrl: "https://scrapebadger.com",
 
   // Optional: Request timeout in milliseconds (default: 30000)
   timeout: 30000,
 
-  // Optional: Maximum retry attempts (default: 3)
-  maxRetries: 3,
+  // Optional: Maximum retry attempts (default: 10)
+  maxRetries: 10,
 
   // Optional: Initial retry delay in milliseconds (default: 1000)
   retryDelay: 1000,
 });
+```
+
+### Retry Behavior
+
+The SDK automatically retries requests that fail with server errors (5xx) or rate
+limits (429) using exponential backoff (1s, 2s, 4s, 8s, ...). Each retry prints a
+colored warning:
+
+```
+⚠ ScrapeBadger: 503 Service Unavailable — retrying in 4s (attempt 3/10)
+```
+
+### Rate Limit Aware Pagination
+
+When using `*All` pagination methods (e.g. `searchAll`, `getFollowersAll`), the SDK
+reads `X-RateLimit-Remaining` and `X-RateLimit-Reset` headers from each response.
+When remaining requests drop below 20% of your tier's limit, pagination automatically
+slows down to spread requests across the remaining window — preventing 429 errors:
+
+```
+⚠ ScrapeBadger: Rate limit: 25/300 remaining (resets in 42s), throttling pagination
+```
+
+This works transparently with all tier levels (Free: 60/min, Basic: 300/min,
+Pro: 1000/min, Enterprise: 5000/min).
 ```
 
 ## API Reference

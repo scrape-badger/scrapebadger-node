@@ -11,6 +11,7 @@ import type {
   IteratorOptions,
 } from "../internal/pagination.js";
 import { createPaginatedResponse, paginate } from "../internal/pagination.js";
+import type { PageResult } from "../internal/pagination.js";
 import type { User, UserAbout, UserIds, Tweet } from "./types.js";
 
 /**
@@ -150,8 +151,12 @@ export class UsersClient {
     username: string,
     options: IteratorOptions = {}
   ): AsyncGenerator<User, void, undefined> {
-    const fetchPage = async (cursor?: string) => {
-      return this.getFollowers(username, { ...options, cursor });
+    const fetchPage = async (cursor?: string): Promise<PageResult<User>> => {
+      const { data, rateLimit } = await this.client.requestWithHeaders<{
+        data?: User[];
+        next_cursor?: string;
+      }>(`/v1/twitter/users/${username}/followers`, { params: { cursor } });
+      return { response: createPaginatedResponse(data.data ?? [], data.next_cursor), rateLimit };
     };
     yield* paginate(fetchPage, options);
   }
@@ -193,8 +198,12 @@ export class UsersClient {
     username: string,
     options: IteratorOptions = {}
   ): AsyncGenerator<User, void, undefined> {
-    const fetchPage = async (cursor?: string) => {
-      return this.getFollowing(username, { ...options, cursor });
+    const fetchPage = async (cursor?: string): Promise<PageResult<User>> => {
+      const { data, rateLimit } = await this.client.requestWithHeaders<{
+        data?: User[];
+        next_cursor?: string;
+      }>(`/v1/twitter/users/${username}/followings`, { params: { cursor } });
+      return { response: createPaginatedResponse(data.data ?? [], data.next_cursor), rateLimit };
     };
     yield* paginate(fetchPage, options);
   }
@@ -374,10 +383,7 @@ export class UsersClient {
    * }
    * ```
    */
-  async search(
-    query: string,
-    options: PaginationOptions = {}
-  ): Promise<PaginatedResponse<User>> {
+  async search(query: string, options: PaginationOptions = {}): Promise<PaginatedResponse<User>> {
     const response = await this.client.request<{ data?: User[]; next_cursor?: string }>(
       "/v1/twitter/users/search_users",
       { params: { query, cursor: options.cursor } }
@@ -396,8 +402,12 @@ export class UsersClient {
     query: string,
     options: IteratorOptions = {}
   ): AsyncGenerator<User, void, undefined> {
-    const fetchPage = async (cursor?: string) => {
-      return this.search(query, { ...options, cursor });
+    const fetchPage = async (cursor?: string): Promise<PageResult<User>> => {
+      const { data, rateLimit } = await this.client.requestWithHeaders<{
+        data?: User[];
+        next_cursor?: string;
+      }>("/v1/twitter/users/search_users", { params: { query, cursor } });
+      return { response: createPaginatedResponse(data.data ?? [], data.next_cursor), rateLimit };
     };
     yield* paginate(fetchPage, options);
   }
