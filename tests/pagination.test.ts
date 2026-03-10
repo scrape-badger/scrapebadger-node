@@ -1,9 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import {
-  createPaginatedResponse,
-  paginate,
-  collectAll,
-} from "../src/internal/pagination.js";
+import { createPaginatedResponse, paginate, collectAll } from "../src/internal/pagination.js";
 
 describe("Pagination", () => {
   describe("createPaginatedResponse", () => {
@@ -29,12 +25,13 @@ describe("Pagination", () => {
   });
 
   describe("paginate", () => {
+    // Helper to wrap a PaginatedResponse in the PageResult shape paginate() expects
+    const page = (data: number[], nextCursor?: string) => ({
+      response: { data, nextCursor, hasMore: !!nextCursor },
+    });
+
     it("yields items from single page", async () => {
-      const fetchPage = vi.fn().mockResolvedValueOnce({
-        data: [1, 2, 3],
-        nextCursor: undefined,
-        hasMore: false,
-      });
+      const fetchPage = vi.fn().mockResolvedValueOnce(page([1, 2, 3]));
 
       const items: number[] = [];
       for await (const item of paginate(fetchPage)) {
@@ -48,21 +45,9 @@ describe("Pagination", () => {
     it("yields items from multiple pages", async () => {
       const fetchPage = vi
         .fn()
-        .mockResolvedValueOnce({
-          data: [1, 2],
-          nextCursor: "page2",
-          hasMore: true,
-        })
-        .mockResolvedValueOnce({
-          data: [3, 4],
-          nextCursor: "page3",
-          hasMore: true,
-        })
-        .mockResolvedValueOnce({
-          data: [5],
-          nextCursor: undefined,
-          hasMore: false,
-        });
+        .mockResolvedValueOnce(page([1, 2], "page2"))
+        .mockResolvedValueOnce(page([3, 4], "page3"))
+        .mockResolvedValueOnce(page([5]));
 
       const items: number[] = [];
       for await (const item of paginate(fetchPage)) {
@@ -76,16 +61,8 @@ describe("Pagination", () => {
     it("respects maxItems limit", async () => {
       const fetchPage = vi
         .fn()
-        .mockResolvedValueOnce({
-          data: [1, 2, 3],
-          nextCursor: "page2",
-          hasMore: true,
-        })
-        .mockResolvedValueOnce({
-          data: [4, 5, 6],
-          nextCursor: "page3",
-          hasMore: true,
-        });
+        .mockResolvedValueOnce(page([1, 2, 3], "page2"))
+        .mockResolvedValueOnce(page([4, 5, 6], "page3"));
 
       const items: number[] = [];
       for await (const item of paginate(fetchPage, { maxItems: 4 })) {
@@ -96,11 +73,7 @@ describe("Pagination", () => {
     });
 
     it("handles empty first page", async () => {
-      const fetchPage = vi.fn().mockResolvedValueOnce({
-        data: [],
-        nextCursor: undefined,
-        hasMore: false,
-      });
+      const fetchPage = vi.fn().mockResolvedValueOnce(page([]));
 
       const items: number[] = [];
       for await (const item of paginate(fetchPage)) {
