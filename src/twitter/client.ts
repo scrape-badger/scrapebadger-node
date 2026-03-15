@@ -12,6 +12,7 @@ import { CommunitiesClient } from "./communities.js";
 import { TrendsClient } from "./trends.js";
 import { GeoClient } from "./geo.js";
 import { StreamClient } from "./stream.js";
+import { SpacesClient } from "./spaces.js";
 
 /**
  * Twitter API client with access to all Twitter endpoints.
@@ -24,6 +25,7 @@ import { StreamClient } from "./stream.js";
  * - `trends` - Trending topics and locations
  * - `geo` - Geographic place information
  * - `stream` - Real-time stream monitor management and WebSocket streaming
+ * - `spaces` - Twitter Spaces and live broadcast details
  *
  * @example
  * ```typescript
@@ -70,6 +72,9 @@ export class TwitterClient {
   /** Client for real-time stream monitor management and WebSocket streaming */
   readonly stream: StreamClient;
 
+  /** Client for Twitter Spaces and live broadcast operations */
+  readonly spaces: SpacesClient;
+
   /**
    * Create a new Twitter client.
    *
@@ -83,5 +88,6 @@ export class TwitterClient {
     this.trends = new TrendsClient(client);
     this.geo = new GeoClient(client);
     this.stream = new StreamClient(client);
+    this.spaces = new SpacesClient(client);
   }
 }

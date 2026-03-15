@@ -213,4 +213,32 @@ export class ListsClient {
     );
     return createPaginatedResponse(response.data ?? [], response.next_cursor);
   }
+
+  /**
+   * Search tweets within a specific list.
+   *
+   * @param listId - The list ID to search within.
+   * @param query - Search query string.
+   * @param options - Pagination options with optional count.
+   * @returns Paginated response containing matching tweets from the list.
+   *
+   * @example
+   * ```typescript
+   * const results = await client.twitter.lists.searchTweets("123456", "python");
+   * for (const tweet of results.data) {
+   *   console.log(`@${tweet.username}: ${tweet.text.slice(0, 100)}...`);
+   * }
+   * ```
+   */
+  async searchTweets(
+    listId: string,
+    query: string,
+    options: PaginationOptions & { count?: number } = {}
+  ): Promise<PaginatedResponse<Tweet>> {
+    const response = await this.client.request<{ data?: Tweet[]; next_cursor?: string }>(
+      `/v1/twitter/lists/${listId}/search_tweets`,
+      { params: { query, count: options.count, cursor: options.cursor } }
+    );
+    return createPaginatedResponse(response.data ?? [], response.next_cursor);
+  }
 }

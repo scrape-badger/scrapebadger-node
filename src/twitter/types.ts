@@ -231,6 +231,10 @@ export interface Tweet {
   in_reply_to_status_id?: string;
   /** ID of the user being replied to */
   in_reply_to_user_id?: string;
+  /** Screen name of the user being replied to */
+  in_reply_to_screen_name?: string;
+  /** Character range [start, end] of the display text within the full text */
+  display_text_range?: number[];
 
   // Rich content
   /** List of attached media */
@@ -313,6 +317,10 @@ export interface User {
   profile_image_url?: string;
   /** Banner image URL */
   profile_banner_url?: string;
+  /** Shape of the profile image (e.g. "Circle") */
+  profile_image_shape?: string;
+  /** Interstitial type shown before viewing the profile */
+  profile_interstitial_type?: string;
 
   // Account metrics
   /** Number of followers */
@@ -335,6 +343,8 @@ export interface User {
   verified_type?: string;
   /** Whether the user has Twitter Blue */
   is_blue_verified?: boolean;
+  /** Structured verification metadata returned by the API */
+  verification_info?: Record<string, unknown>;
 
   // Account dates
   /** Account creation timestamp */
@@ -381,6 +391,16 @@ export interface User {
   professional_type?: string;
   /** Advertiser account type */
   advertiser_account_type?: string;
+
+  // Creator subscriptions
+  /** Number of creator subscriptions (Super Follows) this user has */
+  creator_subscriptions_count?: number;
+  /** Whether the user is eligible to offer Super Follows */
+  super_follow_eligible?: boolean;
+  /** Whether the authenticated user is Super Following this user */
+  super_following?: boolean;
+  /** Whether this user is Super Following the authenticated user */
+  super_followed_by?: boolean;
 
   // Engagement
   /** IDs of pinned tweets */
@@ -490,6 +510,22 @@ export interface List {
   user_id?: string;
   /** Owner's username */
   username?: string;
+
+  // Rich display metadata
+  /** Profile image URLs of a selection of list members (facepile) */
+  facepile_urls?: string[];
+  /** Human-readable followers context, e.g. "2.4K followers including @user" */
+  followers_context?: string;
+  /** Human-readable members count string, e.g. "87 members" */
+  members_context?: string;
+
+  // Ownership (may differ from user_id / username when provided separately)
+  /** Owner's user ID (alternative field name returned by some endpoints) */
+  owner_id?: string;
+  /** Owner's username (alternative field name returned by some endpoints) */
+  owner_username?: string;
+  /** Owner's display name */
+  owner_name?: string;
 }
 
 /**
@@ -585,6 +621,12 @@ export interface Community {
   // Rules
   /** List of community rules */
   rules?: CommunityRule[];
+
+  // Topic and branding
+  /** Primary topic for the community, e.g. "Software" */
+  primary_community_topic?: string;
+  /** Custom banner image distinct from the standard banner */
+  custom_banner?: CommunityBanner;
 }
 
 /**
@@ -704,6 +746,108 @@ export interface Place {
   bounding_box?: Record<string, unknown>;
   /** Additional place attributes */
   attributes?: Record<string, string>;
+}
+
+/**
+ * A long-form article on Twitter.
+ */
+export interface Article {
+  /** Article identifier */
+  id: string;
+  /** Article title */
+  title?: string;
+  /** Article text content */
+  text?: string;
+  /** Cover image URL */
+  cover_image_url?: string;
+  /** Creation timestamp */
+  created_at?: string;
+}
+
+/**
+ * A community note (Birdwatch) on a tweet.
+ */
+export interface CommunityNote {
+  /** Note identifier */
+  id?: string;
+  /** Note text content */
+  text?: string;
+  /** Creation timestamp */
+  created_at?: string;
+  /** Note status */
+  status?: string;
+}
+
+/**
+ * A Twitter Space (audio room).
+ */
+export interface Space {
+  /** Space identifier */
+  id: string;
+  /** Space title */
+  title?: string;
+  /** Current state (e.g. 'Running', 'Ended') */
+  state?: string;
+  /** Creation timestamp */
+  created_at?: string;
+  /** Start timestamp */
+  started_at?: string;
+  /** End timestamp */
+  ended_at?: string;
+  /** Scheduled start time */
+  scheduled_start?: string;
+  /** Last updated timestamp */
+  updated_at?: string;
+  /** Whether the space is locked */
+  is_locked?: boolean;
+  /** Whether replay is available */
+  is_space_available_for_replay?: boolean;
+  /** Whether clipping is available */
+  is_space_available_for_clipping?: boolean;
+  /** Total replay views */
+  total_replay_watched?: number;
+  /** Peak live listeners */
+  total_live_listeners?: number;
+  /** Media key for the space */
+  media_key?: string;
+  /** Content type (e.g. 'visual_audio') */
+  content_type?: string;
+  /** Creator's user ID */
+  creator_id?: string;
+  /** Creator's username */
+  creator_username?: string;
+  /** Creator's display name */
+  creator_name?: string;
+  /** Number of admins */
+  admin_count?: number;
+  /** Number of speakers */
+  speaker_count?: number;
+  /** Number of listeners */
+  listener_count?: number;
+}
+
+/**
+ * A live video broadcast.
+ */
+export interface Broadcast {
+  /** Broadcast identifier */
+  id: string;
+  /** Broadcast title */
+  title?: string;
+  /** Current state */
+  state?: string;
+  /** Media key */
+  media_key?: string;
+  /** Creation timestamp */
+  created_at?: string;
+  /** Start timestamp */
+  started_at?: string;
+  /** Video width */
+  width?: number;
+  /** Video height */
+  height?: number;
+  /** Total viewer count */
+  total_viewers?: number;
 }
 
 // =============================================================================
