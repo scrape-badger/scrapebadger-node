@@ -13,6 +13,7 @@ export { TrendsClient } from "./trends.js";
 export { GeoClient, type GeoSearchOptions } from "./geo.js";
 export { StreamClient, verifyWebhookSignature } from "./stream.js";
 export type { StreamEmitter } from "./stream.js";
+export { SpacesClient } from "./spaces.js";
 
 // Export all types
 export type {
@@ -42,6 +43,10 @@ export type {
   Location,
   PlaceTrends,
   Place,
+  Article,
+  CommunityNote,
+  Space,
+  Broadcast,
   // Response types
   ApiResponse,
   ListResponse,

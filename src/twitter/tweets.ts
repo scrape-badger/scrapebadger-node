@@ -12,7 +12,7 @@ import type {
 } from "../internal/pagination.js";
 import { createPaginatedResponse, paginate } from "../internal/pagination.js";
 import type { PageResult } from "../internal/pagination.js";
-import type { Tweet, User, QueryType } from "./types.js";
+import type { Tweet, User, QueryType, Article, CommunityNote } from "./types.js";
 
 /**
  * Client for Twitter tweets endpoints.
@@ -407,5 +407,61 @@ export class TweetsClient {
       return { response: createPaginatedResponse(data.data ?? [], data.next_cursor), rateLimit };
     };
     yield* paginate(fetchPage, options);
+  }
+
+  /**
+   * Get the edit history of a tweet.
+   *
+   * @param tweetId - The tweet ID to get edit history for.
+   * @returns Paginated response containing tweet versions.
+   *
+   * @example
+   * ```typescript
+   * const history = await client.twitter.tweets.getEditHistory("1234567890");
+   * console.log(`${history.data.length} version(s) of this tweet`);
+   * ```
+   */
+  async getEditHistory(tweetId: string): Promise<PaginatedResponse<Tweet>> {
+    const response = await this.client.request<{ data?: Tweet[] }>(
+      `/v1/twitter/tweets/tweet/${tweetId}/edit_history`
+    );
+    return createPaginatedResponse(response.data ?? [], undefined);
+  }
+
+  /**
+   * Get community notes (Birdwatch) attached to a tweet.
+   *
+   * @param tweetId - The tweet ID to get community notes for.
+   * @returns Paginated response containing community notes.
+   *
+   * @example
+   * ```typescript
+   * const notes = await client.twitter.tweets.getCommunityNotes("1234567890");
+   * for (const note of notes.data) {
+   *   console.log(note.text);
+   * }
+   * ```
+   */
+  async getCommunityNotes(tweetId: string): Promise<PaginatedResponse<CommunityNote>> {
+    const response = await this.client.request<{ data?: CommunityNote[] }>(
+      `/v1/twitter/tweets/tweet/${tweetId}/community_notes`
+    );
+    return createPaginatedResponse(response.data ?? [], undefined);
+  }
+
+  /**
+   * Get a long-form article by its ID.
+   *
+   * @param articleId - The article ID to fetch.
+   * @returns The article data.
+   *
+   * @example
+   * ```typescript
+   * const article = await client.twitter.tweets.getArticle("abc123");
+   * console.log(`${article.title}: ${article.text?.slice(0, 100)}...`);
+   * ```
+   */
+  async getArticle(articleId: string): Promise<Article> {
+    return this.client.request<Article>(`/v1/twitter/tweets/article/${articleId}`);
   }
 }

@@ -411,4 +411,100 @@ export class UsersClient {
     };
     yield* paginate(fetchPage, options);
   }
+
+  /**
+   * Get multiple users by their numeric IDs in a single request.
+   *
+   * @param userIds - List of user IDs to fetch.
+   * @returns Paginated response containing the matching users.
+   *
+   * @example
+   * ```typescript
+   * const users = await client.twitter.users.getByIds(["44196397", "783214"]);
+   * for (const user of users.data) {
+   *   console.log(`@${user.username}`);
+   * }
+   * ```
+   */
+  async getByIds(userIds: string[]): Promise<PaginatedResponse<User>> {
+    const response = await this.client.request<{ data?: User[] }>(
+      "/v1/twitter/users/batch_by_ids",
+      { params: { user_ids: userIds.join(",") } }
+    );
+    return createPaginatedResponse(response.data ?? [], undefined);
+  }
+
+  /**
+   * Get multiple users by their usernames in a single request.
+   *
+   * @param usernames - List of usernames (without @) to fetch.
+   * @returns Paginated response containing the matching users.
+   *
+   * @example
+   * ```typescript
+   * const users = await client.twitter.users.getByUsernames(["elonmusk", "twitter"]);
+   * for (const user of users.data) {
+   *   console.log(`${user.name}: ${user.followers_count?.toLocaleString()} followers`);
+   * }
+   * ```
+   */
+  async getByUsernames(usernames: string[]): Promise<PaginatedResponse<User>> {
+    const response = await this.client.request<{ data?: User[] }>(
+      "/v1/twitter/users/batch_by_usernames",
+      { params: { usernames: usernames.join(",") } }
+    );
+    return createPaginatedResponse(response.data ?? [], undefined);
+  }
+
+  /**
+   * Get tweets that mention a user.
+   *
+   * @param username - The user's username (without @).
+   * @param options - Pagination options with optional count.
+   * @returns Paginated response containing tweets mentioning the user.
+   *
+   * @example
+   * ```typescript
+   * const mentions = await client.twitter.users.getMentions("elonmusk");
+   * for (const tweet of mentions.data) {
+   *   console.log(`@${tweet.username}: ${tweet.text.slice(0, 100)}...`);
+   * }
+   * ```
+   */
+  async getMentions(
+    username: string,
+    options: PaginationOptions & { count?: number } = {}
+  ): Promise<PaginatedResponse<Tweet>> {
+    const response = await this.client.request<{ data?: Tweet[]; next_cursor?: string }>(
+      `/v1/twitter/users/${username}/mentions`,
+      { params: { count: options.count, cursor: options.cursor } }
+    );
+    return createPaginatedResponse(response.data ?? [], response.next_cursor);
+  }
+
+  /**
+   * Get long-form articles authored by a user.
+   *
+   * @param userId - The user's numeric ID.
+   * @param options - Pagination options with optional count.
+   * @returns Paginated response containing the user's articles as tweets.
+   *
+   * @example
+   * ```typescript
+   * const articles = await client.twitter.users.getArticles("44196397");
+   * for (const article of articles.data) {
+   *   console.log(article.text?.slice(0, 100));
+   * }
+   * ```
+   */
+  async getArticles(
+    userId: string,
+    options: PaginationOptions & { count?: number } = {}
+  ): Promise<PaginatedResponse<Tweet>> {
+    const response = await this.client.request<{ data?: Tweet[]; next_cursor?: string }>(
+      `/v1/twitter/users/${userId}/articles`,
+      { params: { count: options.count, cursor: options.cursor } }
+    );
+    return createPaginatedResponse(response.data ?? [], response.next_cursor);
+  }
 }
