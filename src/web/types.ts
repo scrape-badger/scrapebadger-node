@@ -3,106 +3,85 @@
  */
 
 export interface ScrapeOptions {
-  /** Whether to render JavaScript */
-  renderJs?: boolean;
-  /** Output format (html, markdown, text, json) */
-  outputFormat?: "html" | "markdown" | "text" | "json";
-  /** Country code for proxy (e.g. "US") */
-  proxyCountry?: string;
-  /** Proxy type (datacenter, residential) */
-  proxyType?: "datacenter" | "residential" | "mobile" | "isp";
-  /** Reuse an existing session */
-  sessionId?: string;
-  /** Force a specific engine */
-  engine?: string;
-  /** Maximum credit cost */
-  maxCost?: number;
-  /** Custom HTTP headers */
-  headers?: Record<string, string>;
-  /** CSS selector to wait for */
-  waitFor?: string;
-  /** Request timeout in seconds */
-  timeout?: number;
-  /** JavaScript actions to execute */
-  jsScenario?: Array<Record<string, unknown>>;
-}
-
-export interface ScreenshotOptions {
-  /** Capture full page (not just viewport) */
-  fullPage?: boolean;
-  /** Viewport width in pixels */
-  viewportWidth?: number;
-  /** Viewport height in pixels */
-  viewportHeight?: number;
-  /** Image format (png, jpeg) */
-  imageFormat?: "png" | "jpeg";
-  /** CSS selector to wait for */
-  waitFor?: string;
-  /** Request timeout in seconds */
-  timeout?: number;
-}
-
-export interface ExtractOptions {
-  /** Extraction schema (CSS/XPath selectors) */
-  schema?: Record<string, unknown>;
-  /** Whether to render JavaScript */
-  renderJs?: boolean;
-  /** CSS selector to wait for */
-  waitFor?: string;
-  /** Request timeout in seconds */
-  timeout?: number;
-}
-
-export interface BatchOptions {
-  /** Whether to render JavaScript */
-  renderJs?: boolean;
   /** Output format */
-  outputFormat?: "html" | "markdown" | "text" | "json";
-  /** Maximum concurrent requests */
-  maxConcurrency?: number;
-  /** Force a specific engine */
-  engine?: string;
-  /** Request timeout in seconds */
-  timeout?: number;
+  format?: "html" | "markdown" | "text";
+  /** Whether to render JavaScript */
+  renderJs?: boolean;
+  /** Force a specific engine (auto, browser) */
+  engine?: "auto" | "browser";
+  /** CSS selector or XPath to wait for */
+  waitFor?: string;
+  /** Timeout in ms for waitFor selector (1000-120000) */
+  waitTimeout?: number;
+  /** Additional ms to wait after page load (0-30000) */
+  waitAfterLoad?: number;
+  /** Browser actions to perform before extracting */
+  jsScenario?: Array<Record<string, unknown>>;
+  /** Session ID for persistent cookies/state */
+  sessionId?: string;
+  /** Max retry attempts on blocking (0-10) */
+  retryCount?: number;
+  /** Auto-retry on blocking detection */
+  retryOnBlock?: boolean;
+  /** ISO country code for proxy geo-targeting */
+  country?: string;
+  /** Custom HTTP headers */
+  customHeaders?: Record<string, string>;
+  /** Capture full-page screenshot */
+  screenshot?: boolean;
+  /** Record browser session as video (+3 credits) */
+  video?: boolean;
+  /** Attempt anti-bot bypass */
+  antiBot?: boolean;
+  /** Allow auto-escalation to stronger engines */
+  escalate?: boolean;
+  /** Maximum credits budget */
+  maxCost?: number;
+  /** Run AI extraction on content */
+  aiExtract?: boolean;
+  /** Natural language prompt for AI extraction (max 2000 chars) */
+  aiPrompt?: string;
 }
 
 export interface ScrapeResult {
-  content: string;
+  success: boolean;
+  url: string;
   status_code: number;
-  url: string;
-  engine_used?: string;
-  credits_used: number;
-  processing_time_ms?: number;
-  anti_bot_detected: boolean;
-  anti_bot_provider?: string;
-  captcha_solved: boolean;
-  session_id?: string;
-  session_reused: boolean;
-}
-
-export interface ScreenshotResult {
-  image_data: string;
+  content: string | null;
   format: string;
-  url: string;
+  engine_used: string;
   credits_used: number;
+  duration_ms: number;
+  retries_used: number;
+  content_length: number;
+  screenshot_url: string | null;
+  video_url: string | null;
+  headers: Record<string, string>;
+  blocking_detected: boolean;
+  blocking_details: Record<string, unknown> | null;
+  antibot_systems: Array<Record<string, unknown>>;
+  captcha_systems: Array<Record<string, unknown>>;
+  anti_bot_solved: boolean;
+  solver_used: string | null;
+  ai_extraction: Record<string, unknown> | string | unknown[] | null;
+  ai_model: string | null;
+  ai_error: string | null;
 }
 
-export interface ExtractResult {
-  data: Record<string, unknown>;
+export interface DetectOptions {
+  /** Request timeout in ms (1000-60000) */
+  timeout?: number;
+  /** ISO country code for proxy geo-targeting */
+  country?: string;
+}
+
+export interface DetectResult {
   url: string;
+  antibot_systems: Array<Record<string, unknown>>;
+  captcha_systems: Array<Record<string, unknown>>;
+  is_blocked: boolean;
+  blocking_type: string | null;
+  recommendation: string | null;
   credits_used: number;
-}
-
-export interface BatchResult {
-  results: ScrapeResult[];
-  total: number;
-  successful: number;
-  failed: number;
-}
-
-export interface SessionInfo {
-  session_id: string;
-  domain: string;
-  reused: boolean;
-  fingerprint_id?: string;
+  duration_ms: number;
 }

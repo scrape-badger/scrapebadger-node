@@ -6,11 +6,6 @@ export { WebClient } from "./client.js";
 export type {
   ScrapeOptions,
   ScrapeResult,
-  ScreenshotOptions,
-  ScreenshotResult,
-  ExtractOptions,
-  ExtractResult,
-  BatchOptions,
-  BatchResult,
-  SessionInfo,
+  DetectOptions,
+  DetectResult,
 } from "./types.js";
