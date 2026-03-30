@@ -23,6 +23,7 @@ The official Node.js/TypeScript client library for the [ScrapeBadger](https://sc
 - **Resilient Retries** - 10 automatic retries with exponential backoff on server errors, with colored console warnings on each retry
 - **Error Handling** - Typed exceptions for different error scenarios
 - **Tree Shakeable** - Import only what you need
+- **Web Scraping API** - Scrape any website with anti-bot bypass, JS rendering, and AI data extraction
 
 ## Installation
 
@@ -53,12 +54,83 @@ const client = new ScrapeBadger();
 const tweet = await client.twitter.tweets.getById("1234567890");
 console.log(`@${tweet.username}: ${tweet.text}`);
 
+// Scrape a website
+const result = await client.web.scrape("https://scrapebadger.com", { format: "markdown" });
+console.log(result.content);
+
 // Get a user profile
 const user = await client.twitter.users.getByUsername("elonmusk");
 console.log(`${user.name} has ${user.followers_count.toLocaleString()} followers`);
 ```
 
 ## Usage Examples
+
+### Web Scraping
+
+#### Basic Scrape
+
+```typescript
+const result = await client.web.scrape("https://scrapebadger.com", {
+  format: "markdown",
+});
+console.log(result.content);
+console.log(`Credits used: ${result.credits_used}`);
+```
+
+#### JavaScript Rendering
+
+```typescript
+const result = await client.web.scrape("https://spa-website.com", {
+  renderJs: true,
+  waitFor: "#dynamic-content",
+  waitTimeout: 10000,
+});
+```
+
+#### Anti-Bot Bypass with Escalation
+
+```typescript
+const result = await client.web.scrape("https://protected-site.com", {
+  escalate: true,
+  antiBot: true,
+  country: "US",
+  maxCost: 20,
+});
+```
+
+#### AI Data Extraction
+
+```typescript
+const result = await client.web.extract(
+  "https://scrapebadger.com/pricing",
+  "Extract all pricing plan names and prices as a JSON array",
+  { format: "markdown" },
+);
+console.log(result.ai_extraction); // Structured data from LLM
+```
+
+#### Detect Anti-Bot Protection
+
+```typescript
+const detection = await client.web.detect("https://protected-site.com");
+for (const system of detection.antibot_systems) {
+  console.log(`${system.system}: confidence ${system.confidence}`);
+}
+console.log(`Recommendation: ${detection.recommendation}`);
+```
+
+#### Browser Automation
+
+```typescript
+const result = await client.web.scrape("https://scrapebadger.com", {
+  renderJs: true,
+  jsScenario: [
+    { type: "click", selector: "#load-more" },
+    { type: "wait", milliseconds: 2000 },
+    { type: "scroll", direction: "down", amount: 1000 },
+  ],
+});
+```
 
 ### Search Tweets
 
@@ -390,6 +462,14 @@ Pro: 1000/min, Enterprise: 5000/min).
 ### Client
 
 - `ScrapeBadger` - Main client class
+
+### Web Scraping Module
+
+| Method | Description |
+|--------|-------------|
+| `scrape(url, options?)` | Scrape a URL with optional JS rendering, anti-bot bypass, screenshots, video, and AI extraction |
+| `extract(url, prompt, options?)` | Convenience wrapper — scrapes with AI extraction enabled |
+| `detect(url, options?)` | Detect anti-bot and CAPTCHA systems on a URL |
 
 ### Twitter Module
 
