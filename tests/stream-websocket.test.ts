@@ -6,8 +6,6 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { EventEmitter } from "node:events";
-
 // ---------------------------------------------------------------------------
 // Mock the ws module before any imports that use it.
 // vi.hoisted() ensures the factory runs before vi.mock hoisting evaluates.
@@ -21,6 +19,10 @@ const { FakeWebSocket, getLastWs, resetLastWs } = vi.hoisted(() => {
 
   let _lastWs: InstanceType<typeof _FakeWebSocket> | null = null;
 
+  function setLastWs(ws: InstanceType<typeof _FakeWebSocket>): void {
+    _lastWs = ws;
+  }
+
   class _FakeWebSocket extends EE {
     readonly url: string;
     readonly options: unknown;
@@ -30,7 +32,7 @@ const { FakeWebSocket, getLastWs, resetLastWs } = vi.hoisted(() => {
       super();
       this.url = url;
       this.options = options;
-      _lastWs = this;
+      setLastWs(this);
     }
 
     send(data: string): void {
