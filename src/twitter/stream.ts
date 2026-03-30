@@ -680,7 +680,8 @@ export class StreamClient {
         }
 
         if (!reconnect) {
-          const reasonStr = reason instanceof Buffer ? reason.toString() : String(reason ?? "");
+          const reasonStr =
+            reason instanceof Buffer ? reason.toString() : typeof reason === "string" ? reason : "";
           emitter.emit(
             "error",
             new WebSocketStreamError(`WebSocket closed: ${reasonStr || String(code)}`)
