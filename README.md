@@ -19,11 +19,9 @@ The official Node.js/TypeScript client library for the [ScrapeBadger](https://sc
 - **Full TypeScript Support** - Complete type definitions for all API endpoints
 - **Modern ESM & CommonJS** - Works with both module systems
 - **Async Iterators** - Automatic pagination with `for await...of` syntax
-- **Smart Rate Limit Handling** - Reads API rate limit headers and automatically throttles pagination to avoid hitting limits
-- **Resilient Retries** - 10 automatic retries with exponential backoff on server errors, with colored console warnings on each retry
-- **Error Handling** - Typed exceptions for different error scenarios
-- **Tree Shakeable** - Import only what you need
-- **Web Scraping API** - Scrape any website with anti-bot bypass, JS rendering, and AI data extraction
+- **Smart Rate Limiting** - Reads API headers and throttles pagination automatically
+- **Resilient Retries** - Exponential backoff with colored console warnings
+- **Typed Exceptions** - Distinct error classes for every failure scenario
 
 ## Installation
 
@@ -44,11 +42,7 @@ pnpm add scrapebadger
 ```typescript
 import { ScrapeBadger } from "scrapebadger";
 
-// Create client with API key
 const client = new ScrapeBadger({ apiKey: "your-api-key" });
-
-// Or use environment variable (SCRAPEBADGER_API_KEY)
-const client = new ScrapeBadger();
 
 // Get a tweet
 const tweet = await client.twitter.tweets.getById("1234567890");
@@ -63,323 +57,22 @@ const user = await client.twitter.users.getByUsername("elonmusk");
 console.log(`${user.name} has ${user.followers_count.toLocaleString()} followers`);
 ```
 
-## Usage Examples
-
-### Web Scraping
-
-#### Basic Scrape
+## Authentication
 
 ```typescript
-const result = await client.web.scrape("https://scrapebadger.com", {
-  format: "markdown",
-});
-console.log(result.content);
-console.log(`Credits used: ${result.credits_used}`);
+// Pass API key directly
+const client = new ScrapeBadger({ apiKey: "sb_live_xxxxxxxxxxxxx" });
+
+// Or use environment variable SCRAPEBADGER_API_KEY
+const client = new ScrapeBadger();
 ```
 
-#### JavaScript Rendering
-
-```typescript
-const result = await client.web.scrape("https://spa-website.com", {
-  renderJs: true,
-  waitFor: "#dynamic-content",
-  waitTimeout: 10000,
-});
-```
-
-#### Anti-Bot Bypass with Escalation
-
-```typescript
-const result = await client.web.scrape("https://protected-site.com", {
-  escalate: true,
-  antiBot: true,
-  country: "US",
-  maxCost: 20,
-});
-```
-
-#### AI Data Extraction
-
-```typescript
-const result = await client.web.extract(
-  "https://scrapebadger.com/pricing",
-  "Extract all pricing plan names and prices as a JSON array",
-  { format: "markdown" },
-);
-console.log(result.ai_extraction); // Structured data from LLM
-```
-
-#### Detect Anti-Bot Protection
-
-```typescript
-const detection = await client.web.detect("https://protected-site.com");
-for (const system of detection.antibot_systems) {
-  console.log(`${system.system}: confidence ${system.confidence}`);
-}
-console.log(`Recommendation: ${detection.recommendation}`);
-```
-
-#### Browser Automation
-
-```typescript
-const result = await client.web.scrape("https://scrapebadger.com", {
-  renderJs: true,
-  jsScenario: [
-    { type: "click", selector: "#load-more" },
-    { type: "wait", milliseconds: 2000 },
-    { type: "scroll", direction: "down", amount: 1000 },
-  ],
-});
-```
-
-### Search Tweets
-
-```typescript
-import { ScrapeBadger } from "scrapebadger";
-
-const client = new ScrapeBadger({ apiKey: "your-api-key" });
-
-// Basic search (returns first page)
-const results = await client.twitter.tweets.search("python programming");
-for (const tweet of results.data) {
-  console.log(`@${tweet.username}: ${tweet.text}`);
-}
-
-// Paginate manually
-if (results.hasMore) {
-  const nextPage = await client.twitter.tweets.search("python programming", {
-    cursor: results.nextCursor,
-  });
-}
-
-// Automatic pagination with async iterators
-for await (const tweet of client.twitter.tweets.searchAll("python", { maxItems: 100 })) {
-  console.log(tweet.text);
-}
-
-// Collect all results into an array
-import { collectAll } from "scrapebadger";
-
-const tweets = await collectAll(
-  client.twitter.tweets.searchAll("python", { maxItems: 100 })
-);
-console.log(`Fetched ${tweets.length} tweets`);
-```
-
-### User Operations
-
-```typescript
-// Get user by username
-const user = await client.twitter.users.getByUsername("elonmusk");
-
-// Get user by ID
-const userById = await client.twitter.users.getById("44196397");
-
-// Get extended profile info
-const about = await client.twitter.users.getAbout("elonmusk");
-console.log(`Account based in: ${about.account_based_in}`);
-console.log(`Username changes: ${about.username_changes}`);
-
-// Get followers
-const followers = await client.twitter.users.getFollowers("elonmusk");
-for (const follower of followers.data) {
-  console.log(`@${follower.username}`);
-}
-
-// Iterate through all followers
-for await (const follower of client.twitter.users.getFollowersAll("elonmusk", {
-  maxItems: 1000,
-})) {
-  console.log(follower.username);
-}
-
-// Search users
-const users = await client.twitter.users.search("python developer");
-```
-
-### Lists
-
-```typescript
-// Get list details
-const list = await client.twitter.lists.getDetail("123456");
-console.log(`${list.name}: ${list.member_count} members`);
-
-// Get list tweets
-const tweets = await client.twitter.lists.getTweets("123456");
-
-// Get list members
-const members = await client.twitter.lists.getMembers("123456");
-
-// Search for lists
-const lists = await client.twitter.lists.search("tech leaders");
-```
-
-### Communities
-
-```typescript
-// Get community details
-const community = await client.twitter.communities.getDetail("123456");
-console.log(`${community.name}: ${community.member_count} members`);
-
-// Get community tweets
-const tweets = await client.twitter.communities.getTweets("123456", {
-  tweetType: "Latest",
-});
-
-// Search communities
-const communities = await client.twitter.communities.search("python developers");
-```
-
-### Trends
-
-```typescript
-// Get trending topics
-const trends = await client.twitter.trends.getTrends();
-for (const trend of trends.data) {
-  console.log(`${trend.name}: ${trend.tweet_count || "N/A"} tweets`);
-}
-
-// Get trends by category
-const newsTrends = await client.twitter.trends.getTrends({
-  category: "news",
-});
-
-// Get trends for a specific location
-const usTrends = await client.twitter.trends.getPlaceTrends(23424977); // US WOEID
-console.log(`Trends in ${usTrends.name}:`);
-for (const trend of usTrends.trends) {
-  console.log(`  - ${trend.name}`);
-}
-
-// Get available locations
-const locations = await client.twitter.trends.getAvailableLocations();
-```
-
-### Geographic Places
-
-```typescript
-// Search for places
-const places = await client.twitter.geo.search({ query: "San Francisco" });
-for (const place of places.data) {
-  console.log(`${place.full_name} (${place.place_type})`);
-}
-
-// Search by coordinates
-const nearby = await client.twitter.geo.search({
-  lat: 37.7749,
-  long: -122.4194,
-  granularity: "city",
-});
-
-// Get place details
-const place = await client.twitter.geo.getDetail("5a110d312052166f");
-```
-
-### Stream Monitoring
-
-Real-time tweet monitoring with WebSocket streaming and webhook delivery.
-
-```typescript
-import { ScrapeBadger, WebSocketStreamError } from "scrapebadger";
-
-const client = new ScrapeBadger({ apiKey: "your-api-key" });
-
-// Create a monitor
-const monitor = await client.twitter.stream.createMonitor({
-  name: "Tech Leaders",
-  usernames: ["elonmusk", "naval", "sama"],
-  pollIntervalSeconds: 10,
-  webhookUrl: "https://example.com/webhook",
-});
-console.log(`Created: ${monitor.id}, tier: ${monitor.pricing_tier}`);
-console.log(`Credits/hr: ${monitor.estimated_credits_per_hour}`);
-
-// List monitors
-const { monitors, total } = await client.twitter.stream.listMonitors({ status: "active" });
-console.log(`${total} active monitors`);
-
-// Pause / resume
-await client.twitter.stream.pauseMonitor(monitor.id);
-await client.twitter.stream.resumeMonitor(monitor.id);
-
-// Delete
-await client.twitter.stream.deleteMonitor(monitor.id);
-```
-
-#### EventEmitter streaming
-
-```typescript
-const stream = client.twitter.stream.connect({
-  reconnect: true,
-  reconnectDelaySeconds: 90,
-});
-
-stream.on("connected", (e) => {
-  console.log("Connected, connection ID:", e.connectionId);
-});
-
-stream.on("tweet", (event) => {
-  console.log(`@${event.authorUsername}: ${event.tweet.text}`);
-  console.log(`  latency: ${event.latencyMs}ms`);
-});
-
-stream.on("error", (err) => {
-  if (err instanceof WebSocketStreamError && err.code === 4001) {
-    console.error("API key rejected");
-  } else {
-    console.error("Stream error:", err.message);
-  }
-});
-
-stream.on("close", () => console.log("Stream closed"));
-
-// Later: graceful disconnect
-stream.close();
-```
-
-#### AsyncIterator streaming
-
-```typescript
-import { WebSocketStreamError } from "scrapebadger";
-
-try {
-  for await (const event of client.twitter.stream.connectIter({
-    reconnect: true,
-    reconnectDelaySeconds: 90,
-  })) {
-    if (event.type === "tweet") {
-      console.log(`@${event.authorUsername}: ${event.latencyMs}ms latency`);
-    }
-  }
-} catch (err) {
-  if (err instanceof WebSocketStreamError) {
-    console.error("Stream failed:", err.message, err.code);
-  }
-}
-```
-
-#### Webhook signature verification
-
-```typescript
-import { verifyWebhookSignature } from "scrapebadger/twitter";
-import express from "express";
-
-const app = express();
-
-app.post(
-  "/webhook",
-  express.raw({ type: "application/json" }),
-  (req, res) => {
-    const sig = req.headers["x-scrapebadger-signature"] as string;
-    if (!verifyWebhookSignature("my-webhook-secret", req.body, sig)) {
-      return res.status(401).json({ error: "Invalid signature" });
-    }
-    const event = JSON.parse(req.body.toString());
-    console.log("Received tweet:", event.tweet_id);
-    res.sendStatus(200);
-  }
-);
-```
+## Available APIs
+
+| API | Description | Documentation |
+|-----|-------------|---------------|
+| **Web Scraping** | Scrape any website with JS rendering, anti-bot bypass, and AI extraction | [Web Scraping Guide](docs/web-scraping.md) |
+| **Twitter** | 37+ endpoints for tweets, users, lists, communities, trends, and real-time streams | [Twitter Guide](docs/twitter.md) |
 
 ## Error Handling
 
@@ -455,52 +148,8 @@ slows down to spread requests across the remaining window — preventing 429 err
 
 This works transparently with all tier levels (Free: 60/min, Basic: 300/min,
 Pro: 1000/min, Enterprise: 5000/min).
-```
 
-## API Reference
-
-### Client
-
-- `ScrapeBadger` - Main client class
-
-### Web Scraping Module
-
-| Method | Description |
-|--------|-------------|
-| `scrape(url, options?)` | Scrape a URL with optional JS rendering, anti-bot bypass, screenshots, video, and AI extraction |
-| `extract(url, prompt, options?)` | Convenience wrapper — scrapes with AI extraction enabled |
-| `detect(url, options?)` | Detect anti-bot and CAPTCHA systems on a URL |
-
-### Twitter Module
-
-- `client.twitter.tweets` - Tweet operations
-- `client.twitter.users` - User operations
-- `client.twitter.lists` - List operations
-- `client.twitter.communities` - Community operations
-- `client.twitter.trends` - Trend operations
-- `client.twitter.geo` - Geographic place operations
-- `client.twitter.stream` - Real-time stream monitor management and WebSocket streaming
-
-### Stream Client Methods
-
-- `createMonitor(params)` - Create a stream monitor
-- `listMonitors(options?)` - List monitors with optional status filter
-- `getMonitor(id)` - Get a monitor by ID
-- `updateMonitor(id, params)` - Partially update a monitor
-- `pauseMonitor(id)` - Pause an active monitor
-- `resumeMonitor(id)` - Resume a paused monitor
-- `deleteMonitor(id)` - Delete a monitor (irreversible)
-- `listDeliveryLogs(options?)` - List tweet delivery logs
-- `listBillingLogs(options?)` - List billing activity logs
-- `connect(options?)` - Connect via EventEmitter (`.on("tweet", handler)`)
-- `connectIter(options?)` - Connect via AsyncIterator (`for await`)
-
-### Utilities
-
-- `collectAll(asyncIterator)` - Collect async iterator results into an array
-- `verifyWebhookSignature(secret, body, header)` - Verify incoming webhook HMAC signature
-
-### Exceptions
+## Exceptions
 
 - `ScrapeBadgerError` - Base exception class
 - `AuthenticationError` - Invalid or missing API key
