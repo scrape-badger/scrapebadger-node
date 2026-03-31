@@ -66,3 +66,6 @@ export * from "./twitter/index.js";
 
 // Re-export Web module
 export * from "./web/index.js";
+
+// Re-export Vinted module
+export * from "./vinted/index.js";

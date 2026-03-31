@@ -73,6 +73,7 @@ const client = new ScrapeBadger();
 |-----|-------------|---------------|
 | **Web Scraping** | Scrape any website with JS rendering, anti-bot bypass, and AI extraction | [Web Scraping Guide](docs/web-scraping.md) |
 | **Twitter** | 37+ endpoints for tweets, users, lists, communities, trends, and real-time streams | [Twitter Guide](docs/twitter.md) |
+| **Vinted** | Search items, get details, user profiles, and reference data across all Vinted markets | [Vinted Guide](docs/vinted.md) |
 
 ## Error Handling
 

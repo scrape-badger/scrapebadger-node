@@ -5,13 +5,10 @@
  */
 
 import { BaseClient } from "./internal/client.js";
-import {
-  type ScrapeBadgerConfig,
-  resolveConfig,
-  getApiKeyFromEnv,
-} from "./internal/config.js";
+import { type ScrapeBadgerConfig, resolveConfig, getApiKeyFromEnv } from "./internal/config.js";
 import { TwitterClient } from "./twitter/client.js";
 import { WebClient } from "./web/client.js";
+import { VintedClient } from "./vinted/client.js";
 
 /**
  * ScrapeBadger API client.
@@ -54,6 +51,9 @@ export class ScrapeBadger {
   /** Web scraping API client */
   readonly web: WebClient;
 
+  /** Vinted scraper API client */
+  readonly vinted: VintedClient;
+
   /**
    * Create a new ScrapeBadger client.
    *
@@ -95,5 +95,6 @@ export class ScrapeBadger {
     // Initialize sub-clients
     this.twitter = new TwitterClient(this.baseClient);
     this.web = new WebClient(this.baseClient);
+    this.vinted = new VintedClient(this.baseClient);
   }
 }
