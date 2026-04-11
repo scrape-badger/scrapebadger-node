@@ -12,7 +12,7 @@
   <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
 </p>
 
-The official Node.js/TypeScript client library for the [ScrapeBadger](https://scrapebadger.com) API.
+The official Node.js/TypeScript client library for the [ScrapeBadger](https://scrapebadger.com) API — Twitter, Google, Vinted, and general web scraping.
 
 ## Features
 
@@ -22,6 +22,10 @@ The official Node.js/TypeScript client library for the [ScrapeBadger](https://sc
 - **Smart Rate Limiting** - Reads API headers and throttles pagination automatically
 - **Resilient Retries** - Exponential backoff with colored console warnings
 - **Typed Exceptions** - Distinct error classes for every failure scenario
+- **37+ Twitter endpoints** - Tweets, users, lists, communities, trends, geo, real-time streams
+- **19 Google product APIs** - Search (with optional deferred AI Overview follow-up), Maps, News, Hotels, Trends (incl. topic autocomplete), Jobs, Shopping (+ merchant URL enrichment), Patents, Scholar (search + profiles + author + author citation + cite formats), Images, Videos, Finance, AI Mode, Lens, **Local Pack**, **Shorts**, **Flights**, Products
+- **Vinted scraping** - Search items, item details, user profiles, brands, colors, markets
+- **Web scraping** - Anti-bot bypass, JS rendering, and AI data extraction
 
 ## Installation
 
@@ -73,6 +77,7 @@ const client = new ScrapeBadger();
 |-----|-------------|---------------|
 | **Web Scraping** | Scrape any website with JS rendering, anti-bot bypass, and AI extraction | [Web Scraping Guide](docs/web-scraping.md) |
 | **Twitter** | 37+ endpoints for tweets, users, lists, communities, trends, and real-time streams | [Twitter Guide](docs/twitter.md) |
+| **Google** | 19 products — Search, Maps, News, Hotels, Trends, Jobs, Shopping, Patents, Scholar, Images, Videos, Finance, AI Mode, Lens, Autocomplete, Local, Shorts, Flights, Products | [Google Guide](docs/google.md) |
 | **Vinted** | Search items, get details, user profiles, and reference data across all Vinted markets | [Vinted Guide](docs/vinted.md) |
 
 ## Error Handling
