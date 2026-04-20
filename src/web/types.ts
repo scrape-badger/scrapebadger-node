@@ -41,6 +41,21 @@ export interface ScrapeOptions {
   aiExtract?: boolean;
   /** Natural language prompt for AI extraction (max 2000 chars) */
   aiPrompt?: string;
+  /**
+   * When true, the server streams the raw body as `text/html` with
+   * metadata in `X-Scrape-*` response headers instead of JSON-wrapping
+   * the content. Saves 300–1000 ms on large (>1 MB) pages. Incompatible
+   * with `aiExtract`, `screenshot`, `video`.
+   */
+  rawContent?: boolean;
+  /**
+   * When true, the server skips the generic blocking-page + anti-bot /
+   * CAPTCHA regex scans on the response body. Saves ~1.3 s on large
+   * responses. Only safe for origins known not to use consumer WAFs
+   * (Cloudflare, DataDome, Akamai, Kasada). Default false — keep
+   * disabled for general-purpose scraping.
+   */
+  skipBotDetection?: boolean;
 }
 
 export interface ScrapeResult {

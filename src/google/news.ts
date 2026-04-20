@@ -23,7 +23,15 @@ import type {
 export class NewsClient {
   constructor(private readonly client: BaseClient) {}
 
-  async search(params: NewsSearchParams): Promise<GoogleResponse> {
+  /**
+   * Search Google News. One of `q`, `topic_token`, `publication_token`,
+   * or `story_token` is required (or pass no params for the trending
+   * home feed). Returns `menu_links`, `news_results`, `related_topics`.
+   */
+  async search(params: NewsSearchParams = {}): Promise<GoogleResponse> {
+    if (!params.q && !params.topic_token && !params.publication_token && !params.story_token) {
+      throw new Error("Provide q, topic_token, publication_token, or story_token");
+    }
     return this.client.request<GoogleResponse>("/v1/google/news/search", {
       params: { ...params },
     });

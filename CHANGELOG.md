@@ -5,9 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.0] - 2026-04-21
+
+### Added
+
+- **`client.google.shopping.product({ product_id, ... })`** — Shopping product detail page fetch by `product_id`.
+- **`client.google.shopping.click({ title, source, q, product_id? })`** — Resolve the direct merchant URL for a Shopping product tile via Google's "I'm Feeling Lucky" redirect.
+- **`NewsSearchParams.{topic_token, publication_token, story_token}`** — Accept News tokens returned by previous responses (in addition to `q`).
+- **`MapsSearchParams.{place_id, ludocid, page, type, data}`** — Direct-lookup Maps search by Place ID or CID, plus business-type / viewport overrides.
+- **`MapsPostsParams.{place_id, hl, gl}`** — Alternative to `data_id` + country/language controls on business posts.
+
+### Changed
+
+- **Removed hardcoded per-endpoint credit numbers from JSDoc and docs.** Credit costs are configured per-endpoint by ScrapeBadger admins and returned live from `GET /public/pricing` — no more stale "costs 2 credits" comments that go out of sync when pricing changes.
+
+### Removed
+
+- **`client.google.local`** — removed. The Local Pack is exposed via the SERP `/v1/google/search` response's `local_results` field rather than a dedicated endpoint. **Breaking** for anyone using the dedicated local client; migrate to reading `local_results` from `client.google.search.search(...)`.
+
 ## [0.6.0] - 2026-04-11
 
-### Added — Google Scrapingdog parity (refs scrape-badger/scrapebadger#135)
+### Added — Google parity (refs scrape-badger/scrapebadger#135)
 
 Three new Google product sub-clients and deeper Scholar / Trends / Search surface:
 

@@ -18,7 +18,6 @@ export { VideosClient } from "./videos.js";
 export { FinanceClient } from "./finance.js";
 export { AiModeClient } from "./ai-mode.js";
 export { LensClient } from "./lens.js";
-export { LocalClient } from "./local.js";
 export { ShortsClient } from "./shorts.js";
 export { FlightsClient } from "./flights.js";
 export { ProductsClient } from "./products.js";
@@ -38,7 +37,6 @@ export type {
   ImagesSearchParams,
   JobsSearchParams,
   LensSearchParams,
-  LocalSearchParams,
   MapsPhotosParams,
   MapsPlaceParams,
   MapsPostsParams,

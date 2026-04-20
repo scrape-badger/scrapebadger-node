@@ -38,7 +38,9 @@ export interface GoogleSearchParams {
   /**
    * When true, chase Google's deferred AI Overview `page_token` with a
    * follow-up fetch and merge the result back into `ai_overview`. Adds
-   * ~1s and 1 credit only when the SERP actually defers the overview.
+   * ~1s when the SERP actually defers the overview. Credit cost is
+   * configured per-endpoint by admins — query `/public/pricing` for the
+   * live rate.
    */
   ai_overview?: boolean;
 }
@@ -46,11 +48,23 @@ export interface GoogleSearchParams {
 // ===== Maps =====
 
 export interface MapsSearchParams {
-  q: string;
+  /** Search query. Required unless `place_id` or `ludocid` is supplied. */
+  q?: string;
+  /** GPS coords as `@lat,lng,zoom` (e.g. `@40.745,-74.008,14z`). */
   ll?: string;
   gl?: string;
   hl?: string;
   start?: number;
+  /** 1-indexed page number (alternative to `start`). */
+  page?: number;
+  /** Business-type slug (e.g. `restaurant`, `hotel`). */
+  type?: string;
+  /** Raw Google Maps `pb=` override for advanced queries. */
+  data?: string;
+  /** Google Place ID (`ChIJ...`) — direct-lookup a single place. */
+  place_id?: string;
+  /** Google Location Document ID (CID) — direct-lookup by CID. */
+  ludocid?: string;
 }
 
 export interface MapsPlaceParams {
@@ -75,17 +89,29 @@ export interface MapsPhotosParams {
 }
 
 export interface MapsPostsParams {
-  data_id: string;
+  /** Google Maps data ID (`0x...:0x...`). Required unless `place_id` is set. */
+  data_id?: string;
+  /** Google Place ID — alternative to `data_id`. */
+  place_id?: string;
+  hl?: string;
+  gl?: string;
   next_page_token?: string;
 }
 
 // ===== News =====
 
 export interface NewsSearchParams {
-  q: string;
+  /** Free-text keyword query. Pass this OR one of the token fields below. */
+  q?: string;
   hl?: string;
   gl?: string;
   max_results?: number;
+  /** Google News topic token (from a previous response's `topic_token`). */
+  topic_token?: string;
+  /** Google News publication token — scopes results to a single publisher. */
+  publication_token?: string;
+  /** Google News story token — scopes results to a single story cluster. */
+  story_token?: string;
 }
 
 /**
@@ -156,6 +182,60 @@ export interface TrendsTrendingParams {
   geo?: string;
 }
 
+export type TrendsCategory =
+  | "all"
+  | "business"
+  | "entertainment"
+  | "health"
+  | "sci_tech"
+  | "sports"
+  | "top_stories"
+  | "b"
+  | "e"
+  | "m"
+  | "t"
+  | "s"
+  | "h";
+
+export type TrendsTrendingStatus = "all" | "active";
+
+export type TrendsTrendingSort = "relevance" | "search_volume" | "title" | "recency";
+
+export interface TrendsTrendingNowParams {
+  /** Country code (e.g. "US", "LT", "GB"). */
+  geo?: string;
+  /** Look-back window in hours. Common: 4, 24, 48, 168. */
+  hours?: number;
+  /** Category filter. */
+  category?: TrendsCategory;
+  /** Trend state: "all" (default) or "active" (only non-zero search volume). */
+  status?: TrendsTrendingStatus;
+  /** Sort order: relevance / search_volume / title / recency. */
+  sort?: TrendsTrendingSort;
+  /** Language code (e.g. "en-US"). */
+  hl?: string;
+}
+
+export type TrendsDataType =
+  | "TIMESERIES"
+  | "GEO_MAP"
+  | "GEO_MAP_0"
+  | "RELATED_TOPICS"
+  | "RELATED_QUERIES";
+
+export interface TrendsSearchParams {
+  /** Search term(s). Comma-separated (max 5) for TIMESERIES / GEO_MAP. */
+  q: string;
+  data_type?: TrendsDataType;
+  geo?: string;
+  date?: string;
+  cat?: number;
+  gprop?: string;
+  region?: "COUNTRY" | "REGION" | "DMA" | "CITY";
+  language?: string;
+  tz?: string;
+}
+
 export interface TrendsAutocompleteParams {
   /** Query prefix to resolve into Trends topics. */
   q: string;
@@ -169,10 +249,37 @@ export interface TrendsAutocompleteParams {
 
 export interface JobsSearchParams {
   q: string;
+  /**
+   * Data source.
+   * - `"rpc"` (default, ~1-2 s): Google Careers batchexecute RPC —
+   *   structured JSON, scope = Google's own openings.
+   * - `"serp"`: public Google Jobs SERP aggregator — 3rd-party listings
+   *   (LinkedIn, Indeed, Built In, ZipRecruiter, …).
+   */
+  mode?: "rpc" | "serp";
   location?: string;
   gl?: string;
+  /** Alias for gl. */
+  country?: string;
+  hl?: string;
+  /** Alias for hl (accepts "en-US" etc). */
+  language?: string;
+  /** Google domain (google.com, google.co.uk, …). */
+  domain?: string;
   job_type?: "FULLTIME" | "PARTTIME" | "CONTRACTOR" | "INTERN";
   date_posted?: "today" | "3days" | "week" | "month";
+  /** Work arrangement — SERP mode only. */
+  ltype?: "remote" | "hybrid" | "onsite" | "work_from_home";
+  /** Raw Google chip filter string — SERP mode only. */
+  chips?: string;
+  /** Opaque Google filter token — SERP mode only. */
+  uds?: string;
+  /** UULE-encoded location — SERP mode only. */
+  uule?: string;
+  /** Search radius in miles — SERP mode only. */
+  lrad?: string;
+  /** Pagination token from prior response. */
+  next_page_token?: string;
 }
 
 // ===== Shopping =====
@@ -180,41 +287,81 @@ export interface JobsSearchParams {
 export interface ShoppingSearchParams {
   q: string;
   gl?: string;
+  hl?: string;
+  domain?: string;
+  /** Zero-based page index (each page ≈ 60 tiles). */
+  page?: number;
   min_price?: number;
   max_price?: number;
   sort_by?: "price_low" | "price_high" | "rating" | "reviews";
+  /** Free-shipping filter. */
+  free_shipping?: boolean;
+  /** On-sale filter. */
+  on_sale?: boolean;
+  safe?: "off" | "active";
+  /** `1` disables auto-correction. */
+  nfpr?: number;
+  /** Language restrict (e.g. `lang_en`). */
+  lr?: string;
+  /** Raw Google tbs filter. */
+  tbs?: string;
+  /** Google internal shoprs helper token. */
+  shoprs?: string;
 }
 
+/**
+ * Params for `/v1/google/shopping/product` — Google Shopping product
+ * detail page lookup.
+ */
 export interface ShoppingProductParams {
   product_id: string;
   gl?: string;
+  hl?: string;
+  domain?: string;
 }
 
+/**
+ * Params for `/v1/google/shopping/product/click` — resolve the direct
+ * merchant URL for a Shopping product tile. Uses Google's "I'm Feeling
+ * Lucky" redirect scoped to the card's `source` merchant via the
+ * `site:` operator.
+ */
 export interface ShoppingClickParams {
-  /** Exact product title from a search result. */
   title: string;
-  /** Merchant source name (e.g. "Walmart", "Best Buy") — scopes the lookup. */
-  source?: string;
-  /** Original search query (improves disambiguation). */
-  q?: string;
-  /** Stable product_id from the search result. */
+  source: string;
+  q: string;
   product_id?: string;
-  gl?: string;
-  hl?: string;
 }
 
 // ===== Patents =====
 
+/**
+ * Params for `/v1/google/patents/search`. Backed by Google Patents'
+ * `/xhr/query` JSON RPC — ~1 s regardless of filter complexity.
+ */
 export interface PatentsSearchParams {
+  /** Query string — supports Boolean logic (e.g. "quantum AND compute"). */
   q: string;
   page?: number;
   num?: number;
   sort?: "new" | "old";
+  /** Comma-separated inventor names. */
   inventor?: string;
+  /** Comma-separated assignee / company names. */
   assignee?: string;
+  /** Patent-office country code (US, EP, WO, …). */
+  country?: string;
+  language?: "ENGLISH" | "GERMAN" | "CHINESE" | "FRENCH" | "JAPANESE" | "KOREAN" | "SPANISH";
+  status?: "GRANT" | "APPLICATION";
+  patent_type?: "PATENT" | "DESIGN";
+  /** Filing/priority-date upper bound (YYYYMMDD). */
+  before?: string;
+  /** Filing/priority-date lower bound (YYYYMMDD). */
+  after?: string;
 }
 
 export interface PatentsDetailParams {
+  /** Publication number (e.g. "US10000000B2", "EP3097156B1"). */
   patent_id: string;
 }
 
@@ -275,12 +422,19 @@ export interface ImagesSearchParams {
   q: string;
   gl?: string;
   hl?: string;
-  tbs?: string;
-  imgsz?: string;
-  imgcolor?: string;
-  imgtype?: string;
-  safe?: "off" | "medium" | "high";
+  /** Zero-based page index (each page ≈ 100 tiles). */
   page?: number;
+  /** Max tiles to return (1-500, client-side cap). */
+  results?: number;
+  safe?: "off" | "active";
+  /** Raw Google tbs filter (e.g. `qdr:d`). */
+  tbs?: string;
+  /** Size: `l`, `m`, `i`, `xXl`, `xxl`, `xxxl`. */
+  imgsz?: string;
+  /** Colour: `color`, `gray`, `transparent`, `red`, `orange`, … */
+  imgcolor?: string;
+  /** Type: `face`, `photo`, `clipart`, `lineart`, `animated`. */
+  imgtype?: string;
 }
 
 // ===== Videos =====
@@ -289,16 +443,30 @@ export interface VideosSearchParams {
   q: string;
   gl?: string;
   hl?: string;
-  tbs?: string;
-  safe?: "off" | "medium" | "high";
+  /** Zero-based page index (each page ≈ 10 tiles). */
   page?: number;
+  /** Google domain (`google.com`, `google.co.uk`, …). */
+  domain?: string;
+  /** City-level geo-targeting. */
+  location?: string;
+  /** Language restrict (e.g. `lang_en`). */
+  lr?: string;
+  /** UULE-encoded location. */
+  uule?: string;
+  /** `1` disables auto-correction. */
+  nfpr?: number;
+  safe?: "off" | "active";
+  /** Time/duration chip: `qdr:d/w/m`, `dur:s/m/l`. */
+  tbs?: string;
 }
 
 // ===== Finance =====
 
 export interface FinanceQuoteParams {
+  /** Ticker, optionally with exchange — `AAPL`, `AAPL:NASDAQ`, `BTC-USD`, `EURUSD`. */
   q: string;
   hl?: string;
+  gl?: string;
 }
 
 // ===== AI Mode =====
@@ -311,34 +479,55 @@ export interface AiModeSearchParams {
 
 // ===== Lens =====
 
+/**
+ * Params for `/v1/google/lens/search`. Response carries `lens_results`
+ * (Scrapingdog parity — each item has `title`, `source`,
+ * `source_favicon`, `thumbnail`, optional `tag` price chip and
+ * `in_stock`) plus `related_searches` chips. Legacy `results` alias
+ * retained for backwards compat.
+ */
 export interface LensSearchParams {
+  /** Public URL of the image to search visually. */
   url: string;
+  /** Optional text refinement (e.g. `"pizza"`) to bias Lens. */
+  query?: string;
+  /** ISO country code — Scrapingdog-parity alias for `gl`. */
+  country?: string;
+  /** Language code — Scrapingdog-parity alias for `hl`. */
+  language?: string;
   gl?: string;
   hl?: string;
+  /** Bias towards shoppable product matches. */
+  product?: boolean;
+  /** Include the visual-matches carousel (default: true). */
+  visual_matches?: boolean;
+  /** Restrict to exact-match results only. */
+  exact_matches?: boolean;
 }
 
 // ===== Products =====
 
+/**
+ * Params for `/v1/google/products/detail`. Backed by Google's
+ * `/async/oapv` RPC — full product payload (title, brand, price, rating,
+ * specs) in ~2s via warm-session curl_cffi.
+ */
 export interface ProductsDetailParams {
+  /** Google Shopping `gpcid`. Search results expose this on each tile. */
   product_id: string;
-  gl?: string;
-  hl?: string;
-}
-
-// ===== Local Pack =====
-
-export interface LocalSearchParams {
-  /** Search query with local intent (e.g. "pizza in brooklyn"). */
+  /** Original search query — required, used to build the oapv context blob. */
   q: string;
   gl?: string;
   hl?: string;
-  domain?: string;
-  /** City-level geo-targeting string (e.g. "New York, USA"). */
-  location?: string;
-  /** UULE-encoded location parameter. */
-  uule?: string;
-  num?: number;
-  start?: number;
+  /** Extra IDs Google surfaces on Shopping tiles. Improves routing accuracy. */
+  catalog_id?: string;
+  image_docid?: string;
+  headline_offer_docid?: string;
+  mid?: string;
+  /** When true, also fetches `/async/piu_ps` for the merchant offers list. */
+  include_offers?: boolean;
+  /** When true, also fetches `/async/toy_v` for size/colour variants. */
+  include_variants?: boolean;
 }
 
 // ===== Shorts =====
@@ -348,8 +537,15 @@ export interface ShortsSearchParams {
   gl?: string;
   hl?: string;
   domain?: string;
+  /** Max tiles to return (1-60 cap). */
   num?: number;
+  /** Pagination offset. */
   start?: number;
+  safe?: "off" | "active";
+  /** `1` disables auto-correction. */
+  nfpr?: number;
+  /** Raw Google tbs filter (e.g. `qdr:d`). */
+  tbs?: string;
 }
 
 // ===== Flights =====

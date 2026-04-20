@@ -3,12 +3,7 @@
  */
 
 import type { BaseClient } from "../internal/client.js";
-import type {
-  ScrapeOptions,
-  ScrapeResult,
-  DetectOptions,
-  DetectResult,
-} from "./types.js";
+import type { ScrapeOptions, ScrapeResult, DetectOptions, DetectResult } from "./types.js";
 
 /**
  * Client for web scraping operations.
@@ -74,6 +69,8 @@ export class WebClient {
     if (options.maxCost !== undefined) body.max_cost = options.maxCost;
     if (options.aiExtract !== undefined) body.ai_extract = options.aiExtract;
     if (options.aiPrompt !== undefined) body.ai_prompt = options.aiPrompt;
+    if (options.rawContent !== undefined) body.raw_content = options.rawContent;
+    if (options.skipBotDetection !== undefined) body.skip_bot_detection = options.skipBotDetection;
 
     return this.client.request<ScrapeResult>("/v1/web/scrape", {
       method: "POST",
@@ -92,11 +89,7 @@ export class WebClient {
    * @param options - Additional scrape options (aiExtract and aiPrompt are set automatically)
    * @returns The scrape result with ai_extraction populated
    */
-  async extract(
-    url: string,
-    prompt: string,
-    options: ScrapeOptions = {}
-  ): Promise<ScrapeResult> {
+  async extract(url: string, prompt: string, options: ScrapeOptions = {}): Promise<ScrapeResult> {
     return this.scrape(url, {
       format: "markdown",
       ...options,

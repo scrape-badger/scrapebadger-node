@@ -11,7 +11,6 @@ import { HotelsClient } from "./hotels.js";
 import { ImagesClient } from "./images.js";
 import { JobsClient } from "./jobs.js";
 import { LensClient } from "./lens.js";
-import { LocalClient } from "./local.js";
 import { MapsClient } from "./maps.js";
 import { NewsClient } from "./news.js";
 import { PatentsClient } from "./patents.js";
@@ -41,8 +40,7 @@ import { VideosClient } from "./videos.js";
  * });
  * console.log(enriched.merchant_url);
  *
- * // New in v0.3: Local Pack, Shorts, Flights, and Scholar depth
- * const local = await client.google.local.search({ q: "pizza in brooklyn" });
+ * // New in v0.3: Shorts, Flights, and Scholar depth
  * const shorts = await client.google.shorts.search({ q: "cooking hacks" });
  * const flights = await client.google.flights.search({
  *   departure_id: "JFK",
@@ -86,8 +84,6 @@ export class GoogleClient {
   readonly aiMode: AiModeClient;
   /** Google Lens — visual image search. */
   readonly lens: LensClient;
-  /** Google Local — Local Pack business listings ranked for a SERP query. */
-  readonly local: LocalClient;
   /** Google Shorts — short-form vertical video results (udm=39). */
   readonly shorts: ShortsClient;
   /** Google Flights — one-way, round-trip, and multi-city itineraries. */
@@ -111,7 +107,6 @@ export class GoogleClient {
     this.finance = new FinanceClient(client);
     this.aiMode = new AiModeClient(client);
     this.lens = new LensClient(client);
-    this.local = new LocalClient(client);
     this.shorts = new ShortsClient(client);
     this.flights = new FlightsClient(client);
     this.products = new ProductsClient(client);

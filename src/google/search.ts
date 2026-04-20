@@ -27,4 +27,23 @@ export class SearchClient {
   async search(params: GoogleSearchParams): Promise<GoogleResponse> {
     return this.client.request<GoogleResponse>("/v1/google/search", { params: { ...params } });
   }
+
+  /**
+   * Lightweight Google Search — organic results + related searches only.
+   *
+   * ~40% faster than {@link search}. Skips ads, Knowledge Graph, AI
+   * Overview, local pack, news, inline videos, and shopping blocks.
+   * Credit cost is configured per-endpoint by admins — query
+   * `/public/pricing` for the live rate.
+   *
+   * @example
+   * ```typescript
+   * const lite = await client.google.search.light({ q: "python 3.13" });
+   * ```
+   */
+  async light(params: GoogleSearchParams): Promise<GoogleResponse> {
+    return this.client.request<GoogleResponse>("/v1/google/search", {
+      params: { ...params, mode: "fast" },
+    });
+  }
 }

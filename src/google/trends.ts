@@ -9,6 +9,8 @@ import type {
   TrendsInterestParams,
   TrendsRegionsParams,
   TrendsRelatedParams,
+  TrendsSearchParams,
+  TrendsTrendingNowParams,
   TrendsTrendingParams,
 } from "./types.js";
 
@@ -46,6 +48,27 @@ export class TrendsClient {
 
   async trending(params: TrendsTrendingParams = {}): Promise<GoogleResponse> {
     return this.client.request<GoogleResponse>("/v1/google/trends/trending", {
+      params: { ...params },
+    });
+  }
+
+  /**
+   * Current trending searches with the full Google Trends UI filter set
+   * — `geo`, `hours`, `category`, `status`, `sort`, `hl`.
+   */
+  async trendingNow(params: TrendsTrendingNowParams = {}): Promise<GoogleResponse> {
+    return this.client.request<GoogleResponse>("/v1/google/trends/trending-now", {
+      params: { ...params },
+    });
+  }
+
+  /**
+   * Unified Google Trends query — pick the response shape via
+   * `data_type` (TIMESERIES | GEO_MAP | GEO_MAP_0 | RELATED_TOPICS |
+   * RELATED_QUERIES).
+   */
+  async search(params: TrendsSearchParams): Promise<GoogleResponse> {
+    return this.client.request<GoogleResponse>("/v1/google/trends/search", {
       params: { ...params },
     });
   }
