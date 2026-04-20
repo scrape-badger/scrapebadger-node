@@ -29,7 +29,10 @@ jobs:
       # Node 20 ships with npm 10.x. Trusted Publishing (OIDC → npm)
       # requires npm ≥ 11.5.1, so upgrade before publishing.
       - name: Upgrade npm
-        run: npm install -g npm@latest
+        run: |
+          npm install -g npm@latest
+          echo "npm version: $(npm --version)"
+          echo "node version: $(node --version)"
 
       - name: Install dependencies
         run: npm ci
