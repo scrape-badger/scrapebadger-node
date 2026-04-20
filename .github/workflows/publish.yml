@@ -58,4 +58,4 @@ jobs:
       # publisher for this repo on npmjs.com under the `scrapebadger`
       # package settings → Publishing → Trusted Publishers.
       - name: Publish to npm
-        run: npm publish --provenance --access public
+        run: npm publish --provenance --access public --loglevel=verbose
