@@ -14,11 +14,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # NB: no `registry-url` here on purpose. `setup-node` with
+      # `registry-url` writes `//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}`
+      # into .npmrc and sets NODE_AUTH_TOKEN to a placeholder — that
+      # placeholder auth wins over the npm CLI's OIDC exchange, so the
+      # trusted-publishing flow never runs. Omitting `registry-url` lets
+      # npm default to npmjs.org AND use OIDC auth.
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20.x
-          registry-url: "https://registry.npmjs.org"
           cache: "npm"
 
       # Node 20 ships with npm 10.x. Trusted Publishing (OIDC → npm)
