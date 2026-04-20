@@ -30,7 +30,10 @@ jobs:
       - name: Build
         run: npm run build
 
+      # Uses npm Trusted Publishing (OIDC). No token env var — the npm CLI
+      # exchanges the GitHub Actions OIDC token (enabled by `id-token: write`
+      # above) for a short-lived publish token. Configure the trusted
+      # publisher for this repo on npmjs.com under the `scrapebadger`
+      # package settings → Publishing → Trusted Publishers.
       - name: Publish to npm
         run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
