@@ -163,23 +163,39 @@ export interface HotelsDetailsParams {
 // ===== Trends =====
 
 export interface TrendsInterestParams {
+  /** Up to 5 comma-separated terms. */
   q: string;
+  /** Geographic location code (empty = worldwide). */
   geo?: string;
+  /** Time range — e.g. `now 1-H`, `today 12-m`, `all`, or `YYYY-MM-DD YYYY-MM-DD`. */
   date?: string;
+  /** Category filter id (0 = all). */
+  category?: number;
+  /** Property filter — `""`, `images`, `news`, `froogle`, or `youtube`. */
+  gprop?: string;
 }
 
 export interface TrendsRegionsParams {
   q: string;
   geo?: string;
+  date?: string;
+  /** Region granularity — `auto` (default), `COUNTRY`, `REGION`, `DMA`, or `CITY`. */
+  resolution?: "auto" | "COUNTRY" | "REGION" | "DMA" | "CITY";
 }
 
 export interface TrendsRelatedParams {
   q: string;
   geo?: string;
+  date?: string;
 }
 
 export interface TrendsTrendingParams {
+  /** Country code (ISO 3166 alpha-2). Defaults to `US`. */
   geo?: string;
+  /** Language code (e.g. `en-US`). */
+  hl?: string;
+  /** Look-back window — Google supports `24` (default), `48`, `168` (= 1 week). */
+  hours?: number;
 }
 
 export type TrendsCategory =
@@ -519,6 +535,8 @@ export interface ProductsDetailParams {
   q: string;
   gl?: string;
   hl?: string;
+  /** Google domain used to localise the SERP that yields oapv session tokens. */
+  domain?: string;
   /** Extra IDs Google surfaces on Shopping tiles. Improves routing accuracy. */
   catalog_id?: string;
   image_docid?: string;
@@ -528,6 +546,12 @@ export interface ProductsDetailParams {
   include_offers?: boolean;
   /** When true, also fetches `/async/toy_v` for size/colour variants. */
   include_variants?: boolean;
+  /**
+   * Only meaningful with `include_offers=true`. When true, browser-renders
+   * the Shopping SERP so additional merchant deep URLs surface from the
+   * rendered HTML. Adds ~5–8 s latency.
+   */
+  resolve_deep_urls?: boolean;
 }
 
 // ===== Shorts =====

@@ -10,6 +10,7 @@ import { TwitterClient } from "./twitter/client.js";
 import { WebClient } from "./web/client.js";
 import { VintedClient } from "./vinted/client.js";
 import { GoogleClient } from "./google/client.js";
+import { RedditClient } from "./reddit/client.js";
 
 /**
  * ScrapeBadger API client.
@@ -58,6 +59,9 @@ export class ScrapeBadger {
   /** Google Scraper API client — 19 Google product APIs */
   readonly google: GoogleClient;
 
+  /** Reddit scraper API client */
+  readonly reddit: RedditClient;
+
   /**
    * Create a new ScrapeBadger client.
    *
@@ -101,5 +105,6 @@ export class ScrapeBadger {
     this.web = new WebClient(this.baseClient);
     this.vinted = new VintedClient(this.baseClient);
     this.google = new GoogleClient(this.baseClient);
+    this.reddit = new RedditClient(this.baseClient);
   }
 }

@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.0] - 2026-05-28
+
+### Added
+
+- **Reddit Scraper API** — new `client.reddit.*` namespace covering 22 endpoints across search, posts, subreddits, users, and wiki:
+  - `client.reddit.search.posts({ q, ... })` — global or subreddit-scoped post search with full Reddit syntax (title:, author:, subreddit:, flair:, AND/OR/NOT)
+  - `client.reddit.search.subreddits({ q, ... })`, `client.reddit.search.users({ q, ... })`
+  - `client.reddit.search.domainPosts(domain, { ... })` — posts linking to an external domain
+  - `client.reddit.posts.trending({ ... })`, `client.reddit.posts.get(postId)`
+  - `client.reddit.posts.comments(postId, { depth, ... })` — full nested comment trees with configurable depth (0–10)
+  - `client.reddit.posts.duplicates(postId, { ... })` — cross-post detection
+  - `client.reddit.subreddits.get(name)`, `.posts(name, { ... })`, `.rules(name)`, `.moderators(name)`, `.wikiPages(name)`, `.wikiPage(name, page)`, `.popular({ ... })`, `.newSubreddits({ ... })`
+  - `client.reddit.users.get(name)`, `.posts(name, { ... })`, `.comments(name, { ... })`, `.moderated(name)`, `.trophies(name)`
+- **Comprehensive Reddit TypeScript types** — `RedditPost` (66 fields), `RedditComment` (34), `RedditSubreddit` (48), `RedditUser` (27)
+- **Datetime parity** — every datetime field ships both Unix timestamp (`*_utc`) and ISO 8601 UTC string (`*_at`)
+
 ## [0.7.0] - 2026-04-21
 
 ### Added

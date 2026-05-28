@@ -1,7 +1,7 @@
 {
   "name": "scrapebadger",
-  "version": "0.7.0",
-  "description": "Official Node.js SDK for ScrapeBadger - Async web scraping APIs for Twitter, Google, Vinted, and more",
+  "version": "0.8.0",
+  "description": "Official Node.js SDK for ScrapeBadger - Async web scraping APIs for Twitter, Google, Vinted, Reddit, and more",
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
