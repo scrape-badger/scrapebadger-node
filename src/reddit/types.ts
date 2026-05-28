@@ -476,20 +476,6 @@ export interface RedditTrophy {
   url: string | null;
 }
 
-/**
- * A subreddit moderator entry.
- */
-export interface RedditModerator {
-  /** Moderator username */
-  name: string;
-  /** Moderator user ID */
-  id: string | null;
-  /** Moderator permissions list */
-  mod_permissions: string[];
-  /** Date added as moderator (Unix), null if unknown */
-  date: number | null;
-}
-
 // =============================================================================
 // Pagination
 // =============================================================================
@@ -586,16 +572,6 @@ export interface SubredditDetailResponse {
 export interface SubredditRulesResponse {
   /** List of subreddit rules */
   rules: RedditRule[];
-  /** Subreddit name */
-  subreddit: string;
-}
-
-/**
- * Response from the subreddit moderators endpoint.
- */
-export interface SubredditModeratorsResponse {
-  /** List of moderators */
-  moderators: RedditModerator[];
   /** Subreddit name */
   subreddit: string;
 }

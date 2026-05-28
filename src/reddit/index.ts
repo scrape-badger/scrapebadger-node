@@ -20,7 +20,6 @@ export type {
   RedditRule,
   RedditWikiPage,
   RedditTrophy,
-  RedditModerator,
   // Pagination
   RedditPagination,
   // Response types
@@ -31,7 +30,6 @@ export type {
   PostDuplicatesResponse,
   SubredditDetailResponse,
   SubredditRulesResponse,
-  SubredditModeratorsResponse,
   SubredditWikiPagesResponse,
   WikiPageResponse,
   UserProfileResponse as RedditUserProfileResponse,

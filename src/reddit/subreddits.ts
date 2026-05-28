@@ -1,7 +1,7 @@
 /**
  * Reddit Subreddits API client.
  *
- * Provides methods for fetching subreddit details, posts, rules, moderators, and wiki pages.
+ * Provides methods for fetching subreddit details, posts, rules, and wiki pages.
  */
 
 import type { BaseClient } from "../internal/client.js";
@@ -9,7 +9,6 @@ import type {
   SubredditDetailResponse,
   SubredditPostsResponse,
   SubredditRulesResponse,
-  SubredditModeratorsResponse,
   SubredditWikiPagesResponse,
   WikiPageResponse,
   PopularSubredditsResponse,
@@ -57,9 +56,7 @@ export class SubredditsClient {
    * ```
    */
   async get(subreddit: string): Promise<SubredditDetailResponse> {
-    return this.client.request<SubredditDetailResponse>(
-      `/v1/reddit/subreddits/${subreddit}`
-    );
+    return this.client.request<SubredditDetailResponse>(`/v1/reddit/subreddits/${subreddit}`);
   }
 
   /**
@@ -96,17 +93,14 @@ export class SubredditsClient {
       limit?: number;
     } = {}
   ): Promise<SubredditPostsResponse> {
-    return this.client.request<SubredditPostsResponse>(
-      `/v1/reddit/subreddits/${subreddit}/posts`,
-      {
-        params: {
-          sort: options.sort,
-          time: options.time,
-          after: options.after,
-          limit: options.limit,
-        },
-      }
-    );
+    return this.client.request<SubredditPostsResponse>(`/v1/reddit/subreddits/${subreddit}/posts`, {
+      params: {
+        sort: options.sort,
+        time: options.time,
+        after: options.after,
+        limit: options.limit,
+      },
+    });
   }
 
   /**
@@ -127,46 +121,7 @@ export class SubredditsClient {
    * ```
    */
   async rules(subreddit: string): Promise<SubredditRulesResponse> {
-    return this.client.request<SubredditRulesResponse>(
-      `/v1/reddit/subreddits/${subreddit}/rules`
-    );
-  }
-
-  /**
-   * Get the moderators of a subreddit.
-   *
-   * @param subreddit - Subreddit name (without r/ prefix).
-   * @param options - Optional parameters.
-   * @param options.after - Pagination cursor for the next page.
-   * @param options.limit - Number of results to return.
-   * @returns List of moderators with pagination metadata.
-   * @throws NotFoundError - If the subreddit doesn't exist.
-   * @throws AuthenticationError - If the API key is invalid.
-   *
-   * @example
-   * ```typescript
-   * const response = await client.reddit.subreddits.moderators("programming");
-   * for (const mod of response.moderators) {
-   *   console.log(`u/${mod.name}: [${mod.mod_permissions.join(", ")}]`);
-   * }
-   * ```
-   */
-  async moderators(
-    subreddit: string,
-    options: {
-      after?: string;
-      limit?: number;
-    } = {}
-  ): Promise<SubredditModeratorsResponse> {
-    return this.client.request<SubredditModeratorsResponse>(
-      `/v1/reddit/subreddits/${subreddit}/moderators`,
-      {
-        params: {
-          after: options.after,
-          limit: options.limit,
-        },
-      }
-    );
+    return this.client.request<SubredditRulesResponse>(`/v1/reddit/subreddits/${subreddit}/rules`);
   }
 
   /**
@@ -207,13 +162,8 @@ export class SubredditsClient {
    * console.log(response.page.content_md);
    * ```
    */
-  async wikiPage(
-    subreddit: string,
-    page: string
-  ): Promise<WikiPageResponse> {
-    return this.client.request<WikiPageResponse>(
-      `/v1/reddit/subreddits/${subreddit}/wiki/${page}`
-    );
+  async wikiPage(subreddit: string, page: string): Promise<WikiPageResponse> {
+    return this.client.request<WikiPageResponse>(`/v1/reddit/subreddits/${subreddit}/wiki/${page}`);
   }
 
   /**
@@ -233,19 +183,18 @@ export class SubredditsClient {
    * }
    * ```
    */
-  async popular(options: {
-    after?: string;
-    limit?: number;
-  } = {}): Promise<PopularSubredditsResponse> {
-    return this.client.request<PopularSubredditsResponse>(
-      "/v1/reddit/subreddits/popular",
-      {
-        params: {
-          after: options.after,
-          limit: options.limit,
-        },
-      }
-    );
+  async popular(
+    options: {
+      after?: string;
+      limit?: number;
+    } = {}
+  ): Promise<PopularSubredditsResponse> {
+    return this.client.request<PopularSubredditsResponse>("/v1/reddit/subreddits/popular", {
+      params: {
+        after: options.after,
+        limit: options.limit,
+      },
+    });
   }
 
   /**
@@ -265,18 +214,17 @@ export class SubredditsClient {
    * }
    * ```
    */
-  async newSubreddits(options: {
-    after?: string;
-    limit?: number;
-  } = {}): Promise<PopularSubredditsResponse> {
-    return this.client.request<PopularSubredditsResponse>(
-      "/v1/reddit/subreddits/new",
-      {
-        params: {
-          after: options.after,
-          limit: options.limit,
-        },
-      }
-    );
+  async newSubreddits(
+    options: {
+      after?: string;
+      limit?: number;
+    } = {}
+  ): Promise<PopularSubredditsResponse> {
+    return this.client.request<PopularSubredditsResponse>("/v1/reddit/subreddits/new", {
+      params: {
+        after: options.after,
+        limit: options.limit,
+      },
+    });
   }
 }
