@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.9.0] - 2026-05-29
+
+### Removed (Breaking)
+
+- **Reddit response types trimmed to fields available from the old.reddit.com HTML/RSS source.** The Reddit `.json` API is no longer used; the scraper now parses old.reddit.com HTML and RSS. Many fields that were only available from the `.json` API have been removed from the TypeScript types.
+  - **`RedditPost`**: removed `ups`, `downs`, `upvote_ratio`, `view_count`, `num_duplicates`, `edited`, `edited_at`, `is_video`, `is_locked`, `is_archived`, `is_pinned`, `is_robot_indexable`, `is_meta`, `is_crosspostable`, `send_replies`, `author_flair_text`, `author_flair_type`, `author_flair_template_id`, `link_flair_background_color`, `link_flair_text_color`, `link_flair_template_id`, `link_flair_type`, `link_flair_css_class`, `distinguished`, `thumbnail`, `thumbnail_width`, `thumbnail_height`, `post_hint`, `preview_images`, `media`, `gallery_data`, `crosspost_parent`, `suggested_sort`, `total_awards`, `awards`, `content_categories`, `removed_by_category`, `treatment_tags`, `subreddit_subscribers`
+  - **`RedditComment`**: removed `ups`, `downs`, `controversiality`, `edited`, `edited_at`, `gilded`, `is_locked`, `is_score_hidden`, `is_submitter`, `parent_id`, `post_title`, `send_replies`, `subreddit_type`, `total_awards`, `distinguished`, `author_flair_text`, `author_flair_type`
+  - **`RedditSubreddit`**: removed `subscribers`, `active_users`, `description_html`, `public_description_html`, `submit_text`, `submit_text_html`, `header_title`, `type`, `submission_type`, `icon_url`, `header_url`, `banner_url`, `banner_background_color`, `primary_color`, `key_color`, `wiki_enabled`, `allow_images`, `allow_videos`, `allow_galleries`, `allow_polls`, `allow_discovery`, `spoilers_enabled`, `emojis_enabled`, `free_form_reports`, `accept_followers`, `restrict_posting`, `link_flair_enabled`, `link_flair_position`, `user_flair_enabled`, `user_flair_position`, `comment_score_hide_mins`, `should_archive_posts`, `allowed_media_in_comments`, `is_quarantined`, `is_advertiser_friendly`, `advertiser_category`, `language`
+  - **`RedditUser`**: removed `id`, `fullname`, `icon_url`, `snoovatar_url`, `banner_url`, `profile_title`, `profile_url`, `description`, `awardee_karma`, `awarder_karma`, `has_verified_email`, `verified`, `accepts_followers`, `has_subscribed`, `is_employee`, `is_mod`, `is_suspended`, `is_nsfw`, `pref_show_snoovatar`
+  - **`RedditRule`**: removed `description_html`, `kind`, `violation_reason`
+  - **Helper types deleted entirely**: `RedditPreviewImage`, `RedditMedia`, `RedditAward` (were only used by removed `RedditPost` fields; never exported from the package index)
+
 ## [0.8.1] - 2026-05-28
 
 ### Removed
