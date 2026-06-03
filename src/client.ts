@@ -11,6 +11,7 @@ import { WebClient } from "./web/client.js";
 import { VintedClient } from "./vinted/client.js";
 import { GoogleClient } from "./google/client.js";
 import { RedditClient } from "./reddit/client.js";
+import { AmazonClient } from "./amazon/client.js";
 
 /**
  * ScrapeBadger API client.
@@ -62,6 +63,9 @@ export class ScrapeBadger {
   /** Reddit scraper API client */
   readonly reddit: RedditClient;
 
+  /** Amazon scraper API client — 14 endpoints */
+  readonly amazon: AmazonClient;
+
   /**
    * Create a new ScrapeBadger client.
    *
@@ -106,5 +110,6 @@ export class ScrapeBadger {
     this.vinted = new VintedClient(this.baseClient);
     this.google = new GoogleClient(this.baseClient);
     this.reddit = new RedditClient(this.baseClient);
+    this.amazon = new AmazonClient(this.baseClient);
   }
 }
