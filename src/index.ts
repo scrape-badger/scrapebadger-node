@@ -101,7 +101,12 @@ export {
   ProductsClient as GoogleProductsClient,
 } from "./google/index.js";
 export type {
+  AiListItem,
+  AiModeResponse,
   AiModeSearchParams,
+  AiReference,
+  AiTableRow,
+  AiTextBlock,
   AutocompleteParams,
   FinanceQuoteParams,
   FlightsSearchParams,

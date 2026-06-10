@@ -23,7 +23,12 @@ export { FlightsClient } from "./flights.js";
 export { ProductsClient } from "./products.js";
 
 export type {
+  AiListItem,
+  AiModeResponse,
   AiModeSearchParams,
+  AiReference,
+  AiTableRow,
+  AiTextBlock,
   AutocompleteParams,
   FinanceQuoteParams,
   FlightsSearchParams,

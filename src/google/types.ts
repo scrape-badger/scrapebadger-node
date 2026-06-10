@@ -491,6 +491,70 @@ export interface AiModeSearchParams {
   q: string;
   gl?: string;
   hl?: string;
+  /**
+   * Include the raw `answer_html` body in the response (can be 100s of
+   * KB). Defaults to true; set false when you only need `text_blocks` /
+   * `markdown`.
+   */
+  include_html?: boolean;
+}
+
+/** A source cited by an AI Mode / AI Overview answer. */
+export interface AiReference {
+  title?: string | null;
+  link?: string | null;
+  snippet?: string | null;
+  source?: string | null;
+  favicon?: string | null;
+  thumbnail?: string | null;
+  index?: number | null;
+}
+
+/** One item inside a `list` text block. */
+export interface AiListItem {
+  type?: string;
+  snippet?: string | null;
+  links?: Array<Record<string, unknown>>;
+}
+
+/** One row of a `table` text block (ordered cell values). */
+export interface AiTableRow {
+  cells: string[];
+}
+
+/**
+ * A single block of the AI-generated answer. `type` is one of
+ * `paragraph` | `heading` | `list` | `table`. A `table` block carries
+ * `header` + `rows`; a `list` block carries `items`.
+ */
+export interface AiTextBlock {
+  type?: string | null;
+  snippet?: string | null;
+  text?: string | null;
+  level?: number | null;
+  items?: AiListItem[];
+  citation_links?: AiReference[];
+  links?: Array<Record<string, unknown>>;
+  header?: string[];
+  rows?: AiTableRow[];
+}
+
+/**
+ * Response for `/v1/google/ai-mode/search`. `markdown` is a compact
+ * rendering of the whole answer; `answer_html` is the raw answer body
+ * (present unless `include_html: false`).
+ */
+export interface AiModeResponse {
+  text_blocks: AiTextBlock[];
+  references: AiReference[];
+  shopping_results?: Array<Record<string, unknown>>;
+  inline_images?: Array<Record<string, unknown>>;
+  local_results?: Array<Record<string, unknown>>;
+  markdown?: string | null;
+  answer_html?: string | null;
+  query: string;
+  language: string;
+  country: string;
 }
 
 // ===== Lens =====
