@@ -3,6 +3,7 @@
  */
 
 import type { ResolvedConfig } from "./config.js";
+import { SDK_VERSION } from "./version.js";
 import {
   AuthenticationError,
   RateLimitError,
@@ -97,7 +98,7 @@ export class BaseClient {
       "Content-Type": "application/json",
       Accept: "application/json",
       "X-API-Key": this.config.apiKey,
-      "User-Agent": "scrapebadger-node/0.3.1",
+      "User-Agent": `scrapebadger-node/${SDK_VERSION}`,
       ...headers,
     };
 

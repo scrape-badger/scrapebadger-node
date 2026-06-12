@@ -76,6 +76,9 @@ export * from "./reddit/index.js";
 // Re-export Amazon module — AmazonClient + Amazon*-prefixed sub-clients and types
 export * from "./amazon/index.js";
 
+// Re-export TikTok module — TikTokClient + TikTok*-prefixed sub-clients and types
+export * from "./tiktok/index.js";
+
 // Re-export Google module — GoogleClient is exposed directly; sub-clients
 // are aliased with a Google* prefix to avoid collisions with other modules
 // (e.g. Twitter also has a TrendsClient).

@@ -81,6 +81,7 @@ const client = new ScrapeBadger();
 | **Vinted** | Search items, get details, user profiles, and reference data across all Vinted markets | [Vinted Guide](docs/vinted.md) |
 | **Reddit** | Search posts/subreddits/users, subreddit details, post comments, user profiles, wiki pages, trophies | [Reddit Guide](docs/reddit.md) |
 | **Amazon** | 14 endpoints — search, autocomplete, product detail, offers, reviews, bestsellers, new releases, deals, category browse, seller profile/products/feedback, markets, categories | [Amazon Guide](docs/amazon.md) |
+| **TikTok** | 26 endpoints — user profile/videos/followers/following/liked/reposts, video detail/comments/replies/related/transcript, oEmbed, hashtag detail/videos, music detail/videos, search (general/videos/users/hashtags), trending (videos/hashtags/songs), ad library, regions | [TikTok Guide](docs/tiktok.md) |
 
 ## Error Handling
 
