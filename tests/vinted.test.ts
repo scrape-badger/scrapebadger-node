@@ -81,6 +81,7 @@ const SEARCH_RESPONSE_FIXTURE: SearchResponse = {
         full_size_url: "https://images.vinted.net/photo1_full.jpg",
       },
       photos: [],
+      seller_country_code: "FR",
     },
   ],
   pagination: {
@@ -90,6 +91,7 @@ const SEARCH_RESPONSE_FIXTURE: SearchResponse = {
     per_page: 20,
   },
   market: "fr",
+  seller_country: "fr",
 };
 
 const ITEM_DETAIL_FIXTURE: ItemDetailResponse = {
@@ -119,6 +121,7 @@ const ITEM_DETAIL_FIXTURE: ItemDetailResponse = {
       full_size_url: "https://images.vinted.net/photo1_full.jpg",
     },
     photos: [],
+    seller_country_code: "FR",
     description: "Classic Nike Air Max 90 in great condition",
     catalog_id: 5,
     color1: "White",
@@ -322,6 +325,21 @@ describe("VintedClient.search", () => {
     expect(url).toContain("color_ids=1%2C2");
     expect(url).toContain("status_ids=1");
     expect(url).toContain("order=price_low_to_high");
+  });
+
+  it("passes seller_country filter and exposes echoed fields", async () => {
+    mockFetch(SEARCH_RESPONSE_FIXTURE);
+    const client = makeClient();
+
+    const result = await client.vinted.search.search({
+      query: "jacket",
+      seller_country: "fr,be",
+    });
+
+    const { url } = capturedRequest();
+    expect(url).toContain("seller_country=fr%2Cbe");
+    expect(result.seller_country).toBe("fr");
+    expect(result.items[0].seller_country_code).toBe("FR");
   });
 
   it("does not include undefined optional params in URL", async () => {

@@ -56,6 +56,19 @@ export class SearchClient {
    * });
    * console.log(`Found ${results.pagination.total_entries} items`);
    * ```
+   *
+   * @example
+   * ```typescript
+   * // Filter results to sellers physically located in France or Belgium.
+   * // Billing: 1 base credit + 1 credit per uncached seller looked up.
+   * const local = await client.vinted.search.search({
+   *   query: "vintage jacket",
+   *   seller_country: "fr,be",
+   * });
+   * for (const item of local.items) {
+   *   console.log(`${item.title} — seller in ${item.seller_country_code}`);
+   * }
+   * ```
    */
   async search(params: VintedSearchParams): Promise<SearchResponse> {
     return this.client.request<SearchResponse>("/v1/vinted/search", {
@@ -70,6 +83,7 @@ export class SearchClient {
         color_ids: params.color_ids,
         status_ids: params.status_ids,
         order: params.order,
+        seller_country: params.seller_country,
       },
     });
   }
