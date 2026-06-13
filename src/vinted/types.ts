@@ -102,6 +102,11 @@ export interface VintedItemSummary {
   photo: VintedPhoto;
   /** All photos */
   photos: VintedPhoto[];
+  /**
+   * Physical country of the seller as an upper-case ISO-2 code (e.g. "FR"),
+   * or null. Populated only when the `seller_country` search filter is used.
+   */
+  seller_country_code: string | null;
 }
 
 /**
@@ -282,6 +287,11 @@ export interface SearchResponse {
   pagination: VintedPagination;
   /** Market code used for this search */
   market: string;
+  /**
+   * Echo of the normalized `seller_country` filter applied to this search
+   * (comma-separated ISO-2 codes, e.g. "fr,be"), or null when no filter was used.
+   */
+  seller_country: string | null;
 }
 
 /**
@@ -378,4 +388,16 @@ export interface VintedSearchParams {
   status_ids?: string;
   /** Sort order */
   order?: "relevance" | "newest_first" | "price_low_to_high" | "price_high_to_low";
+  /**
+   * Filter results to items whose seller is physically located in one of the
+   * given countries. A comma-separated list of ISO-2 country codes (e.g. "fr"
+   * or "fr,be"). Vinted federates cross-border EU listings into each market
+   * domain and has no native country filter, so this is applied by ScrapeBadger.
+   *
+   * When set, each returned item gains a `seller_country_code` and the response
+   * gains a top-level `seller_country` echo.
+   *
+   * Billing: 1 base credit + 1 credit per uncached seller looked up.
+   */
+  seller_country?: string;
 }
