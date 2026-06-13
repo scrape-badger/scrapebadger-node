@@ -76,6 +76,9 @@ export * from "./reddit/index.js";
 // Re-export Amazon module — AmazonClient + Amazon*-prefixed sub-clients and types
 export * from "./amazon/index.js";
 
+// Re-export Shopee module — ShopeeClient + Shopee*-prefixed sub-clients and types
+export * from "./shopee/index.js";
+
 // Re-export TikTok module — TikTokClient + TikTok*-prefixed sub-clients and types
 export * from "./tiktok/index.js";
 

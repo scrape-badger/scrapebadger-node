@@ -655,6 +655,10 @@ export interface TikTokCommentsParams {
   region?: string;
   /** Number of items to return (1-50) */
   count?: number;
+  /**
+   * Pagination cursor from a prior response's pagination.cursor; omit for the first page.
+   */
+  cursor?: string;
 }
 
 /** Options for the comment replies endpoint. */
@@ -665,6 +669,10 @@ export interface TikTokCommentRepliesParams {
   region?: string;
   /** Number of items to return (1-50, default 20) */
   count?: number;
+  /**
+   * Pagination cursor from a prior response's pagination.cursor; omit for the first page.
+   */
+  cursor?: string;
 }
 
 /** Options for the related-videos endpoint. */
@@ -693,12 +701,16 @@ export interface TikTokHashtagParams {
   region?: string;
 }
 
-/** Options for hashtag/music video listings (no cursor — backend does not accept it). */
+/** Options for hashtag/music video listings. */
 export interface TikTokListVideosParams {
   /** Content region (ISO 3166-1 alpha-2, default "US") */
   region?: string;
   /** Number of items to return (1-50) */
   count?: number;
+  /**
+   * Pagination cursor from a prior response's pagination.cursor; omit for the first page.
+   */
+  cursor?: string;
 }
 
 /** Options for the music detail endpoint. */
@@ -715,6 +727,10 @@ export interface TikTokSearchParams {
   region?: string;
   /** Number of items to return (1-50) */
   count?: number;
+  /**
+   * Pagination cursor from a prior response's pagination.cursor; omit for the first page.
+   */
+  cursor?: string;
 }
 
 /** Options for the trending videos endpoint. */

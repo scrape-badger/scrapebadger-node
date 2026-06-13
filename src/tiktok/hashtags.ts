@@ -48,12 +48,12 @@ export class HashtagsClient {
    * Get videos tagged with a TikTok hashtag.
    *
    * @param name - The hashtag name (without the leading '#').
-   * @param options - Optional parameters (region, count).
+   * @param options - Optional parameters (region, count, cursor).
    * @returns A cursor-paginated list of videos.
    */
   async videos(name: string, options: TikTokListVideosParams = {}): Promise<VideoListResponse> {
     return this.client.request<VideoListResponse>(`/v1/tiktok/hashtags/${name}/videos`, {
-      params: { region: options.region, count: options.count },
+      params: { region: options.region, count: options.count, cursor: options.cursor },
     });
   }
 }

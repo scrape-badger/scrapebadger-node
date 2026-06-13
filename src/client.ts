@@ -12,6 +12,7 @@ import { VintedClient } from "./vinted/client.js";
 import { GoogleClient } from "./google/client.js";
 import { RedditClient } from "./reddit/client.js";
 import { AmazonClient } from "./amazon/client.js";
+import { ShopeeClient } from "./shopee/client.js";
 import { TikTokClient } from "./tiktok/client.js";
 
 /**
@@ -67,6 +68,9 @@ export class ScrapeBadger {
   /** Amazon scraper API client — 14 endpoints */
   readonly amazon: AmazonClient;
 
+  /** Shopee scraper API client — 6 endpoints across 11 markets */
+  readonly shopee: ShopeeClient;
+
   /** TikTok scraper API client — 26 endpoints */
   readonly tiktok: TikTokClient;
 
@@ -115,6 +119,7 @@ export class ScrapeBadger {
     this.google = new GoogleClient(this.baseClient);
     this.reddit = new RedditClient(this.baseClient);
     this.amazon = new AmazonClient(this.baseClient);
+    this.shopee = new ShopeeClient(this.baseClient);
     this.tiktok = new TikTokClient(this.baseClient);
   }
 }

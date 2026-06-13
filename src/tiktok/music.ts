@@ -48,12 +48,12 @@ export class MusicClient {
    * Get videos using a given TikTok sound.
    *
    * @param musicId - The sound/music id.
-   * @param options - Optional parameters (region, count).
+   * @param options - Optional parameters (region, count, cursor).
    * @returns A cursor-paginated list of videos.
    */
   async videos(musicId: string, options: TikTokListVideosParams = {}): Promise<VideoListResponse> {
     return this.client.request<VideoListResponse>(`/v1/tiktok/music/${musicId}/videos`, {
-      params: { region: options.region, count: options.count },
+      params: { region: options.region, count: options.count, cursor: options.cursor },
     });
   }
 }

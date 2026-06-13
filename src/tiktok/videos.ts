@@ -66,7 +66,7 @@ export class VideosClient {
     options: TikTokCommentsParams = {}
   ): Promise<CommentListResponse> {
     return this.client.request<CommentListResponse>(`/v1/tiktok/videos/${videoId}/comments`, {
-      params: { region: options.region, count: options.count },
+      params: { region: options.region, count: options.count, cursor: options.cursor },
     });
   }
 
@@ -74,7 +74,7 @@ export class VideosClient {
    * Get replies to a TikTok comment (best-effort).
    *
    * @param commentId - The comment id.
-   * @param options - Parameters including the required `videoId` (region, count).
+   * @param options - Parameters including the required `videoId` (region, count, cursor).
    * @returns A cursor-paginated list of reply comments.
    */
   async commentReplies(
@@ -86,6 +86,7 @@ export class VideosClient {
         video_id: options.videoId,
         region: options.region,
         count: options.count,
+        cursor: options.cursor,
       },
     });
   }

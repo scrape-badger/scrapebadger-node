@@ -33,7 +33,7 @@ export class SearchClient {
   /**
    * General TikTok search — video results from the Top feed.
    *
-   * @param params - Search parameters including query, region, count.
+   * @param params - Search parameters including query, region, count, cursor.
    * @returns A cursor-paginated list of videos.
    */
   async search(params: TikTokSearchParams): Promise<VideoListResponse> {
@@ -42,6 +42,7 @@ export class SearchClient {
         query: params.query,
         region: params.region,
         count: params.count,
+        cursor: params.cursor,
       },
     });
   }
@@ -49,7 +50,7 @@ export class SearchClient {
   /**
    * Search TikTok videos by keyword.
    *
-   * @param params - Search parameters including query, region, count.
+   * @param params - Search parameters including query, region, count, cursor.
    * @returns A cursor-paginated list of videos.
    */
   async videos(params: TikTokSearchParams): Promise<VideoListResponse> {
@@ -58,6 +59,7 @@ export class SearchClient {
         query: params.query,
         region: params.region,
         count: params.count,
+        cursor: params.cursor,
       },
     });
   }
@@ -65,7 +67,7 @@ export class SearchClient {
   /**
    * Search TikTok users by keyword.
    *
-   * @param params - Search parameters including query, region, count.
+   * @param params - Search parameters including query, region, count, cursor.
    * @returns A cursor-paginated list of matching users.
    */
   async users(params: TikTokSearchParams): Promise<UserSearchResponse> {
@@ -74,6 +76,7 @@ export class SearchClient {
         query: params.query,
         region: params.region,
         count: params.count,
+        cursor: params.cursor,
       },
     });
   }
@@ -81,7 +84,7 @@ export class SearchClient {
   /**
    * Search TikTok hashtags by keyword.
    *
-   * @param params - Search parameters including query, region, count.
+   * @param params - Search parameters including query, region, count, cursor.
    * @returns A cursor-paginated list of matching hashtags.
    */
   async hashtags(params: TikTokSearchParams): Promise<HashtagSearchResponse> {
@@ -90,6 +93,7 @@ export class SearchClient {
         query: params.query,
         region: params.region,
         count: params.count,
+        cursor: params.cursor,
       },
     });
   }
