@@ -669,3 +669,16 @@ export interface FlightsSearchParams {
   /** Upper price filter. */
   max_price?: number;
 }
+
+export interface FlightsBookingOptionsParams {
+  /**
+   * `selection_token` from a flights search offer (one-way or
+   * fully-selected itinerary). Pass it to retrieve the provider booking list.
+   */
+  selection_token: string;
+  /** ISO-4217 currency code (default "USD"). */
+  currency?: string;
+  gl?: string;
+  /** Language for the returned `booking_url`. */
+  hl?: string;
+}

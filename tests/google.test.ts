@@ -123,9 +123,7 @@ describe("MapsClient", () => {
 
   it("place throws when no identifier is supplied", async () => {
     const client = makeClient();
-    await expect(client.google.maps.place({})).rejects.toThrow(
-      "place_id or data_id"
-    );
+    await expect(client.google.maps.place({})).rejects.toThrow("place_id or data_id");
   });
 
   it("reviews forwards all params", async () => {
@@ -211,6 +209,45 @@ describe("HotelsClient", () => {
     const url = capturedUrl();
     expect(url.pathname).toBe("/v1/google/hotels/details");
     expect(url.searchParams.get("property_token")).toBe("PTOKEN");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Flights
+// ---------------------------------------------------------------------------
+
+describe("FlightsClient", () => {
+  it("search forwards itinerary params", async () => {
+    mockFetch({ best_flights: [], other_flights: [] });
+    const client = makeClient();
+    await client.google.flights.search({
+      departure_id: "CNF",
+      arrival_id: "GRU",
+      outbound_date: "2026-06-25",
+      trip_type: "one_way",
+      currency: "BRL",
+      gl: "br",
+      hl: "pt-BR",
+    });
+    const url = capturedUrl();
+    expect(url.pathname).toBe("/v1/google/flights/search");
+    expect(url.searchParams.get("departure_id")).toBe("CNF");
+    expect(url.searchParams.get("trip_type")).toBe("one_way");
+    expect(url.searchParams.get("currency")).toBe("BRL");
+  });
+
+  it("bookingOptions forwards selection_token", async () => {
+    mockFetch({ booking_options: [] });
+    const client = makeClient();
+    await client.google.flights.bookingOptions({
+      selection_token: "CBwQAhxx",
+      currency: "BRL",
+      gl: "br",
+    });
+    const url = capturedUrl();
+    expect(url.pathname).toBe("/v1/google/flights/booking_options");
+    expect(url.searchParams.get("selection_token")).toBe("CBwQAhxx");
+    expect(url.searchParams.get("currency")).toBe("BRL");
   });
 });
 

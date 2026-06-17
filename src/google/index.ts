@@ -31,6 +31,7 @@ export type {
   AiTextBlock,
   AutocompleteParams,
   FinanceQuoteParams,
+  FlightsBookingOptionsParams,
   FlightsSearchParams,
   FlightsStopsFilter,
   FlightsTravelClass,
