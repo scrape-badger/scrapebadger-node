@@ -85,6 +85,9 @@ export * from "./tiktok/index.js";
 // Re-export eBay module — EbayClient + Ebay*-prefixed sub-clients and types
 export * from "./ebay/index.js";
 
+// Re-export YouTube module — YoutubeClient + Youtube*-prefixed sub-clients and types
+export * from "./youtube/index.js";
+
 // Re-export Google module — GoogleClient is exposed directly; sub-clients
 // are aliased with a Google* prefix to avoid collisions with other modules
 // (e.g. Twitter also has a TrendsClient).
