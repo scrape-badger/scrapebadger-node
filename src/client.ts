@@ -14,6 +14,7 @@ import { RedditClient } from "./reddit/client.js";
 import { AmazonClient } from "./amazon/client.js";
 import { ShopeeClient } from "./shopee/client.js";
 import { TikTokClient } from "./tiktok/client.js";
+import { EbayClient } from "./ebay/client.js";
 
 /**
  * ScrapeBadger API client.
@@ -74,6 +75,9 @@ export class ScrapeBadger {
   /** TikTok scraper API client — 26 endpoints */
   readonly tiktok: TikTokClient;
 
+  /** eBay scraper API client — 12 endpoints across 18 markets */
+  readonly ebay: EbayClient;
+
   /**
    * Create a new ScrapeBadger client.
    *
@@ -121,5 +125,6 @@ export class ScrapeBadger {
     this.amazon = new AmazonClient(this.baseClient);
     this.shopee = new ShopeeClient(this.baseClient);
     this.tiktok = new TikTokClient(this.baseClient);
+    this.ebay = new EbayClient(this.baseClient);
   }
 }
