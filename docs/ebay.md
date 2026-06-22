@@ -22,6 +22,25 @@ The ScrapeBadger eBay API provides access to eBay marketplace data across 12 end
 - `per_page`: `60` | `120` | `240` (clamped)
 - `domain` (default `"com"`): `com`, `co.uk`, `de`, `fr`, `it`, `es`, `com.au`, `ca`, `at`, `ch`, `be`, `ie`, `nl`, `pl`, `com.hk`, `com.sg`, `com.my`, `ph` (aliases: `us`→`com`, `uk`/`gb`→`co.uk`, `au`→`com.au`)
 
+## Auction fields
+
+Auction listings populate the existing `is_auction` (bool), `bids` (count), and `time_left` (relative string, e.g. `"12h 16m"`) fields, plus these auction-specific fields:
+
+- Search/listing cards (`SearchResult`) gain `current_bid` (`EbayPrice | null`) — the current high bid (mirrors `price`); `null` for non-auctions.
+- Item detail (`Item`) gains:
+  - `current_bid` (`EbayPrice | null`) — the current high bid (mirrors `price`); `null` for non-auctions.
+  - `end_time_utc` (`number | null`) — absolute auction end time as a Unix timestamp (float seconds).
+  - `end_time_at` (`string | null`) — absolute auction end time as an ISO-8601 Z string (e.g. `"2026-06-22T19:50:51Z"`).
+  - `buy_it_now_price` (`EbayPrice | null`) — Buy-It-Now price for fixed-price listings (== `price`) or auctions with Buy-It-Now; `null` for pure auctions.
+
+```typescript
+const detail = await client.ebay.items.get("123456789012");
+if (detail.item.is_auction) {
+  console.log(`Current bid: ${detail.item.current_bid?.raw} (${detail.item.bids} bids)`);
+  console.log(`Ends ${detail.item.end_time_at} — ${detail.item.time_left} left`);
+}
+```
+
 ## Usage Examples
 
 ### Search
