@@ -116,6 +116,8 @@ export interface SearchResult {
   is_auction: boolean;
   bids: number | null;
   time_left: string | null;
+  /** Auctions: the current high bid (mirrors `price`); null for non-auctions */
+  current_bid: EbayPrice | null;
   shipping: string | null;
   shipping_cost: EbayPrice | null;
   free_shipping: boolean | null;
@@ -187,6 +189,14 @@ export interface Item {
   is_auction: boolean;
   bids: number | null;
   time_left: string | null;
+  /** Auctions: the current high bid (mirrors `price`); null for non-auctions */
+  current_bid: EbayPrice | null;
+  /** Absolute auction end time, Unix timestamp (float seconds); null for non-auctions */
+  end_time_utc: number | null;
+  /** Absolute auction end time, ISO-8601 Z string; null for non-auctions */
+  end_time_at: string | null;
+  /** BIN price: fixed-price listings (== price) or auction-with-Buy-It-Now; null for pure auctions */
+  buy_it_now_price: EbayPrice | null;
   best_offer_enabled: boolean | null;
   brand: string | null;
   mpn: string | null;
@@ -407,12 +417,7 @@ export type EbaySortBy =
   | "price_high_to_low";
 
 /** Item condition filter. */
-export type EbayCondition =
-  | "new"
-  | "open_box"
-  | "refurbished"
-  | "used"
-  | "for_parts";
+export type EbayCondition = "new" | "open_box" | "refurbished" | "used" | "for_parts";
 
 /** Buying-format filter. */
 export type EbayBuyingFormat = "auction" | "buy_it_now" | "best_offer";

@@ -81,6 +81,7 @@ const SEARCH_RESULT = {
   is_auction: false,
   bids: null,
   time_left: null,
+  current_bid: null,
   shipping: "Free shipping",
   shipping_cost: null,
   free_shipping: true,
@@ -139,6 +140,10 @@ const ITEM_FIXTURE: EbayItemDetailResponse = {
     is_auction: false,
     bids: null,
     time_left: null,
+    current_bid: null,
+    end_time_utc: null,
+    end_time_at: null,
+    buy_it_now_price: PRICE,
     best_offer_enabled: true,
     brand: "Nintendo",
     mpn: "HEGSKAAAA",
@@ -344,6 +349,7 @@ describe("EbayClient.search", () => {
     expect(url).toContain("query=nintendo+switch");
     expect(result.results).toHaveLength(1);
     expect(result.results[0].item_id).toBe("123456789012");
+    expect(result.results[0].current_bid).toBeNull();
     expect(result.sold).toBe(false);
     expect(result.facets.condition).toContain("new");
   });
@@ -419,6 +425,10 @@ describe("EbayClient.items", () => {
     expect(result.item.item_id).toBe("123456789012");
     expect(result.item.seller?.username).toBe("musicmagpie");
     expect(result.item.returns?.accepted).toBe(true);
+    expect(result.item.current_bid).toBeNull();
+    expect(result.item.end_time_utc).toBeNull();
+    expect(result.item.end_time_at).toBeNull();
+    expect(result.item.buy_it_now_price?.raw).toBe("$29.99");
   });
 
   it("reviews sends GET to /v1/ebay/items/{itemId}/reviews with productId", async () => {
