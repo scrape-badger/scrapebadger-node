@@ -120,13 +120,7 @@ export interface NewsSearchParams {
  * back to a plain `string` when you know the topic code out-of-band.
  */
 export type NewsTopic =
-  | "WORLD"
-  | "BUSINESS"
-  | "TECHNOLOGY"
-  | "ENTERTAINMENT"
-  | "SPORTS"
-  | "SCIENCE"
-  | "HEALTH";
+  "WORLD" | "BUSINESS" | "TECHNOLOGY" | "ENTERTAINMENT" | "SPORTS" | "SCIENCE" | "HEALTH";
 
 export interface NewsTopicsParams {
   // Accept the canonical codes as a `NewsTopic` union, but also allow any
@@ -233,11 +227,7 @@ export interface TrendsTrendingNowParams {
 }
 
 export type TrendsDataType =
-  | "TIMESERIES"
-  | "GEO_MAP"
-  | "GEO_MAP_0"
-  | "RELATED_TOPICS"
-  | "RELATED_QUERIES";
+  "TIMESERIES" | "GEO_MAP" | "GEO_MAP_0" | "RELATED_TOPICS" | "RELATED_QUERIES";
 
 export interface TrendsSearchParams {
   /** Search term(s). Comma-separated (max 5) for TIMESERIES / GEO_MAP. */
@@ -347,6 +337,21 @@ export interface ShoppingClickParams {
   source: string;
   q: string;
   product_id?: string;
+}
+
+/**
+ * Params for `/v1/google/shopping/offers` — resolve a product by barcode
+ * (GTIN-8/UPC-A/EAN-13/GTIN-14) and return its multi-seller Google
+ * Shopping offers. Returns 422 for an invalid/checksum-failing barcode and
+ * 404 when the barcode can't be resolved to a product.
+ */
+export interface ShoppingOffersParams {
+  /** Product barcode: a GTIN-8, UPC-A, EAN-13, or GTIN-14. */
+  barcode: string;
+  /** ISO-3166 alpha-2 country code (e.g. `us`). */
+  gl?: string;
+  /** UI/results language (e.g. `en`). Defaults to `en`. */
+  hl?: string;
 }
 
 // ===== Patents =====
