@@ -185,6 +185,18 @@ console.log("Merchant URL:", enriched.merchant_url);
 
 // Get detailed product information + seller list
 const detail = await client.google.shopping.product({ product_id: first.product_id });
+
+// Resolve a product by barcode (GTIN-8/UPC-A/EAN-13/GTIN-14) and return
+// its multi-seller Google Shopping offers. 422 for an invalid/checksum-
+// failing barcode, 404 when the barcode can't be resolved.
+const byBarcode = await client.google.shopping.offers({
+  barcode: "0190198001751",
+  gl: "us",
+});
+console.log(byBarcode.product_title, byBarcode.resolved_query);
+for (const o of byBarcode.offers as any[]) {
+  console.log(`${o.source} — ${o.price.extracted}`);
+}
 ```
 
 ### Patents
@@ -271,7 +283,7 @@ const product = await client.google.products.detail({ product_id: "1234567890" }
 | `client.google.hotels` | Hotels: search, details |
 | `client.google.trends` | Trends: interest, regions, related, trending |
 | `client.google.jobs` | Job listings search |
-| `client.google.shopping` | Shopping: search, product, click enrichment |
+| `client.google.shopping` | Shopping: search, product, click enrichment, barcode offers |
 | `client.google.patents` | Patents: search, detail |
 | `client.google.scholar` | Academic paper search |
 | `client.google.autocomplete` | Search suggestion lookup |
@@ -305,6 +317,7 @@ const product = await client.google.products.detail({ product_id: "1234567890" }
 | `shopping` | `search(params)` | Product search |
 | `shopping` | `product(params)` | Product detail + sellers |
 | `shopping` | `click(params)` | Merchant URL enrichment |
+| `shopping` | `offers(params)` | Barcode → multi-seller offers |
 | `patents` | `search(params)` | Patent search |
 | `patents` | `detail(params)` | Patent document |
 | `scholar` | `search(params)` | Academic papers |
@@ -343,6 +356,7 @@ import type {
   ShoppingSearchParams,
   ShoppingProductParams,
   ShoppingClickParams,
+  ShoppingOffersParams,
   PatentsSearchParams,
   PatentsDetailParams,
   ScholarSearchParams,
@@ -411,6 +425,7 @@ import type {
 | `search`, `images`, `videos`, `maps/search`, `shopping/search`, `jobs/search`, `scholar/search`, `patents/search`, `finance/quote`, `trends/*` (except trending) | **2** |
 | `maps/place`, `maps/reviews`, `patents/detail`, `ai-mode/search`, `lens/search`, `hotels/search`, `products/detail` | **3** |
 | `hotels/details`, `shopping/product` | **5** |
+| `shopping/offers` | **14** |
 | `news/*`, `autocomplete`, `trends/trending`, `maps/photos`, `maps/posts`, `shopping/product/click` | **1** |
 | Failed requests | **0** |
 

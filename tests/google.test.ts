@@ -123,9 +123,7 @@ describe("MapsClient", () => {
 
   it("place throws when no identifier is supplied", async () => {
     const client = makeClient();
-    await expect(client.google.maps.place({})).rejects.toThrow(
-      "place_id or data_id"
-    );
+    await expect(client.google.maps.place({})).rejects.toThrow("place_id or data_id");
   });
 
   it("reviews forwards all params", async () => {
@@ -317,6 +315,21 @@ describe("ShoppingClient", () => {
     expect(url.searchParams.get("source")).toBe("Razer.com");
     expect(url.searchParams.get("product_id")).toBe("pid123");
     expect(response.merchant_url).toBe("https://www.razer.com/x");
+  });
+
+  it("offers resolves a barcode via /shopping/offers", async () => {
+    mockFetch({ barcode: "0190198001751", offers: [] });
+    const client = makeClient();
+    const response = await client.google.shopping.offers({
+      barcode: "0190198001751",
+      gl: "us",
+      hl: "en",
+    });
+    const url = capturedUrl();
+    expect(url.pathname).toBe("/v1/google/shopping/offers");
+    expect(url.searchParams.get("barcode")).toBe("0190198001751");
+    expect(url.searchParams.get("gl")).toBe("us");
+    expect(response.barcode).toBe("0190198001751");
   });
 });
 

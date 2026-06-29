@@ -6,6 +6,7 @@ import type { BaseClient } from "../internal/client.js";
 import type {
   GoogleResponse,
   ShoppingClickParams,
+  ShoppingOffersParams,
   ShoppingProductParams,
   ShoppingSearchParams,
 } from "./types.js";
@@ -55,6 +56,17 @@ export class ShoppingClient {
    */
   async click(params: ShoppingClickParams): Promise<GoogleResponse> {
     return this.client.request<GoogleResponse>("/v1/google/shopping/product/click", {
+      params: { ...params },
+    });
+  }
+
+  /**
+   * Resolve a product by `barcode` (GTIN-8/UPC-A/EAN-13/GTIN-14) and return
+   * its multi-seller Google Shopping offers. Throws on a 422 (invalid or
+   * checksum-failing barcode) or 404 (barcode not resolvable to a product).
+   */
+  async offers(params: ShoppingOffersParams): Promise<GoogleResponse> {
+    return this.client.request<GoogleResponse>("/v1/google/shopping/offers", {
       params: { ...params },
     });
   }

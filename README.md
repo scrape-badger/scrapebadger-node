@@ -23,7 +23,7 @@ The official Node.js/TypeScript client library for the [ScrapeBadger](https://sc
 - **Resilient Retries** - Exponential backoff with colored console warnings
 - **Typed Exceptions** - Distinct error classes for every failure scenario
 - **37+ Twitter endpoints** - Tweets, users, lists, communities, trends, geo, real-time streams
-- **19 Google product APIs** - Search (with optional deferred AI Overview follow-up), Maps, News, Hotels, Trends (incl. topic autocomplete), Jobs, Shopping (+ merchant URL enrichment), Patents, Scholar (search + profiles + author + author citation + cite formats), Images, Videos, Finance, AI Mode, Lens, **Local Pack**, **Shorts**, **Flights**, Products
+- **19 Google product APIs** - Search (with optional deferred AI Overview follow-up), Maps, News, Hotels, Trends (incl. topic autocomplete), Jobs, Shopping (+ merchant URL enrichment, barcode offers), Patents, Scholar (search + profiles + author + author citation + cite formats), Images, Videos, Finance, AI Mode, Lens, **Local Pack**, **Shorts**, **Flights**, Products
 - **Vinted scraping** - Search items, item details, user profiles, brands, colors, markets
 - **Web scraping** - Anti-bot bypass, JS rendering, and AI data extraction
 

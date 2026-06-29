@@ -149,6 +149,7 @@ export type {
   ScholarProfilesParams,
   ScholarSearchParams,
   ShoppingClickParams,
+  ShoppingOffersParams,
   ShoppingProductParams,
   ShoppingSearchParams,
   ShortsSearchParams,
