@@ -922,10 +922,10 @@ export interface YoutubeSearchParams extends YoutubeRegionParams {
 }
 
 /** Options for the autocomplete endpoint. */
-export interface YoutubeAutocompleteParams extends YoutubeRegionParams {}
+export type YoutubeAutocompleteParams = YoutubeRegionParams;
 
 /** Options for the video detail endpoint. */
-export interface YoutubeVideoParams extends YoutubeRegionParams {}
+export type YoutubeVideoParams = YoutubeRegionParams;
 
 /** Options for the related-videos endpoint. */
 export interface YoutubeRelatedParams extends YoutubeRegionParams {
@@ -954,7 +954,7 @@ export interface YoutubeTranscriptParams extends YoutubeRegionParams {
 }
 
 /** Options for the captions endpoint. */
-export interface YoutubeCaptionsParams extends YoutubeRegionParams {}
+export type YoutubeCaptionsParams = YoutubeRegionParams;
 
 /** Options for the streams endpoint. */
 export interface YoutubeStreamsParams {
@@ -985,7 +985,7 @@ export interface YoutubeOEmbedParams {
 }
 
 /** Options for the channel detail / about / subscriber_count endpoints. */
-export interface YoutubeChannelParams extends YoutubeRegionParams {}
+export type YoutubeChannelParams = YoutubeRegionParams;
 
 /** Options for a channel tab (videos/shorts/streams/playlists/community) endpoint. */
 export interface YoutubeChannelTabParams extends YoutubeRegionParams {
@@ -1010,7 +1010,7 @@ export interface YoutubeResolveParams extends YoutubeRegionParams {
 }
 
 /** Options for the playlist detail / mix endpoints. */
-export interface YoutubePlaylistParams extends YoutubeRegionParams {}
+export type YoutubePlaylistParams = YoutubeRegionParams;
 
 /** Options for the playlist items endpoint. */
 export interface YoutubePlaylistItemsParams extends YoutubeRegionParams {
@@ -1019,7 +1019,7 @@ export interface YoutubePlaylistItemsParams extends YoutubeRegionParams {
 }
 
 /** Options for the community post detail endpoint. */
-export interface YoutubePostParams extends YoutubeRegionParams {}
+export type YoutubePostParams = YoutubeRegionParams;
 
 /** Options for the community post comments endpoint. */
 export interface YoutubePostCommentsParams extends YoutubeRegionParams {
@@ -1028,7 +1028,7 @@ export interface YoutubePostCommentsParams extends YoutubeRegionParams {
 }
 
 /** Options for the single-short endpoint. */
-export interface YoutubeShortParams extends YoutubeRegionParams {}
+export type YoutubeShortParams = YoutubeRegionParams;
 
 /** Options for the shorts-by-sound endpoint. */
 export interface YoutubeShortsBySoundParams extends YoutubeRegionParams {
