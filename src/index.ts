@@ -87,6 +87,7 @@ export * from "./ebay/index.js";
 
 // Re-export YouTube module — YoutubeClient + Youtube*-prefixed sub-clients and types
 export * from "./youtube/index.js";
+export * from "./realtor/index.js";
 
 // Re-export Google module — GoogleClient is exposed directly; sub-clients
 // are aliased with a Google* prefix to avoid collisions with other modules
