@@ -16,6 +16,7 @@ import { ShopeeClient } from "./shopee/client.js";
 import { TikTokClient } from "./tiktok/client.js";
 import { EbayClient } from "./ebay/client.js";
 import { YoutubeClient } from "./youtube/client.js";
+import { RealtorClient } from "./realtor/client.js";
 
 /**
  * ScrapeBadger API client.
@@ -82,6 +83,9 @@ export class ScrapeBadger {
   /** YouTube scraper API client — 39 endpoints */
   readonly youtube: YoutubeClient;
 
+  /** Realtor scraper API client — 4 endpoints across 2 markets (us, ca) */
+  readonly realtor: RealtorClient;
+
   /**
    * Create a new ScrapeBadger client.
    *
@@ -131,5 +135,6 @@ export class ScrapeBadger {
     this.tiktok = new TikTokClient(this.baseClient);
     this.ebay = new EbayClient(this.baseClient);
     this.youtube = new YoutubeClient(this.baseClient);
+    this.realtor = new RealtorClient(this.baseClient);
   }
 }
