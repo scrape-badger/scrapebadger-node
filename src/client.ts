@@ -17,6 +17,7 @@ import { TikTokClient } from "./tiktok/client.js";
 import { EbayClient } from "./ebay/client.js";
 import { YoutubeClient } from "./youtube/client.js";
 import { RealtorClient } from "./realtor/client.js";
+import { LeboncoinClient } from "./leboncoin/client.js";
 import { ZillowClient } from "./zillow/client.js";
 
 /**
@@ -87,6 +88,9 @@ export class ScrapeBadger {
   /** Realtor scraper API client — 4 endpoints across 2 markets (us, ca) */
   readonly realtor: RealtorClient;
 
+  /** Leboncoin scraper API client — 10 endpoints (France) */
+  readonly leboncoin: LeboncoinClient;
+
   /** Zillow scraper API client — 5 endpoints (search, property, agent, autocomplete, markets) */
   readonly zillow: ZillowClient;
 
@@ -140,6 +144,7 @@ export class ScrapeBadger {
     this.ebay = new EbayClient(this.baseClient);
     this.youtube = new YoutubeClient(this.baseClient);
     this.realtor = new RealtorClient(this.baseClient);
+    this.leboncoin = new LeboncoinClient(this.baseClient);
     this.zillow = new ZillowClient(this.baseClient);
   }
 }
