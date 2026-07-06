@@ -88,6 +88,7 @@ export * from "./ebay/index.js";
 // Re-export YouTube module — YoutubeClient + Youtube*-prefixed sub-clients and types
 export * from "./youtube/index.js";
 export * from "./realtor/index.js";
+export * from "./zillow/index.js";
 
 // Re-export Leboncoin module — LeboncoinClient + Leboncoin*-prefixed sub-clients and types
 export * from "./leboncoin/index.js";
