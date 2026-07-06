@@ -89,6 +89,9 @@ export * from "./ebay/index.js";
 export * from "./youtube/index.js";
 export * from "./realtor/index.js";
 
+// Re-export Leboncoin module — LeboncoinClient + Leboncoin*-prefixed sub-clients and types
+export * from "./leboncoin/index.js";
+
 // Re-export Google module — GoogleClient is exposed directly; sub-clients
 // are aliased with a Google* prefix to avoid collisions with other modules
 // (e.g. Twitter also has a TrendsClient).
