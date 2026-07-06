@@ -17,6 +17,7 @@ import { TikTokClient } from "./tiktok/client.js";
 import { EbayClient } from "./ebay/client.js";
 import { YoutubeClient } from "./youtube/client.js";
 import { RealtorClient } from "./realtor/client.js";
+import { ZillowClient } from "./zillow/client.js";
 
 /**
  * ScrapeBadger API client.
@@ -86,6 +87,9 @@ export class ScrapeBadger {
   /** Realtor scraper API client — 4 endpoints across 2 markets (us, ca) */
   readonly realtor: RealtorClient;
 
+  /** Zillow scraper API client — 5 endpoints (search, property, agent, autocomplete, markets) */
+  readonly zillow: ZillowClient;
+
   /**
    * Create a new ScrapeBadger client.
    *
@@ -136,5 +140,6 @@ export class ScrapeBadger {
     this.ebay = new EbayClient(this.baseClient);
     this.youtube = new YoutubeClient(this.baseClient);
     this.realtor = new RealtorClient(this.baseClient);
+    this.zillow = new ZillowClient(this.baseClient);
   }
 }
