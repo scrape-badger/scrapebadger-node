@@ -19,6 +19,7 @@ import { YoutubeClient } from "./youtube/client.js";
 import { RealtorClient } from "./realtor/client.js";
 import { LeboncoinClient } from "./leboncoin/client.js";
 import { ZillowClient } from "./zillow/client.js";
+import { ImmobiliareClient } from "./immobiliare/client.js";
 
 /**
  * ScrapeBadger API client.
@@ -94,6 +95,9 @@ export class ScrapeBadger {
   /** Zillow scraper API client — 5 endpoints (search, property, agent, autocomplete, markets) */
   readonly zillow: ZillowClient;
 
+  /** Immobiliare scraper API client — 8 endpoints across 4 markets (it, es, gr, lu) */
+  readonly immobiliare: ImmobiliareClient;
+
   /**
    * Create a new ScrapeBadger client.
    *
@@ -146,5 +150,6 @@ export class ScrapeBadger {
     this.realtor = new RealtorClient(this.baseClient);
     this.leboncoin = new LeboncoinClient(this.baseClient);
     this.zillow = new ZillowClient(this.baseClient);
+    this.immobiliare = new ImmobiliareClient(this.baseClient);
   }
 }
