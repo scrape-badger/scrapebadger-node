@@ -86,6 +86,7 @@ const client = new ScrapeBadger();
 | **eBay** | 12 endpoints across 18 markets — search, completed/sold listings, item detail, item reviews, seller profile/items/feedback, category browse, categories, autocomplete, markets | [eBay Guide](docs/ebay.md) |
 | **YouTube** | 39 endpoints — search, autocomplete, video detail/related/comments/replies/transcript/captions/streams/live chat/batch, channel detail/videos/shorts/streams/playlists/community/about/subscriber count/search/resolve, playlist detail/items, mixes, trending/shorts, hashtags, home, shorts detail/by sound, community posts/comments, music search, oEmbed, categories/languages/regions/markets | [YouTube Guide](docs/youtube.md) |
 | **Immobiliare** | 8 endpoints across 4 markets (it, es, gr, lu) — autocomplete, search, listing detail, agency profile/listings, price stats, markets, reference | [Immobiliare Guide](docs/immobiliare.md) |
+| **LoopNet** | 5 endpoints across loopnet.com/.ca/.co.uk/.fr/.es — commercial-real-estate search (for-lease/for-sale/auctions), listing detail, broker profile, markets, property types | [LoopNet Guide](docs/loopnet.md) |
 
 ## Error Handling
 

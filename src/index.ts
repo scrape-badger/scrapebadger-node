@@ -93,6 +93,9 @@ export * from "./zillow/index.js";
 // Re-export Immobiliare module — ImmobiliareClient + Immobiliare*-prefixed types
 export * from "./immobiliare/index.js";
 
+// Re-export LoopNet module — LoopNetClient + LoopNet*-prefixed types
+export * from "./loopnet/index.js";
+
 // Re-export Leboncoin module — LeboncoinClient + Leboncoin*-prefixed sub-clients and types
 export * from "./leboncoin/index.js";
 
