@@ -11,6 +11,7 @@ import { WebClient } from "./web/client.js";
 import { VintedClient } from "./vinted/client.js";
 import { GoogleClient } from "./google/client.js";
 import { RedditClient } from "./reddit/client.js";
+import { RedfinClient } from "./redfin/client.js";
 import { AmazonClient } from "./amazon/client.js";
 import { ShopeeClient } from "./shopee/client.js";
 import { TikTokClient } from "./tiktok/client.js";
@@ -71,6 +72,9 @@ export class ScrapeBadger {
 
   /** Reddit scraper API client */
   readonly reddit: RedditClient;
+
+  /** Redfin scraper API client — search, property, agent, autocomplete, markets (redfin.com, US) */
+  readonly redfin: RedfinClient;
 
   /** Amazon scraper API client — 14 endpoints */
   readonly amazon: AmazonClient;
@@ -146,6 +150,7 @@ export class ScrapeBadger {
     this.vinted = new VintedClient(this.baseClient);
     this.google = new GoogleClient(this.baseClient);
     this.reddit = new RedditClient(this.baseClient);
+    this.redfin = new RedfinClient(this.baseClient);
     this.amazon = new AmazonClient(this.baseClient);
     this.shopee = new ShopeeClient(this.baseClient);
     this.tiktok = new TikTokClient(this.baseClient);

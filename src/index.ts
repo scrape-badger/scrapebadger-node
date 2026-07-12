@@ -73,6 +73,9 @@ export * from "./vinted/index.js";
 // Re-export Reddit module
 export * from "./reddit/index.js";
 
+// Re-export Redfin module — RedfinClient + Redfin*-prefixed types
+export * from "./redfin/index.js";
+
 // Re-export Amazon module — AmazonClient + Amazon*-prefixed sub-clients and types
 export * from "./amazon/index.js";
 
