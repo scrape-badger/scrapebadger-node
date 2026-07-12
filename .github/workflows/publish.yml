@@ -27,10 +27,12 @@ jobs:
           cache: "npm"
 
       # Node 20 ships with npm 10.x. Trusted Publishing (OIDC → npm)
-      # requires npm ≥ 11.5.1, so upgrade before publishing.
+      # requires npm ≥ 11.5.1, so upgrade before publishing. Pin npm@11:
+      # npm@latest is now 12.x which requires node ≥22.22 and breaks on the
+      # node-20 runner (EBADENGINE). npm 11 still satisfies the OIDC minimum.
       - name: Upgrade npm
         run: |
-          npm install -g npm@latest
+          npm install -g npm@11
           echo "npm version: $(npm --version)"
           echo "node version: $(node --version)"
           echo "---global .npmrc:"
