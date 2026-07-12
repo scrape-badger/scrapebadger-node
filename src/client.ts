@@ -22,6 +22,7 @@ import { LeboncoinClient } from "./leboncoin/client.js";
 import { ZillowClient } from "./zillow/client.js";
 import { ImmobiliareClient } from "./immobiliare/client.js";
 import { LoopNetClient } from "./loopnet/client.js";
+import { DepopClient } from "./depop/client.js";
 
 /**
  * ScrapeBadger API client.
@@ -106,6 +107,9 @@ export class ScrapeBadger {
   /** LoopNet scraper API client — commercial real estate across US/CA/UK/FR/ES (search, listing, broker, markets, property types) */
   readonly loopnet: LoopNetClient;
 
+  /** Depop scraper API client — search, product, user, user products, markets (www.depop.com, 10 markets) */
+  readonly depop: DepopClient;
+
   /**
    * Create a new ScrapeBadger client.
    *
@@ -161,5 +165,6 @@ export class ScrapeBadger {
     this.zillow = new ZillowClient(this.baseClient);
     this.immobiliare = new ImmobiliareClient(this.baseClient);
     this.loopnet = new LoopNetClient(this.baseClient);
+    this.depop = new DepopClient(this.baseClient);
   }
 }
