@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.20.0] - 2026-07-13
+
+### Added
+
+- **LinkedIn client** (`client.linkedin`) — LinkedIn's public, logged-out surface across 11 no-auth endpoints: `jobsSearch()`, `getJob()`, `companyJobs()`, `getCompany()`, `getSchool()`, `getProfile()`, `getPost()`, `getArticle()`, `getCourse()`, `geoSuggest()`, `health()`. Covers guest job search + detail, public company/school/profile pages, posts/articles, LinkedIn Learning courses, and geo/company typeahead, with fully-typed `LinkedIn*`-prefixed types (`LinkedInJobsSearchResponse`, `LinkedInJobDetail`, `LinkedInCompany`, `LinkedInSchool`, `LinkedInProfile`, `LinkedInPost`, `LinkedInLearningCourse`, `LinkedInGeoSuggestResponse`, etc.). Requests are localised by a `country` residential-proxy param.
+
 ## [0.18.0] - 2026-07-12
 
 ### Added

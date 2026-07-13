@@ -23,6 +23,7 @@ import { ZillowClient } from "./zillow/client.js";
 import { ImmobiliareClient } from "./immobiliare/client.js";
 import { LoopNetClient } from "./loopnet/client.js";
 import { DepopClient } from "./depop/client.js";
+import { LinkedInClient } from "./linkedin/client.js";
 
 /**
  * ScrapeBadger API client.
@@ -110,6 +111,9 @@ export class ScrapeBadger {
   /** Depop scraper API client — search, product, user, user products, markets (www.depop.com, 10 markets) */
   readonly depop: DepopClient;
 
+  /** LinkedIn scraper API client — 11 no-auth endpoints (jobs, company, school, profile, post, article, learning, geo) */
+  readonly linkedin: LinkedInClient;
+
   /**
    * Create a new ScrapeBadger client.
    *
@@ -166,5 +170,6 @@ export class ScrapeBadger {
     this.immobiliare = new ImmobiliareClient(this.baseClient);
     this.loopnet = new LoopNetClient(this.baseClient);
     this.depop = new DepopClient(this.baseClient);
+    this.linkedin = new LinkedInClient(this.baseClient);
   }
 }

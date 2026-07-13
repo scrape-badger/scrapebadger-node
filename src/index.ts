@@ -102,6 +102,9 @@ export * from "./loopnet/index.js";
 // Re-export Depop module — DepopClient + Depop*-prefixed types
 export * from "./depop/index.js";
 
+// Re-export LinkedIn module — LinkedInClient + LinkedIn*-prefixed types
+export * from "./linkedin/index.js";
+
 // Re-export Leboncoin module — LeboncoinClient + Leboncoin*-prefixed sub-clients and types
 export * from "./leboncoin/index.js";
 
