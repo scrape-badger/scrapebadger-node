@@ -144,6 +144,7 @@ const ITEM_FIXTURE: EbayItemDetailResponse = {
     bids: null,
     time_left: null,
     current_bid: null,
+    is_ended: false,
     end_time_utc: null,
     end_time_at: null,
     buy_it_now_price: PRICE,
@@ -431,6 +432,7 @@ describe("EbayClient.items", () => {
     expect(result.item.seller?.username).toBe("musicmagpie");
     expect(result.item.returns?.accepted).toBe(true);
     expect(result.item.current_bid).toBeNull();
+    expect(result.item.is_ended).toBe(false);
     expect(result.item.end_time_utc).toBeNull();
     expect(result.item.end_time_at).toBeNull();
     expect(result.item.buy_it_now_price?.raw).toBe("$29.99");

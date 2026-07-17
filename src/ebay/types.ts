@@ -195,9 +195,11 @@ export interface Item {
   time_left: string | null;
   /** Auctions: the current high bid (mirrors `price`); null for non-auctions */
   current_bid: EbayPrice | null;
-  /** Absolute auction end time, Unix timestamp (float seconds); null for non-auctions */
+  /** Listing has closed (sold / ended), any buying format */
+  is_ended: boolean;
+  /** Listing end: auction close / sold time, Unix timestamp (float seconds); null for active fixed-price listings */
   end_time_utc: number | null;
-  /** Absolute auction end time, ISO-8601 Z string; null for non-auctions */
+  /** Listing end: auction close / sold time, ISO-8601 Z string; null for active fixed-price listings */
   end_time_at: string | null;
   /** BIN price: fixed-price listings (== price) or auction-with-Buy-It-Now; null for pure auctions */
   buy_it_now_price: EbayPrice | null;
