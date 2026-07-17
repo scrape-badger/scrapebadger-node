@@ -124,6 +124,10 @@ export interface SearchResult {
   location: string | null;
   returns: string | null;
   sold_count: number | null;
+  /** Sale date text as rendered by eBay, e.g. "2 Jul 2026" (completed/sold cards; localized on non-English markets) */
+  sold_date: string | null;
+  /** Best-effort ISO date, e.g. "2026-07-02"; null when the market's format isn't English */
+  sold_date_at: string | null;
   watchers: number | null;
   coupon: string | null;
   rating: number | null;

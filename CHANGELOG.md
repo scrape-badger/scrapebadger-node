@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.21.0] - 2026-07-17
+
+### Added
+
+- **eBay** — new `sold_date` / `sold_date_at` fields on `SearchResult` cards (search, seller items, category, completed). `sold_date` is the sale date text as rendered by eBay (e.g. `"2 Jul 2026"`, localized on non-English markets, always set on completed/sold cards); `sold_date_at` is a best-effort ISO date (e.g. `"2026-07-02"`, `null` when the market's format isn't English). (SCR-122)
+
 ## [0.20.0] - 2026-07-13
 
 ### Added

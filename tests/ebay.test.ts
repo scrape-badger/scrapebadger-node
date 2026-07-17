@@ -88,6 +88,8 @@ const SEARCH_RESULT = {
   location: "United States",
   returns: "30 days",
   sold_count: 120,
+  sold_date: null,
+  sold_date_at: null,
   watchers: 30,
   coupon: null,
   rating: 4.8,
@@ -114,6 +116,7 @@ const SEARCH_FIXTURE: EbaySearchResponse = {
 const COMPLETED_FIXTURE: EbaySearchResponse = {
   ...SEARCH_FIXTURE,
   sold: true,
+  results: [{ ...SEARCH_RESULT, sold_date: "2 Jul 2026", sold_date_at: "2026-07-02" }],
 };
 
 const ITEM_FIXTURE: EbayItemDetailResponse = {
@@ -390,6 +393,8 @@ describe("EbayClient.search", () => {
     const { url } = capturedRequest();
     expect(url).toContain("/v1/ebay/completed");
     expect(result.sold).toBe(true);
+    expect(result.results[0].sold_date).toBe("2 Jul 2026");
+    expect(result.results[0].sold_date_at).toBe("2026-07-02");
   });
 
   it("autocomplete sends GET to /v1/ebay/autocomplete", async () => {
