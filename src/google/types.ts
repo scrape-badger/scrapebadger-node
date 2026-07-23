@@ -647,6 +647,8 @@ export type FlightsTripType = "round_trip" | "one_way" | "multi_city";
 export type FlightsTravelClass = "economy" | "premium_economy" | "business" | "first";
 export type FlightsStopsFilter = "any" | "nonstop" | "one_stop" | "two_stops";
 
+export type FlightsSortBy = "top" | "price";
+
 export interface FlightsSearchParams {
   /** Departure airport IATA code (e.g. "JFK") or location ID. */
   departure_id: string;
@@ -673,4 +675,12 @@ export interface FlightsSearchParams {
   stops?: FlightsStopsFilter;
   /** Upper price filter. */
   max_price?: number;
+  /**
+   * `"top"` (default) returns Google's ~6-8 "best" picks (fast). `"price"`
+   * returns the FULL price-sorted inventory (every carrier, the cheap
+   * long-layover fares) plus Google's own price floor, typical range, and
+   * price history — slower, and falls back to the "top" set under load.
+   * Round-trip initial search only.
+   */
+  sort_by?: FlightsSortBy;
 }
