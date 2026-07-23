@@ -142,6 +142,7 @@ export type {
   AutocompleteParams,
   FinanceQuoteParams,
   FlightsSearchParams,
+  FlightsSortBy,
   FlightsStopsFilter,
   FlightsTravelClass,
   FlightsTripType,
