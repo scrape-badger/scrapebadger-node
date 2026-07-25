@@ -37,6 +37,13 @@ export interface Pagination {
   total_pages: number | null;
   /** Total number of results, if known */
   total_results: number | null;
+  /**
+   * True while eBay still offers a next page — the stop signal for bulk
+   * extraction. `total_pages`/`total_results` are null on the completed/sold
+   * grid, and past the last page eBay re-serves that page, so looping "until
+   * empty" alone never terminates.
+   */
+  has_more: boolean | null;
 }
 
 /**
@@ -137,7 +144,12 @@ export interface SearchResult {
   seller_feedback_score: number | null;
   /** e.g. "eBay Refurbished" */
   program_badge: string | null;
-  is_sponsored: boolean;
+  /**
+   * Always null — eBay renders its "Sponsored" badge into every card as
+   * anti-scraping bait, so promoted placements cannot be distinguished
+   * from organic results.
+   */
+  is_sponsored: boolean | null;
 }
 
 // =============================================================================
