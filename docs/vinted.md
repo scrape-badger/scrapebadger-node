@@ -26,6 +26,7 @@ const filtered = await client.vinted.search.search({
   price_from: 10,
   price_to: 50,
   brand_ids: "53",
+  catalog_ids: "221",  // Vinted category — the catalog[] value in a category URL
   color_ids: "1,2",
   status_ids: "1",
   order: "price_low_to_high",
@@ -157,6 +158,7 @@ for (const status of statuses.statuses) {
 | `price_from` | `number` | Minimum price filter |
 | `price_to` | `number` | Maximum price filter |
 | `brand_ids` | `string` | Comma-separated brand IDs |
+| `catalog_ids` | `string` | Comma-separated catalog (category) IDs — the `catalog[]` value in a Vinted category URL |
 | `color_ids` | `string` | Comma-separated color IDs |
 | `status_ids` | `string` | Comma-separated status IDs |
 | `order` | `string` | Sort order: `"relevance"`, `"newest_first"`, `"price_low_to_high"`, `"price_high_to_low"` |
