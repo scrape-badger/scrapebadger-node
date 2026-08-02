@@ -59,8 +59,16 @@ export class SearchClient {
    *
    * @example
    * ```typescript
+   * // Restrict to a Vinted category (women's T-shirts on vinted.fr).
+   * const tshirts = await client.vinted.search.search({
+   *   query: "nike",
+   *   catalog_ids: "221",
+   * });
+   * ```
+   *
+   * @example
+   * ```typescript
    * // Filter results to sellers physically located in France or Belgium.
-   * // Billing: 1 base credit + 1 credit per uncached seller looked up.
    * const local = await client.vinted.search.search({
    *   query: "vintage jacket",
    *   seller_country: "fr,be",
@@ -80,6 +88,7 @@ export class SearchClient {
         price_from: params.price_from,
         price_to: params.price_to,
         brand_ids: params.brand_ids,
+        catalog_ids: params.catalog_ids,
         color_ids: params.color_ids,
         status_ids: params.status_ids,
         order: params.order,

@@ -88,10 +88,22 @@ export interface VintedItemSummary {
   brand_title: string;
   /** Size label */
   size_title: string;
-  /** Item condition status */
+  /** Item condition status, localized to the market */
   status: string;
   /** Item URL on Vinted */
   url: string;
+  /** Path portion of the item URL */
+  path: string | null;
+  /** Buyer-protection fee as a decimal string, in `price.currency_code` */
+  service_fee: string | null;
+  /** Price + buyer protection as a decimal string, in `price.currency_code` */
+  total_item_price: string | null;
+  /** Whether the listing is publicly visible */
+  is_visible: boolean;
+  /** Whether the listing is a promoted/bumped placement */
+  promoted: boolean;
+  /** Vinted's own label for where the result came from (e.g. "search") */
+  content_source: string | null;
   /** Number of users who favorited this item */
   favourite_count: number;
   /** Number of views */
@@ -115,20 +127,31 @@ export interface VintedItemSummary {
 export interface VintedItemDetail extends VintedItemSummary {
   /** Item description */
   description: string;
-  /** Catalog category identifier */
+  /** Catalog category identifier — the value to pass as `catalog_ids` when searching */
   catalog_id: number;
-  /** Primary color */
+  /** Primary color, localized. May list several, comma-separated */
   color1: string;
+  /** Secondary color */
+  color2: string | null;
   /** Seller details */
   seller: VintedSellerSummary;
-  /** Category name */
-  category: string;
-  /** Upload timestamp (ISO format) */
+  /** Category breadcrumb, root first, localized to the market */
+  category: string[];
+  /**
+   * Vinted's relative "listed" label, localized (e.g. "Il y a une semaine").
+   * Not an ISO timestamp.
+   */
   upload_date: string;
   /** Whether the item can be purchased */
   can_buy: boolean;
   /** Whether instant buy is enabled */
   instant_buy: boolean;
+  /** Whether the seller accepts bundles */
+  can_bundle: boolean;
+  /** Whether the item can be reserved */
+  can_reserve: boolean;
+  /** Whether the item is favourited */
+  is_favourite: boolean;
   /** Whether the listing is closed */
   is_closed: boolean;
   /** Whether the item is reserved */
@@ -382,6 +405,15 @@ export interface VintedSearchParams {
   price_to?: number;
   /** Comma-separated brand IDs */
   brand_ids?: string;
+  /**
+   * Comma-separated Vinted catalog (category) IDs to restrict the search to
+   * (e.g. "221" or "221,1242"). Vinted applies this before the search runs,
+   * and sub-categories are included.
+   *
+   * A catalog ID is the `catalog[]` value in a Vinted category URL
+   * (vinted.fr/catalog?catalog[]=221). IDs are per market.
+   */
+  catalog_ids?: string;
   /** Comma-separated color IDs */
   color_ids?: string;
   /** Comma-separated status IDs */
@@ -397,7 +429,8 @@ export interface VintedSearchParams {
    * When set, each returned item gains a `seller_country_code` and the response
    * gains a top-level `seller_country` echo.
    *
-   * Billing: 1 base credit + 1 credit per uncached seller looked up.
+   * Billing: a search is a flat 5 credits whatever filters you pass; seller
+   * lookups are not billed on top.
    */
   seller_country?: string;
 }
