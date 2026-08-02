@@ -9,8 +9,10 @@ import type { GoogleResponse, LensSearchParams } from "./types.js";
  * Client for Google Lens visual search by image URL.
  *
  * Response carries `lens_results` (Scrapingdog-parity alias) with
- * `title`, `source`, `source_favicon`, `thumbnail`, optional `tag`
- * price chip and `in_stock`, plus `related_searches` chips. Legacy
+ * `title`, `source`, `source_favicon`, `thumbnail`, `rating`,
+ * `reviews` and `in_stock`. Shoppable matches also carry `price`
+ * (`{value, currency, extracted}`) plus the raw `tag` chip it is
+ * parsed from. `related_searches` chips come alongside. Legacy
  * `results` alias retained for backwards compat.
  *
  * @example
@@ -20,7 +22,7 @@ import type { GoogleResponse, LensSearchParams } from "./types.js";
  *   product: true, // bias towards shoppable matches
  * });
  * for (const match of out.lens_results) {
- *   console.log(match.title, match.tag);
+ *   console.log(match.title, match.price?.value, match.price?.currency);
  * }
  * ```
  */
