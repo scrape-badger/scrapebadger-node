@@ -63,6 +63,22 @@ export interface ScrapeResult {
   url: string;
   status_code: number;
   content: string | null;
+  /**
+   * Base64 body for a binary target (image/PDF/archive). Set instead of
+   * `content`, which is null there — binary bytes have no text form.
+   * Null when the body exceeded the 25 MB base64 ceiling.
+   */
+  content_base64: string | null;
+  /** Whether the target returned a binary (non-text) body. */
+  is_binary: boolean;
+  /** The target's response Content-Type, as a bare media type. */
+  content_type: string | null;
+  /**
+   * Undecoded response body. Only set when `rawContent: true` — that mode
+   * returns the body itself rather than a JSON envelope. Write it straight to
+   * a file; do not decode it, the payload may be an image or a PDF.
+   */
+  content_bytes?: Uint8Array;
   format: string;
   engine_used: string;
   credits_used: number;
