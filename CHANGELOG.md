@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.24.2] - 2026-08-03
+
+### Fixed
+
+- **No server error was ever retried.** The retry loop rethrew every `ScrapeBadgerError` except `RateLimitError` — and `ServerError` and `TimeoutError` both extend it, so a 500/502/503/504 or a request timeout failed on the first attempt regardless of `maxRetries`. The `ServerError` and `TimeoutError` warning branches inside the loop were unreachable as a result. Transient server failures (500, 502, 503, 504), timeouts, rate limits and raw network faults now retry with the documented exponential backoff; client errors (auth, validation, not-found, conflict) still fail fast.
+
 ## [0.24.1] - 2026-08-02
 
 ### Added
@@ -15,7 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **Vinted `catalog_ids` search filter** — `client.vinted.search.search({ query: "nike", catalog_ids: "221" })` restricts a search to one or more Vinted categories. Vinted applies it *before* the search runs (sub-categories included), so you get whole pages of in-category results instead of filtering them out client-side. A catalog ID is the `catalog[]` value in a Vinted category URL (`vinted.fr/catalog?catalog[]=221`); IDs are per market. (SCR-159)
+- **Vinted `catalog_ids` search filter** — `client.vinted.search.search({ query: "nike", catalog_ids: "221" })` restricts a search to one or more Vinted categories. Vinted applies it _before_ the search runs (sub-categories included), so you get whole pages of in-category results instead of filtering them out client-side. A catalog ID is the `catalog[]` value in a Vinted category URL (`vinted.fr/catalog?catalog[]=221`); IDs are per market. (SCR-159)
 - **Vinted item fields missing from the types** — `VintedItemSummary` now declares `path`, `service_fee`, `total_item_price`, `is_visible`, `promoted` and `content_source`; `VintedItemDetail` adds `color2`, `can_bundle`, `can_reserve` and `is_favourite`. The API had always returned these. (SCR-159)
 
 ### Changed
