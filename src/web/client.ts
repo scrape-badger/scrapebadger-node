@@ -110,7 +110,7 @@ export class WebClient {
 
     return {
       success: headers.get("x-scrape-success") !== "0",
-      url: headers.get("x-scrape-url") ?? String(body.url ?? ""),
+      url: headers.get("x-scrape-url") ?? (typeof body.url === "string" ? body.url : ""),
       status_code: int("x-scrape-status-code") || status,
       content: isText ? new TextDecoder().decode(bytes) : null,
       content_bytes: bytes,

@@ -28,7 +28,6 @@ describe("scrape with rawContent", () => {
       "x-credits-used": "2",
       "x-scrape-engine": "httpcloak",
     });
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const web = new WebClient(inner as any);
 
     const result = await web.scrape("https://x.com/a.png", { rawContent: true });
@@ -47,7 +46,6 @@ describe("scrape with rawContent", () => {
       "content-type": "text/html; charset=utf-8",
       "x-scrape-status-code": "200",
     });
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const web = new WebClient(inner as any);
 
     const result = await web.scrape("https://x.com", { rawContent: true });
@@ -59,7 +57,6 @@ describe("scrape with rawContent", () => {
   it("uses the JSON path when rawContent is not set", async () => {
     const inner = clientReturning(new Uint8Array(), {});
     inner.request.mockResolvedValue({ success: true, content: "<html/>" });
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const web = new WebClient(inner as any);
 
     const result = await web.scrape("https://x.com");
