@@ -73,6 +73,47 @@ export class BaseClient {
   }
 
   /**
+   * POST and return the undecoded response body.
+   *
+   * For endpoints that answer with something other than JSON — currently
+   * `/v1/web/scrape` with `raw_content: true`, which returns the scraped body
+   * itself. The normal path funnels a non-JSON response into
+   * `{ detail: await response.text() }`, which both loses the result and, for
+   * a binary payload, corrupts it: `text()` decodes bytes as UTF-8.
+   *
+   * Returns the raw bytes plus the response headers.
+   */
+  async postBinary(
+    path: string,
+    options: RequestOptions = {}
+  ): Promise<{ bytes: Uint8Array; headers: Headers; status: number }> {
+    const url = new URL(path, this.config.baseUrl);
+    const { body, headers = {} } = options;
+
+    const response = await this.fetchWithTimeout(url.toString(), {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-API-Key": this.config.apiKey,
+        "User-Agent": `scrapebadger-node/${SDK_VERSION}`,
+        ...headers,
+      },
+      body: body ? JSON.stringify(body) : undefined,
+    });
+
+    if (!response.ok) {
+      // Let the shared error mapping raise the right typed error.
+      await this.handleResponse<unknown>(response);
+    }
+
+    return {
+      bytes: new Uint8Array(await response.arrayBuffer()),
+      headers: response.headers,
+      status: response.status,
+    };
+  }
+
+  /**
    * Make an HTTP request and return both data and rate limit headers.
    */
   async requestWithHeaders<T>(

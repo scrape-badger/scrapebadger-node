@@ -72,10 +72,62 @@ export class WebClient {
     if (options.rawContent !== undefined) body.raw_content = options.rawContent;
     if (options.skipBotDetection !== undefined) body.skip_bot_detection = options.skipBotDetection;
 
+    if (options.rawContent) {
+      return this.scrapeRaw(body);
+    }
+
     return this.client.request<ScrapeResult>("/v1/web/scrape", {
       method: "POST",
       body,
     });
+  }
+
+  /**
+   * Run a `rawContent` scrape, whose response is not JSON.
+   *
+   * The normal path funnels a non-JSON response into `{ detail: text }`, so a
+   * raw scrape returned a result with no content — and for a binary target,
+   * `response.text()` decoded the bytes as UTF-8 and destroyed them. Read the
+   * body as bytes and rebuild the metadata from the `X-Scrape-*` headers the
+   * server sends in this mode.
+   */
+  private async scrapeRaw(body: Record<string, unknown>): Promise<ScrapeResult> {
+    const { bytes, headers, status } = await this.client.postBinary("/v1/web/scrape", {
+      body,
+    });
+
+    const int = (name: string): number => {
+      const parsed = Number.parseInt(headers.get(name) ?? "", 10);
+      return Number.isNaN(parsed) ? 0 : parsed;
+    };
+
+    const mediaType = ((headers.get("content-type") ?? "").split(";")[0] ?? "").trim().toLowerCase();
+    // Only decode when the payload is genuinely text — decoding an image or a
+    // PDF is the very corruption this mode exists to avoid.
+    const isText =
+      mediaType.startsWith("text/") ||
+      ["application/json", "application/xml", "image/svg+xml"].includes(mediaType);
+
+    return {
+      success: headers.get("x-scrape-success") !== "0",
+      url: headers.get("x-scrape-url") ?? (typeof body.url === "string" ? body.url : ""),
+      status_code: int("x-scrape-status-code") || status,
+      content: isText ? new TextDecoder().decode(bytes) : null,
+      content_bytes: bytes,
+      content_base64: null,
+      is_binary: !isText,
+      content_type: mediaType || null,
+      format: headers.get("x-scrape-format") ?? "html",
+      engine_used: headers.get("x-scrape-engine") ?? "",
+      credits_used: int("x-credits-used"),
+      duration_ms: int("x-scrape-duration-ms"),
+      retries_used: int("x-scrape-retries"),
+      content_length: int("x-scrape-content-length") || bytes.length,
+      screenshot_url: null,
+      video_url: null,
+      headers: {},
+      blocking_detected: false,
+    } as ScrapeResult;
   }
 
   /**
