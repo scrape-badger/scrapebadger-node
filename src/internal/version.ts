@@ -6,4 +6,4 @@
  *
  * @internal
  */
-export const SDK_VERSION = "0.24.1";
+export const SDK_VERSION = "0.24.2";

@@ -17,6 +17,14 @@ import {
   ScrapeBadgerError,
 } from "./exceptions.js";
 
+/**
+ * Server-side status codes worth retrying.
+ *
+ * A transient 500 is no more permanent than a 502, and both clear on a retry
+ * far more often than not. Kept in step with the Python SDK's `retry_on_status`.
+ */
+const RETRYABLE_STATUS_CODES = [500, 502, 503, 504];
+
 export interface RateLimit {
   limit: number;
   remaining: number;
@@ -134,8 +142,9 @@ export class BaseClient {
       } catch (error) {
         lastError = error as Error;
 
-        // Don't retry on client errors (4xx) except rate limits
-        if (error instanceof ScrapeBadgerError && !(error instanceof RateLimitError)) {
+        // Client errors (auth, validation, not-found) are final — retrying only
+        // delays the throw. Transient server failures and timeouts fall through.
+        if (!BaseClient.isRetryable(error)) {
           throw error;
         }
 
@@ -292,6 +301,24 @@ export class BaseClient {
         }
         throw new ScrapeBadgerError(message);
     }
+  }
+
+  /**
+   * Whether a failed request is worth another attempt.
+   *
+   * Retryable: transient server failures (500/502/503/504), request timeouts,
+   * rate limits, and raw network faults thrown by `fetch` itself. Everything
+   * else — auth, validation, not-found, conflict — is final.
+   */
+  private static isRetryable(error: unknown): boolean {
+    if (error instanceof ServerError) {
+      return RETRYABLE_STATUS_CODES.includes(error.statusCode);
+    }
+    if (error instanceof RateLimitError || error instanceof TimeoutError) {
+      return true;
+    }
+    // Anything that isn't one of ours is a network-level fault from fetch.
+    return !(error instanceof ScrapeBadgerError);
   }
 
   /**
