@@ -1,0 +1,61 @@
+/**
+ * ChatGPT API client.
+ *
+ * Provides access to all ChatGPT API endpoints through specialized sub-clients.
+ */
+
+import type { BaseClient } from "../internal/client.js";
+import { AskClient } from "./ask.js";
+import { BrandClient } from "./brand.js";
+import { ReferenceClient } from "./reference.js";
+
+/**
+ * ChatGPT API client with access to all ChatGPT endpoints.
+ *
+ * Prompts the real chatgpt.com — not the OpenAI API — anonymously, and returns
+ * the answer as structured JSON including the web sources ChatGPT cited.
+ *
+ * Sub-clients:
+ * - `ask` - Send a prompt and get the answer with its sources
+ * - `brand` - AEO/GEO brand-visibility analysis
+ * - `reference` - Reference data (available models)
+ *
+ * @example
+ * ```typescript
+ * const client = new ScrapeBadger({ apiKey: "key" });
+ *
+ * // Ask a question
+ * const result = await client.chatgpt.ask.ask({ prompt: "best running shoes 2026" });
+ *
+ * // Brand visibility
+ * const brand = await client.chatgpt.brand.visibility({
+ *   prompt: "best web scraping API",
+ *   brand: "ScrapeBadger",
+ *   competitors: ["Bright Data"],
+ * });
+ *
+ * // Available models
+ * const models = await client.chatgpt.reference.models();
+ * ```
+ */
+export class ChatGPTClient {
+  /** Client for asking ChatGPT a question */
+  readonly ask: AskClient;
+
+  /** Client for AEO/GEO brand-visibility analysis */
+  readonly brand: BrandClient;
+
+  /** Client for reference data (available models) */
+  readonly reference: ReferenceClient;
+
+  /**
+   * Create a new ChatGPT client.
+   *
+   * @param client - The base HTTP client for making requests.
+   */
+  constructor(client: BaseClient) {
+    this.ask = new AskClient(client);
+    this.brand = new BrandClient(client);
+    this.reference = new ReferenceClient(client);
+  }
+}

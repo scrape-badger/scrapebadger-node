@@ -24,6 +24,7 @@ import { ImmobiliareClient } from "./immobiliare/client.js";
 import { LoopNetClient } from "./loopnet/client.js";
 import { DepopClient } from "./depop/client.js";
 import { LinkedInClient } from "./linkedin/client.js";
+import { ChatGPTClient } from "./chatgpt/client.js";
 
 /**
  * ScrapeBadger API client.
@@ -114,6 +115,9 @@ export class ScrapeBadger {
   /** LinkedIn scraper API client — 11 no-auth endpoints (jobs, company, school, profile, post, article, learning, geo) */
   readonly linkedin: LinkedInClient;
 
+  /** ChatGPT scraper API client — ask, brand visibility, models (the real chatgpt.com, anonymous) */
+  readonly chatgpt: ChatGPTClient;
+
   /**
    * Create a new ScrapeBadger client.
    *
@@ -171,5 +175,6 @@ export class ScrapeBadger {
     this.loopnet = new LoopNetClient(this.baseClient);
     this.depop = new DepopClient(this.baseClient);
     this.linkedin = new LinkedInClient(this.baseClient);
+    this.chatgpt = new ChatGPTClient(this.baseClient);
   }
 }

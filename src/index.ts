@@ -105,6 +105,9 @@ export * from "./depop/index.js";
 // Re-export LinkedIn module — LinkedInClient + LinkedIn*-prefixed types
 export * from "./linkedin/index.js";
 
+// Re-export ChatGPT module — ChatGPTClient + ChatGPT*-prefixed sub-clients and types
+export * from "./chatgpt/index.js";
+
 // Re-export Leboncoin module — LeboncoinClient + Leboncoin*-prefixed sub-clients and types
 export * from "./leboncoin/index.js";
 
