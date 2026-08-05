@@ -120,6 +120,8 @@ export interface ChatGPTAskResponse {
   /** Distinct domains across the sources */
   source_domains: string[];
   /** Whether ChatGPT ACTUALLY browsed the web */
+  /** True when the render budget expired mid-answer; `answer` is partial. */
+  truncated: boolean;
   web_search_triggered: boolean;
   /** Raw reference markers (e.g. "turn0search1") */
   reference_tokens: string[];

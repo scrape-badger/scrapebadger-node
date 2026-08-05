@@ -34,7 +34,7 @@ export class AskClient {
   /**
    * Ask ChatGPT a question and get the answer with its sources.
    *
-   * Costs 20 credits. Typical latency is 21-30 seconds.
+   * Costs 20 credits. Typical latency is 20-25s ungrounded, 30-70s with web search.
    *
    * @param params - Ask parameters.
    * @param params.prompt - The prompt to send (max 4096 characters).
