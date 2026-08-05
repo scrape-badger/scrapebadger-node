@@ -124,6 +124,8 @@ export interface ChatGPTAskResponse {
   truncated: boolean;
   web_search_triggered: boolean;
   /** Raw reference markers (e.g. "turn0search1") */
+  /** Actual sub-queries ChatGPT issued to the search engine. */
+  search_queries: string[];
   reference_tokens: string[];
   /** Model slug that answered (e.g. "gpt-5-5") */
   model: string | null;
