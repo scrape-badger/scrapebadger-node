@@ -73,6 +73,9 @@ export * from "./vinted/index.js";
 // Re-export Reddit module
 export * from "./reddit/index.js";
 
+// Re-export Instagram module
+export * from "./instagram/index.js";
+
 // Re-export Redfin module — RedfinClient + Redfin*-prefixed types
 export * from "./apartments/index.js";
 export * from "./redfin/index.js";

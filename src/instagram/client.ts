@@ -1,0 +1,67 @@
+/**
+ * Instagram API client.
+ *
+ * Provides access to all Instagram API endpoints through specialized
+ * sub-clients.
+ */
+
+import type { BaseClient } from "../internal/client.js";
+import { UsersClient } from "./users.js";
+import { MediaClient } from "./media.js";
+import { SearchClient } from "./search.js";
+import { HashtagsClient, LocationsClient, AudioClient } from "./reference.js";
+
+/**
+ * Instagram API client with access to all Instagram endpoints.
+ *
+ * Sub-clients:
+ * - `users` - Profiles, posts, reels, followers, stories, highlights
+ * - `media` - Media details, comments, replies, likers, oEmbed
+ * - `search` - Users, hashtags, places, top, reels, music, autocomplete
+ * - `hashtags` - Hashtag info and its top/recent/reels feeds
+ * - `locations` - Location info, top/recent feeds, and location search
+ * - `audio` - Audio info, its media, and trending audio
+ *
+ * @example
+ * ```typescript
+ * const client = new ScrapeBadger({ apiKey: "key" });
+ *
+ * const profile = await client.instagram.users.get("instagram");
+ * const posts = await client.instagram.users.posts("instagram", { amount: 12 });
+ * const media = await client.instagram.media.get("C1abcdEfGhI");
+ * const users = await client.instagram.search.users("nike");
+ * ```
+ */
+export class InstagramClient {
+  /** Client for user operations (profile, posts, followers, stories, highlights) */
+  readonly users: UsersClient;
+
+  /** Client for media operations (detail, comments, replies, likers, oEmbed) */
+  readonly media: MediaClient;
+
+  /** Client for search operations (users, hashtags, places, top, reels, music, autocomplete) */
+  readonly search: SearchClient;
+
+  /** Client for hashtag operations (info, top, recent, reels) */
+  readonly hashtags: HashtagsClient;
+
+  /** Client for location operations (info, top, recent, search) */
+  readonly locations: LocationsClient;
+
+  /** Client for audio operations (info, media, trending) */
+  readonly audio: AudioClient;
+
+  /**
+   * Create a new Instagram client.
+   *
+   * @param client - The base HTTP client for making requests.
+   */
+  constructor(client: BaseClient) {
+    this.users = new UsersClient(client);
+    this.media = new MediaClient(client);
+    this.search = new SearchClient(client);
+    this.hashtags = new HashtagsClient(client);
+    this.locations = new LocationsClient(client);
+    this.audio = new AudioClient(client);
+  }
+}
