@@ -11,6 +11,7 @@ import { WebClient } from "./web/client.js";
 import { VintedClient } from "./vinted/client.js";
 import { GoogleClient } from "./google/client.js";
 import { RedditClient } from "./reddit/client.js";
+import { ApartmentsClient } from "./apartments/client.js";
 import { RedfinClient } from "./redfin/client.js";
 import { AmazonClient } from "./amazon/client.js";
 import { ShopeeClient } from "./shopee/client.js";
@@ -75,6 +76,9 @@ export class ScrapeBadger {
 
   /** Reddit scraper API client */
   readonly reddit: RedditClient;
+
+  /** Apartments.com scraper API client — search + property with unit-level pricing (US) */
+  readonly apartments: ApartmentsClient;
 
   /** Redfin scraper API client — search, property, agent, autocomplete, markets (redfin.com, US) */
   readonly redfin: RedfinClient;
@@ -162,6 +166,7 @@ export class ScrapeBadger {
     this.vinted = new VintedClient(this.baseClient);
     this.google = new GoogleClient(this.baseClient);
     this.reddit = new RedditClient(this.baseClient);
+    this.apartments = new ApartmentsClient(this.baseClient);
     this.redfin = new RedfinClient(this.baseClient);
     this.amazon = new AmazonClient(this.baseClient);
     this.shopee = new ShopeeClient(this.baseClient);
