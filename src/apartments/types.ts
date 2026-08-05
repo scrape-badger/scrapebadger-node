@@ -58,6 +58,25 @@ export interface FloorPlan {
   units_available: number;
 }
 
+
+/** A school from the property's Schools section (GreatSchools data). */
+export interface School {
+  name: string | null;
+  type_text: string | null;
+  is_private: boolean;
+  grades: string | null;
+  student_count: number | null;
+  /** "Attendance Zone" (the property is zoned for it) or "Nearby". */
+  proximity: string | null;
+  /**
+   * GreatSchools rating out of 10. **null means UNRATED**, not zero — the site
+   * renders no badge for those schools.
+   */
+  rating: number | null;
+  rating_scale: number;
+  url: string | null;
+}
+
 /** An apartments.com property (a complex, not a single home). */
 export interface Property {
   property_id: string | null;
@@ -79,6 +98,7 @@ export interface Property {
   amenities: string[];
   office_hours: string[];
   photos: string[];
+  schools: School[];
   floor_plans: FloorPlan[];
   /** Every unit across every floor plan, flattened. */
   units: Unit[];

@@ -10,6 +10,7 @@ export type {
   Unit as ApartmentsUnit,
   FloorPlan as ApartmentsFloorPlan,
   Property as ApartmentsProperty,
+  School as ApartmentsSchool,
   SearchResult as ApartmentsSearchResult,
   SearchResponse as ApartmentsSearchResponse,
   ApartmentsSearchParams,
