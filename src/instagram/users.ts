@@ -43,7 +43,10 @@ export class UsersClient {
     return this.client.request<User>(`/v1/instagram/users/${username}`);
   }
 
-  /** Get "About this account" metadata for a user. */
+  /**
+   * Get "About this account" metadata for a user.
+   * @deprecated Temporarily unavailable — authenticated data is temporarily offline.
+   */
   async about(username: string): Promise<UserAbout> {
     return this.client.request<UserAbout>(
       `/v1/instagram/users/${username}/about`
@@ -65,7 +68,10 @@ export class UsersClient {
     return this.media(`/v1/instagram/users/${username}/posts`, options);
   }
 
-  /** Get a user's video posts (IGTV/feed videos). */
+  /**
+   * Get a user's video posts (IGTV/feed videos).
+   * @deprecated Temporarily unavailable — authenticated data is temporarily offline.
+   */
   async videos(
     username: string,
     options: { amount?: number; cursor?: string } = {}
@@ -73,7 +79,10 @@ export class UsersClient {
     return this.media(`/v1/instagram/users/${username}/videos`, options);
   }
 
-  /** Get a user's reels. */
+  /**
+   * Get a user's reels.
+   * @deprecated Temporarily unavailable — authenticated data is temporarily offline.
+   */
   async reels(
     username: string,
     options: { amount?: number; cursor?: string } = {}
@@ -81,7 +90,10 @@ export class UsersClient {
     return this.media(`/v1/instagram/users/${username}/reels`, options);
   }
 
-  /** Get media a user is tagged in. */
+  /**
+   * Get media a user is tagged in.
+   * @deprecated Temporarily unavailable — authenticated data is temporarily offline.
+   */
   async tagged(
     username: string,
     options: { amount?: number; cursor?: string } = {}
@@ -89,7 +101,10 @@ export class UsersClient {
     return this.media(`/v1/instagram/users/${username}/tagged`, options);
   }
 
-  /** Get a user's pinned posts. */
+  /**
+   * Get a user's pinned posts.
+   * @deprecated Temporarily unavailable — authenticated data is temporarily offline.
+   */
   async pinned(username: string): Promise<Paginated<Media>> {
     return this.client.request<Paginated<Media>>(
       `/v1/instagram/users/${username}/pinned`
@@ -97,6 +112,8 @@ export class UsersClient {
   }
 
   /**
+   * @deprecated Temporarily unavailable — authenticated data is temporarily offline.
+   *
    * Get a user's followers.
    *
    * @param username - Instagram username.
@@ -120,7 +137,10 @@ export class UsersClient {
     );
   }
 
-  /** Get the accounts a user follows. */
+  /**
+   * Get the accounts a user follows.
+   * @deprecated Temporarily unavailable — authenticated data is temporarily offline.
+   */
   async following(
     username: string,
     options: { amount?: number; cursor?: string } = {}
@@ -131,7 +151,10 @@ export class UsersClient {
     );
   }
 
-  /** Search within a user's followers by name/username. */
+  /**
+   * Search within a user's followers by name/username.
+   * @deprecated Temporarily unavailable — authenticated data is temporarily offline.
+   */
   async searchFollowers(
     username: string,
     query: string,
@@ -145,14 +168,20 @@ export class UsersClient {
     );
   }
 
-  /** Get a user's currently-live stories. */
+  /**
+   * Get a user's currently-live stories.
+   * @deprecated Temporarily unavailable — authenticated data is temporarily offline.
+   */
   async stories(username: string): Promise<Paginated<Media>> {
     return this.client.request<Paginated<Media>>(
       `/v1/instagram/users/${username}/stories`
     );
   }
 
-  /** Get a user's story highlights. */
+  /**
+   * Get a user's story highlights.
+   * @deprecated Temporarily unavailable — authenticated data is temporarily offline.
+   */
   async highlights(username: string): Promise<Paginated<Highlight>> {
     return this.client.request<Paginated<Highlight>>(
       `/v1/instagram/users/${username}/highlights`

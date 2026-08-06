@@ -38,7 +38,10 @@ export class SearchClient {
     this.client = client;
   }
 
-  /** Search accounts by name/username. */
+  /**
+   * Search accounts by name/username.
+   * @deprecated Temporarily unavailable — authenticated data is temporarily offline.
+   */
   async users(query: string): Promise<Paginated<UserShort>> {
     return this.client.request<Paginated<UserShort>>(
       "/v1/instagram/search/users",
@@ -54,7 +57,10 @@ export class SearchClient {
     );
   }
 
-  /** Search places/locations. */
+  /**
+   * Search places/locations.
+   * @deprecated Temporarily unavailable — authenticated data is temporarily offline.
+   */
   async places(query: string): Promise<Paginated<Location>> {
     return this.client.request<Paginated<Location>>(
       "/v1/instagram/search/places",
@@ -62,7 +68,10 @@ export class SearchClient {
     );
   }
 
-  /** Search reels. */
+  /**
+   * Search reels.
+   * @deprecated Temporarily unavailable — authenticated data is temporarily offline.
+   */
   async reels(query: string): Promise<Paginated<Media>> {
     return this.client.request<Paginated<Media>>(
       "/v1/instagram/search/reels",
@@ -70,7 +79,10 @@ export class SearchClient {
     );
   }
 
-  /** Search music/audio tracks. */
+  /**
+   * Search music/audio tracks.
+   * @deprecated Temporarily unavailable — authenticated data is temporarily offline.
+   */
   async music(query: string): Promise<Paginated<Audio>> {
     return this.client.request<Paginated<Audio>>(
       "/v1/instagram/search/music",
@@ -85,7 +97,10 @@ export class SearchClient {
     });
   }
 
-  /** Get typeahead/autocomplete suggestions (mixed entity types). */
+  /**
+   * Get typeahead/autocomplete suggestions (mixed entity types).
+   * @deprecated Temporarily unavailable — authenticated data is temporarily offline.
+   */
   async autocomplete(query: string): Promise<SearchTopResponse> {
     return this.client.request<SearchTopResponse>(
       "/v1/instagram/search/autocomplete",

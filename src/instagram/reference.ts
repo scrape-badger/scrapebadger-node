@@ -37,7 +37,10 @@ export class HashtagsClient {
     return this.client.request<Hashtag>(`/v1/instagram/hashtags/${tag}`);
   }
 
-  /** Get the top/popular media for a hashtag. */
+  /**
+   * Get the top/popular media for a hashtag.
+   * @deprecated Temporarily unavailable — authenticated data is temporarily offline.
+   */
   async top(
     tag: string,
     options: { amount?: number; cursor?: string } = {}
@@ -57,7 +60,10 @@ export class HashtagsClient {
     );
   }
 
-  /** Get reels for a hashtag. */
+  /**
+   * Get reels for a hashtag.
+   * @deprecated Temporarily unavailable — authenticated data is temporarily offline.
+   */
   async reels(
     tag: string,
     options: { amount?: number; cursor?: string } = {}
@@ -78,12 +84,18 @@ export class LocationsClient {
     this.client = client;
   }
 
-  /** Get a location's info. */
+  /**
+   * Get a location's info.
+   * @deprecated Temporarily unavailable — authenticated data is temporarily offline.
+   */
   async get(pk: string): Promise<Location> {
     return this.client.request<Location>(`/v1/instagram/locations/${pk}`);
   }
 
-  /** Get the top/popular media for a location. */
+  /**
+   * Get the top/popular media for a location.
+   * @deprecated Temporarily unavailable — authenticated data is temporarily offline.
+   */
   async top(
     pk: string,
     options: { amount?: number; cursor?: string } = {}
@@ -91,7 +103,10 @@ export class LocationsClient {
     return mediaFeed(this.client, `/v1/instagram/locations/${pk}/top`, options);
   }
 
-  /** Get the most recent media for a location. */
+  /**
+   * Get the most recent media for a location.
+   * @deprecated Temporarily unavailable — authenticated data is temporarily offline.
+   */
   async recent(
     pk: string,
     options: { amount?: number; cursor?: string } = {}
@@ -103,7 +118,10 @@ export class LocationsClient {
     );
   }
 
-  /** Search locations by name. */
+  /**
+   * Search locations by name.
+   * @deprecated Temporarily unavailable — authenticated data is temporarily offline.
+   */
   async search(query: string): Promise<Paginated<Location>> {
     return this.client.request<Paginated<Location>>(
       "/v1/instagram/locations/search",
@@ -120,12 +138,18 @@ export class AudioClient {
     this.client = client;
   }
 
-  /** Get an audio track's info. */
+  /**
+   * Get an audio track's info.
+   * @deprecated Temporarily unavailable — authenticated data is temporarily offline.
+   */
   async get(audioId: string): Promise<Audio> {
     return this.client.request<Audio>(`/v1/instagram/audio/${audioId}`);
   }
 
-  /** Get media that use an audio track. */
+  /**
+   * Get media that use an audio track.
+   * @deprecated Temporarily unavailable — authenticated data is temporarily offline.
+   */
   async media(
     audioId: string,
     options: { amount?: number; cursor?: string } = {}
@@ -137,7 +161,10 @@ export class AudioClient {
     );
   }
 
-  /** Get currently-trending audio tracks. */
+  /**
+   * Get currently-trending audio tracks.
+   * @deprecated Temporarily unavailable — authenticated data is temporarily offline.
+   */
   async trending(): Promise<Paginated<Audio>> {
     return this.client.request<Paginated<Audio>>("/v1/instagram/audio/trending");
   }

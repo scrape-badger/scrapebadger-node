@@ -56,14 +56,20 @@ export class MediaClient {
     );
   }
 
-  /** Get the users who liked a media. */
+  /**
+   * Get the users who liked a media.
+   * @deprecated Temporarily unavailable — authenticated data is temporarily offline.
+   */
   async likers(code: string): Promise<Paginated<UserShort>> {
     return this.client.request<Paginated<UserShort>>(
       `/v1/instagram/media/${code}/likers`
     );
   }
 
-  /** Get replies to a comment. */
+  /**
+   * Get replies to a comment.
+   * @deprecated Temporarily unavailable — authenticated data is temporarily offline.
+   */
   async replies(
     code: string,
     commentId: string,
