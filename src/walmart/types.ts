@@ -414,7 +414,11 @@ export interface WalmartSearchItem {
   condition: string | null;
   is_preowned: boolean | null;
   snap_eligible: boolean | null;
+  /** 1-based rank across the merged organic result set. */
   position: number | null;
+  /** Walmart's raw itemStackPosition — the index of the STACK the item came
+   *  from, shared by every item in that stack. Not a rank. */
+  stack_position: number | null;
   product_location: string | null;
   additional_offer_count: number | null;
 }
