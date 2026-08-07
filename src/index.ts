@@ -92,6 +92,9 @@ export * from "./tiktok/index.js";
 // Re-export eBay module — EbayClient + Ebay*-prefixed sub-clients and types
 export * from "./ebay/index.js";
 
+// Re-export Walmart module — WalmartClient + Walmart*-prefixed sub-clients and types
+export * from "./walmart/index.js";
+
 // Re-export YouTube module — YoutubeClient + Youtube*-prefixed sub-clients and types
 export * from "./youtube/index.js";
 export * from "./realtor/index.js";

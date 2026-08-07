@@ -18,6 +18,7 @@ import { AmazonClient } from "./amazon/client.js";
 import { ShopeeClient } from "./shopee/client.js";
 import { TikTokClient } from "./tiktok/client.js";
 import { EbayClient } from "./ebay/client.js";
+import { WalmartClient } from "./walmart/client.js";
 import { YoutubeClient } from "./youtube/client.js";
 import { RealtorClient } from "./realtor/client.js";
 import { LeboncoinClient } from "./leboncoin/client.js";
@@ -99,6 +100,9 @@ export class ScrapeBadger {
   /** eBay scraper API client — 12 endpoints across 18 markets */
   readonly ebay: EbayClient;
 
+  /** Walmart scraper API client — 11 endpoints (walmart.com, US-only) */
+  readonly walmart: WalmartClient;
+
   /** YouTube scraper API client — 39 endpoints */
   readonly youtube: YoutubeClient;
 
@@ -177,6 +181,7 @@ export class ScrapeBadger {
     this.shopee = new ShopeeClient(this.baseClient);
     this.tiktok = new TikTokClient(this.baseClient);
     this.ebay = new EbayClient(this.baseClient);
+    this.walmart = new WalmartClient(this.baseClient);
     this.youtube = new YoutubeClient(this.baseClient);
     this.realtor = new RealtorClient(this.baseClient);
     this.leboncoin = new LeboncoinClient(this.baseClient);
