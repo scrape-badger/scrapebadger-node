@@ -86,10 +86,13 @@ const client = new ScrapeBadger();
 | **TikTok** | 26 endpoints — user profile/videos/followers/following/liked/reposts, video detail/comments/replies/related/transcript, oEmbed, hashtag detail/videos, music detail/videos, search (general/videos/users/hashtags), trending (videos/hashtags/songs), ad library, regions | [TikTok Guide](docs/tiktok.md) |
 | **eBay** | 12 endpoints across 18 markets — search, completed/sold listings, item detail, item reviews, seller profile/items/feedback, category browse, categories, autocomplete, markets | [eBay Guide](docs/ebay.md) |
 | **Walmart** | 11 endpoints (walmart.com, US-only) — search, category browse, deals feed, autocomplete, product detail, reviews, seller profile/products, store detail with nearby stores, markets |
+| **Bing** | 6 endpoints — web search (with ads + related searches), image search, video search, news vertical, autocomplete, markets |
+| **DuckDuckGo** | 7 endpoints — web search (with instant-answer abstract), image search, news vertical, video search, autocomplete, instant answers, regions |
 | **YouTube** | 39 endpoints — search, autocomplete, video detail/related/comments/replies/transcript/captions/streams/live chat/batch, channel detail/videos/shorts/streams/playlists/community/about/subscriber count/search/resolve, playlist detail/items, mixes, trending/shorts, hashtags, home, shorts detail/by sound, community posts/comments, music search, oEmbed, categories/languages/regions/markets | [YouTube Guide](docs/youtube.md) |
 | **Immobiliare** | 8 endpoints across 4 markets (it, es, gr, lu) — autocomplete, search, listing detail, agency profile/listings, price stats, markets, reference | [Immobiliare Guide](docs/immobiliare.md) |
 | **LoopNet** | 5 endpoints across loopnet.com/.ca/.co.uk/.fr/.es — commercial-real-estate search (for-lease/for-sale/auctions), listing detail, broker profile, markets, property types | [LoopNet Guide](docs/loopnet.md) |
 | **Apartments.com** | US rental listings with UNIT-LEVEL pricing — search by location with bed/price filters, plus per-unit rent, beds, baths, sqft and availability for every rentable unit |
+| **Baidu** | 4 endpoints (baidu.com, China's #1 search engine) — web search with language and date-window filters, news vertical, image search, autocomplete. Results carry the **real target URL**, not just Baidu's tracking redirect | [Baidu Docs](https://docs.scrapebadger.com/baidu/overview) |
 | **ChatGPT** | Prompt the real chatgpt.com anonymously — structured answer with citations anchored to character offsets, the full retrieved search trail, and AEO/GEO brand-visibility analysis | [ChatGPT Guide](docs/chatgpt.md) |
 
 ## Error Handling

@@ -95,6 +95,15 @@ export * from "./ebay/index.js";
 // Re-export Walmart module — WalmartClient + Walmart*-prefixed sub-clients and types
 export * from "./walmart/index.js";
 
+// Re-export DuckDuckGo module — DuckDuckGoClient + DuckDuckGo*-prefixed sub-clients and types
+export * from "./duckduckgo/index.js";
+
+// Re-export Bing module — BingClient + Bing*-prefixed sub-clients and types
+export * from "./bing/index.js";
+
+// Re-export Baidu module — BaiduClient + Baidu*-prefixed types
+export * from "./baidu/index.js";
+
 // Re-export YouTube module — YoutubeClient + Youtube*-prefixed sub-clients and types
 export * from "./youtube/index.js";
 export * from "./realtor/index.js";

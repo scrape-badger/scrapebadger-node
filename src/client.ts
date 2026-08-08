@@ -19,6 +19,9 @@ import { ShopeeClient } from "./shopee/client.js";
 import { TikTokClient } from "./tiktok/client.js";
 import { EbayClient } from "./ebay/client.js";
 import { WalmartClient } from "./walmart/client.js";
+import { DuckDuckGoClient } from "./duckduckgo/client.js";
+import { BingClient } from "./bing/client.js";
+import { BaiduClient } from "./baidu/client.js";
 import { YoutubeClient } from "./youtube/client.js";
 import { RealtorClient } from "./realtor/client.js";
 import { LeboncoinClient } from "./leboncoin/client.js";
@@ -103,6 +106,15 @@ export class ScrapeBadger {
   /** Walmart scraper API client — 11 endpoints (walmart.com, US-only) */
   readonly walmart: WalmartClient;
 
+  /** DuckDuckGo scraper API client — search, images, news, videos, autocomplete, instant, regions */
+  readonly duckduckgo: DuckDuckGoClient;
+
+  /** Bing scraper API client — 6 endpoints (search, images, videos, news, autocomplete, markets) */
+  readonly bing: BingClient;
+
+  /** Baidu scraper API client — search, news, images, autocomplete (baidu.com, China's #1 search engine) */
+  readonly baidu: BaiduClient;
+
   /** YouTube scraper API client — 39 endpoints */
   readonly youtube: YoutubeClient;
 
@@ -182,6 +194,9 @@ export class ScrapeBadger {
     this.tiktok = new TikTokClient(this.baseClient);
     this.ebay = new EbayClient(this.baseClient);
     this.walmart = new WalmartClient(this.baseClient);
+    this.duckduckgo = new DuckDuckGoClient(this.baseClient);
+    this.bing = new BingClient(this.baseClient);
+    this.baidu = new BaiduClient(this.baseClient);
     this.youtube = new YoutubeClient(this.baseClient);
     this.realtor = new RealtorClient(this.baseClient);
     this.leboncoin = new LeboncoinClient(this.baseClient);
