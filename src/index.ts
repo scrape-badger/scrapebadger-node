@@ -104,6 +104,9 @@ export * from "./bing/index.js";
 // Re-export Baidu module — BaiduClient + Baidu*-prefixed types
 export * from "./baidu/index.js";
 
+// Re-export Yandex module — YandexClient + Yandex*-prefixed sub-clients and types
+export * from "./yandex/index.js";
+
 // Re-export YouTube module — YoutubeClient + Youtube*-prefixed sub-clients and types
 export * from "./youtube/index.js";
 export * from "./realtor/index.js";
