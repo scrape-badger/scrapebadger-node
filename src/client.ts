@@ -22,6 +22,7 @@ import { WalmartClient } from "./walmart/client.js";
 import { DuckDuckGoClient } from "./duckduckgo/client.js";
 import { BingClient } from "./bing/client.js";
 import { BaiduClient } from "./baidu/client.js";
+import { YahooClient } from "./yahoo/client.js";
 import { YandexClient } from "./yandex/client.js";
 import { YoutubeClient } from "./youtube/client.js";
 import { RealtorClient } from "./realtor/client.js";
@@ -116,6 +117,9 @@ export class ScrapeBadger {
   /** Baidu scraper API client — search, news, images, autocomplete (baidu.com, China's #1 search engine) */
   readonly baidu: BaiduClient;
 
+  /** Yahoo scraper API client — 6 endpoints (search, images, videos, news, autocomplete, markets) across 35 markets */
+  readonly yahoo: YahooClient;
+
   /** Yandex scraper API client — web search, image search, reverse-image (CBIR), markets (tr/com/ru/by/kz/uz) */
   readonly yandex: YandexClient;
 
@@ -201,6 +205,7 @@ export class ScrapeBadger {
     this.duckduckgo = new DuckDuckGoClient(this.baseClient);
     this.bing = new BingClient(this.baseClient);
     this.baidu = new BaiduClient(this.baseClient);
+    this.yahoo = new YahooClient(this.baseClient);
     this.yandex = new YandexClient(this.baseClient);
     this.youtube = new YoutubeClient(this.baseClient);
     this.realtor = new RealtorClient(this.baseClient);
