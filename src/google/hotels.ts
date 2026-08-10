@@ -3,11 +3,7 @@
  */
 
 import type { BaseClient } from "../internal/client.js";
-import type {
-  GoogleResponse,
-  HotelsDetailsParams,
-  HotelsSearchParams,
-} from "./types.js";
+import type { GoogleResponse, HotelsDetailsParams, HotelsSearchParams } from "./types.js";
 
 /**
  * Client for Google Hotels endpoints.

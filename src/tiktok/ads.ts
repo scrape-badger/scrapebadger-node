@@ -34,9 +34,7 @@ export class AdsClient {
    * @param params - Optional parameters (query, advertiser_id, region, days, sort, offset, search_id, count).
    * @returns The ad-library search response with ads and pagination.
    */
-  async search(
-    params: TikTokAdSearchParams = {}
-  ): Promise<AdLibrarySearchResponse> {
+  async search(params: TikTokAdSearchParams = {}): Promise<AdLibrarySearchResponse> {
     return this.client.request<AdLibrarySearchResponse>("/v1/tiktok/ads/search", {
       params: {
         query: params.query,

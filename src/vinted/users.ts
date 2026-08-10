@@ -55,10 +55,9 @@ export class UsersClient {
     userId: number,
     options: { market?: string } = {}
   ): Promise<UserProfileResponse> {
-    return this.client.request<UserProfileResponse>(
-      `/v1/vinted/users/${userId}`,
-      { params: { market: options.market } }
-    );
+    return this.client.request<UserProfileResponse>(`/v1/vinted/users/${userId}`, {
+      params: { market: options.market },
+    });
   }
 
   /**
@@ -90,15 +89,12 @@ export class UsersClient {
     userId: number,
     options: { market?: string; page?: number; per_page?: number } = {}
   ): Promise<UserItemsResponse> {
-    return this.client.request<UserItemsResponse>(
-      `/v1/vinted/users/${userId}/items`,
-      {
-        params: {
-          market: options.market,
-          page: options.page,
-          per_page: options.per_page,
-        },
-      }
-    );
+    return this.client.request<UserItemsResponse>(`/v1/vinted/users/${userId}/items`, {
+      params: {
+        market: options.market,
+        page: options.page,
+        per_page: options.per_page,
+      },
+    });
   }
 }

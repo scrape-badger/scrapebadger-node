@@ -667,21 +667,11 @@ export interface WalmartMarketsResponse {
  * Not available on `/category` — Walmart's browse pages ignore sort.
  */
 export type WalmartSortBy =
-  | "best_match"
-  | "best_seller"
-  | "price_low"
-  | "price_high"
-  | "rating_high"
-  | "new";
+  "best_match" | "best_seller" | "price_low" | "price_high" | "rating_high" | "new";
 
 /** Review ordering for `/products/{id}/reviews`. */
 export type WalmartReviewSort =
-  | "relevancy"
-  | "submission-desc"
-  | "submission-asc"
-  | "rating-desc"
-  | "rating-asc"
-  | "helpful";
+  "relevancy" | "submission-desc" | "submission-asc" | "rating-desc" | "rating-asc" | "helpful";
 
 /** Options for the search endpoint. */
 export interface WalmartSearchParams {

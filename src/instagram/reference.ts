@@ -6,13 +6,7 @@
  */
 
 import type { BaseClient } from "../internal/client.js";
-import type {
-  Audio,
-  Hashtag,
-  Location,
-  Media,
-  Paginated,
-} from "./types.js";
+import type { Audio, Hashtag, Location, Media, Paginated } from "./types.js";
 
 function mediaFeed(
   client: BaseClient,
@@ -53,11 +47,7 @@ export class HashtagsClient {
     tag: string,
     options: { amount?: number; cursor?: string } = {}
   ): Promise<Paginated<Media>> {
-    return mediaFeed(
-      this.client,
-      `/v1/instagram/hashtags/${tag}/recent`,
-      options
-    );
+    return mediaFeed(this.client, `/v1/instagram/hashtags/${tag}/recent`, options);
   }
 
   /**
@@ -68,11 +58,7 @@ export class HashtagsClient {
     tag: string,
     options: { amount?: number; cursor?: string } = {}
   ): Promise<Paginated<Media>> {
-    return mediaFeed(
-      this.client,
-      `/v1/instagram/hashtags/${tag}/reels`,
-      options
-    );
+    return mediaFeed(this.client, `/v1/instagram/hashtags/${tag}/reels`, options);
   }
 }
 
@@ -111,11 +97,7 @@ export class LocationsClient {
     pk: string,
     options: { amount?: number; cursor?: string } = {}
   ): Promise<Paginated<Media>> {
-    return mediaFeed(
-      this.client,
-      `/v1/instagram/locations/${pk}/recent`,
-      options
-    );
+    return mediaFeed(this.client, `/v1/instagram/locations/${pk}/recent`, options);
   }
 
   /**
@@ -123,10 +105,9 @@ export class LocationsClient {
    * @deprecated Temporarily unavailable — authenticated data is temporarily offline.
    */
   async search(query: string): Promise<Paginated<Location>> {
-    return this.client.request<Paginated<Location>>(
-      "/v1/instagram/locations/search",
-      { params: { query } }
-    );
+    return this.client.request<Paginated<Location>>("/v1/instagram/locations/search", {
+      params: { query },
+    });
   }
 }
 
@@ -154,11 +135,7 @@ export class AudioClient {
     audioId: string,
     options: { amount?: number; cursor?: string } = {}
   ): Promise<Paginated<Media>> {
-    return mediaFeed(
-      this.client,
-      `/v1/instagram/audio/${audioId}/media`,
-      options
-    );
+    return mediaFeed(this.client, `/v1/instagram/audio/${audioId}/media`, options);
   }
 
   /**

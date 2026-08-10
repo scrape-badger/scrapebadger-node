@@ -296,12 +296,7 @@ export type LeboncoinOwnerType = "all" | "pro" | "private";
 export type LeboncoinAdType = "offer" | "demand";
 
 /** Sort order for search. */
-export type LeboncoinSortBy =
-  | "relevance"
-  | "newest"
-  | "oldest"
-  | "price_low"
-  | "price_high";
+export type LeboncoinSortBy = "relevance" | "newest" | "oldest" | "price_low" | "price_high";
 
 /** Parameters for searching Leboncoin ads. */
 export interface LeboncoinSearchParams {

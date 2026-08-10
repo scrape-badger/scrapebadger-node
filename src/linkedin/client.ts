@@ -204,7 +204,10 @@ export class LinkedInClient {
    * @returns Course detail.
    * @throws NotFoundError - If the course doesn't exist.
    */
-  async getCourse(courseSlug: string, options: LinkedInCountryParams = {}): Promise<LearningCourse> {
+  async getCourse(
+    courseSlug: string,
+    options: LinkedInCountryParams = {}
+  ): Promise<LearningCourse> {
     return this.client.request<LearningCourse>(`/v1/linkedin/learning/${courseSlug}`, {
       params: { country: options.country ?? "us" },
     });

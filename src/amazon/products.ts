@@ -45,20 +45,14 @@ export class ProductsClient {
    * @returns Product detail including variants, badges, buybox, and related products.
    * @throws NotFoundError - If the product doesn't exist.
    */
-  async get(
-    asin: string,
-    options: AmazonProductParams = {}
-  ): Promise<ProductDetailResponse> {
-    return this.client.request<ProductDetailResponse>(
-      `/v1/amazon/products/${asin}`,
-      {
-        params: {
-          domain: options.domain,
-          zip: options.zip,
-          language: options.language,
-        },
-      }
-    );
+  async get(asin: string, options: AmazonProductParams = {}): Promise<ProductDetailResponse> {
+    return this.client.request<ProductDetailResponse>(`/v1/amazon/products/${asin}`, {
+      params: {
+        domain: options.domain,
+        zip: options.zip,
+        language: options.language,
+      },
+    });
   }
 
   /**
@@ -68,14 +62,10 @@ export class ProductsClient {
    * @param options - Optional parameters (domain, zip).
    * @returns Offers response with the buybox winner and full offer list.
    */
-  async offers(
-    asin: string,
-    options: AmazonOffersParams = {}
-  ): Promise<OffersResponse> {
-    return this.client.request<OffersResponse>(
-      `/v1/amazon/products/${asin}/offers`,
-      { params: { domain: options.domain, zip: options.zip } }
-    );
+  async offers(asin: string, options: AmazonOffersParams = {}): Promise<OffersResponse> {
+    return this.client.request<OffersResponse>(`/v1/amazon/products/${asin}/offers`, {
+      params: { domain: options.domain, zip: options.zip },
+    });
   }
 
   /**
@@ -85,22 +75,16 @@ export class ProductsClient {
    * @param options - Optional parameters (domain, page, sort_by, star, verified_only, media_only).
    * @returns Reviews response with reviews, aggregate rating, and breakdown.
    */
-  async reviews(
-    asin: string,
-    options: AmazonReviewsParams = {}
-  ): Promise<ReviewsResponse> {
-    return this.client.request<ReviewsResponse>(
-      `/v1/amazon/products/${asin}/reviews`,
-      {
-        params: {
-          domain: options.domain,
-          page: options.page,
-          sort_by: options.sort_by,
-          star: options.star,
-          verified_only: options.verified_only,
-          media_only: options.media_only,
-        },
-      }
-    );
+  async reviews(asin: string, options: AmazonReviewsParams = {}): Promise<ReviewsResponse> {
+    return this.client.request<ReviewsResponse>(`/v1/amazon/products/${asin}/reviews`, {
+      params: {
+        domain: options.domain,
+        page: options.page,
+        sort_by: options.sort_by,
+        star: options.star,
+        verified_only: options.verified_only,
+        media_only: options.media_only,
+      },
+    });
   }
 }

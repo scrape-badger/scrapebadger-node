@@ -60,13 +60,15 @@ export class PostsClient {
    * }
    * ```
    */
-  async trending(options: {
-    subreddit?: string;
-    sort?: "hot" | "new" | "top" | "rising" | "controversial";
-    time?: "hour" | "day" | "week" | "month" | "year" | "all";
-    after?: string;
-    limit?: number;
-  } = {}): Promise<TrendingPostsResponse> {
+  async trending(
+    options: {
+      subreddit?: string;
+      sort?: "hot" | "new" | "top" | "rising" | "controversial";
+      time?: "hour" | "day" | "week" | "month" | "year" | "all";
+      after?: string;
+      limit?: number;
+    } = {}
+  ): Promise<TrendingPostsResponse> {
     return this.client.request<TrendingPostsResponse>("/v1/reddit/posts", {
       params: {
         subreddit: options.subreddit,
@@ -96,14 +98,10 @@ export class PostsClient {
    * console.log(`Score: ${post.score}, Comments: ${post.num_comments}`);
    * ```
    */
-  async get(
-    postId: string,
-    options: { subreddit?: string } = {}
-  ): Promise<PostDetailResponse> {
-    return this.client.request<PostDetailResponse>(
-      `/v1/reddit/posts/${postId}`,
-      { params: { subreddit: options.subreddit } }
-    );
+  async get(postId: string, options: { subreddit?: string } = {}): Promise<PostDetailResponse> {
+    return this.client.request<PostDetailResponse>(`/v1/reddit/posts/${postId}`, {
+      params: { subreddit: options.subreddit },
+    });
   }
 
   /**
@@ -140,17 +138,14 @@ export class PostsClient {
       limit?: number;
     } = {}
   ): Promise<PostCommentsResponse> {
-    return this.client.request<PostCommentsResponse>(
-      `/v1/reddit/posts/${postId}/comments`,
-      {
-        params: {
-          subreddit: options.subreddit,
-          sort: options.sort,
-          depth: options.depth,
-          limit: options.limit,
-        },
-      }
-    );
+    return this.client.request<PostCommentsResponse>(`/v1/reddit/posts/${postId}/comments`, {
+      params: {
+        subreddit: options.subreddit,
+        sort: options.sort,
+        depth: options.depth,
+        limit: options.limit,
+      },
+    });
   }
 
   /**
@@ -181,14 +176,11 @@ export class PostsClient {
       limit?: number;
     } = {}
   ): Promise<PostDuplicatesResponse> {
-    return this.client.request<PostDuplicatesResponse>(
-      `/v1/reddit/posts/${postId}/duplicates`,
-      {
-        params: {
-          after: options.after,
-          limit: options.limit,
-        },
-      }
-    );
+    return this.client.request<PostDuplicatesResponse>(`/v1/reddit/posts/${postId}/duplicates`, {
+      params: {
+        after: options.after,
+        limit: options.limit,
+      },
+    });
   }
 }

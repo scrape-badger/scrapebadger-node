@@ -57,9 +57,8 @@ export class ShortsClient {
     soundId: string,
     options: YoutubeShortsBySoundParams = {}
   ): Promise<ChannelTabResponse> {
-    return this.client.request<ChannelTabResponse>(
-      `/v1/youtube/shorts/by_sound/${soundId}`,
-      { params: { continuation: options.continuation, gl: options.gl, hl: options.hl } }
-    );
+    return this.client.request<ChannelTabResponse>(`/v1/youtube/shorts/by_sound/${soundId}`, {
+      params: { continuation: options.continuation, gl: options.gl, hl: options.hl },
+    });
   }
 }

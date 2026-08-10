@@ -44,10 +44,7 @@ export class PlaylistsClient {
    * @returns Full playlist detail with a continuation token.
    * @throws NotFoundError - If the playlist doesn't exist.
    */
-  async get(
-    playlistId: string,
-    options: YoutubePlaylistParams = {}
-  ): Promise<Playlist> {
+  async get(playlistId: string, options: YoutubePlaylistParams = {}): Promise<Playlist> {
     return this.client.request<Playlist>(`/v1/youtube/playlists/${playlistId}`, {
       params: { gl: options.gl, hl: options.hl },
     });
@@ -64,10 +61,9 @@ export class PlaylistsClient {
     playlistId: string,
     options: YoutubePlaylistItemsParams = {}
   ): Promise<PlaylistItemsResponse> {
-    return this.client.request<PlaylistItemsResponse>(
-      `/v1/youtube/playlists/${playlistId}/items`,
-      { params: { continuation: options.continuation, gl: options.gl, hl: options.hl } }
-    );
+    return this.client.request<PlaylistItemsResponse>(`/v1/youtube/playlists/${playlistId}/items`, {
+      params: { continuation: options.continuation, gl: options.gl, hl: options.hl },
+    });
   }
 
   /**

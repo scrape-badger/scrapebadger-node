@@ -45,9 +45,8 @@ export class ProductsClient {
     itemId: number,
     options: ShopeeProductParams = {}
   ): Promise<ShopeeProduct> {
-    return this.client.request<ShopeeProduct>(
-      `/v1/shopee/product/${shopId}/${itemId}`,
-      { params: { market: options.market } }
-    );
+    return this.client.request<ShopeeProduct>(`/v1/shopee/product/${shopId}/${itemId}`, {
+      params: { market: options.market },
+    });
   }
 }

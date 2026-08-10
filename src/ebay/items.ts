@@ -41,14 +41,10 @@ export class ItemsClient {
    * @returns Item detail including specifics, shipping, and seller summary.
    * @throws NotFoundError - If the item doesn't exist.
    */
-  async get(
-    itemId: string,
-    options: EbayItemParams = {}
-  ): Promise<ItemDetailResponse> {
-    return this.client.request<ItemDetailResponse>(
-      `/v1/ebay/items/${itemId}`,
-      { params: { domain: options.domain } }
-    );
+  async get(itemId: string, options: EbayItemParams = {}): Promise<ItemDetailResponse> {
+    return this.client.request<ItemDetailResponse>(`/v1/ebay/items/${itemId}`, {
+      params: { domain: options.domain },
+    });
   }
 
   /**
@@ -58,19 +54,13 @@ export class ItemsClient {
    * @param options - Optional parameters (domain, page, productId).
    * @returns Reviews response with reviews, aggregate rating, and histogram.
    */
-  async reviews(
-    itemId: string,
-    options: EbayReviewsParams = {}
-  ): Promise<ReviewsResponse> {
-    return this.client.request<ReviewsResponse>(
-      `/v1/ebay/items/${itemId}/reviews`,
-      {
-        params: {
-          domain: options.domain,
-          page: options.page,
-          product_id: options.productId,
-        },
-      }
-    );
+  async reviews(itemId: string, options: EbayReviewsParams = {}): Promise<ReviewsResponse> {
+    return this.client.request<ReviewsResponse>(`/v1/ebay/items/${itemId}/reviews`, {
+      params: {
+        domain: options.domain,
+        page: options.page,
+        product_id: options.productId,
+      },
+    });
   }
 }

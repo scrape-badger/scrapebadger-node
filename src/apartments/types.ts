@@ -58,7 +58,6 @@ export interface FloorPlan {
   units_available: number;
 }
 
-
 /** A school from the property's Schools section (GreatSchools data). */
 export interface School {
   name: string | null;

@@ -428,11 +428,7 @@ export interface CategoriesResponse {
 
 /** Sort order for search / listing endpoints. */
 export type EbaySortBy =
-  | "best_match"
-  | "ending_soonest"
-  | "newly_listed"
-  | "price_low_to_high"
-  | "price_high_to_low";
+  "best_match" | "ending_soonest" | "newly_listed" | "price_low_to_high" | "price_high_to_low";
 
 /** Item condition filter. */
 export type EbayCondition = "new" | "open_box" | "refurbished" | "used" | "for_parts";

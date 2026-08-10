@@ -38,7 +38,7 @@ export class MediaClient {
    */
   async images(
     query: string,
-    params: DuckDuckGoImagesParams = {},
+    params: DuckDuckGoImagesParams = {}
   ): Promise<DuckDuckGoImagesResponse> {
     return this.client.request<DuckDuckGoImagesResponse>("/v1/duckduckgo/images", {
       params: {
@@ -61,10 +61,7 @@ export class MediaClient {
    * @param query - Search keywords.
    * @param params - Optional region, safesearch, timelimit and page.
    */
-  async news(
-    query: string,
-    params: DuckDuckGoNewsParams = {},
-  ): Promise<DuckDuckGoNewsResponse> {
+  async news(query: string, params: DuckDuckGoNewsParams = {}): Promise<DuckDuckGoNewsResponse> {
     return this.client.request<DuckDuckGoNewsResponse>("/v1/duckduckgo/news", {
       params: {
         query,
@@ -84,7 +81,7 @@ export class MediaClient {
    */
   async videos(
     query: string,
-    params: DuckDuckGoVideosParams = {},
+    params: DuckDuckGoVideosParams = {}
   ): Promise<DuckDuckGoVideosResponse> {
     return this.client.request<DuckDuckGoVideosResponse>("/v1/duckduckgo/videos", {
       params: {

@@ -41,14 +41,10 @@ export class SellersClient {
    * @returns Seller profile response.
    * @throws NotFoundError - If the seller doesn't exist.
    */
-  async get(
-    sellerId: string,
-    options: AmazonSellerParams = {}
-  ): Promise<SellerProfileResponse> {
-    return this.client.request<SellerProfileResponse>(
-      `/v1/amazon/sellers/${sellerId}`,
-      { params: { domain: options.domain } }
-    );
+  async get(sellerId: string, options: AmazonSellerParams = {}): Promise<SellerProfileResponse> {
+    return this.client.request<SellerProfileResponse>(`/v1/amazon/sellers/${sellerId}`, {
+      params: { domain: options.domain },
+    });
   }
 
   /**
@@ -62,10 +58,9 @@ export class SellersClient {
     sellerId: string,
     options: AmazonSellerListParams = {}
   ): Promise<SellerProductsResponse> {
-    return this.client.request<SellerProductsResponse>(
-      `/v1/amazon/sellers/${sellerId}/products`,
-      { params: { domain: options.domain, page: options.page } }
-    );
+    return this.client.request<SellerProductsResponse>(`/v1/amazon/sellers/${sellerId}/products`, {
+      params: { domain: options.domain, page: options.page },
+    });
   }
 
   /**
@@ -79,9 +74,8 @@ export class SellersClient {
     sellerId: string,
     options: AmazonSellerListParams = {}
   ): Promise<SellerFeedbackResponse> {
-    return this.client.request<SellerFeedbackResponse>(
-      `/v1/amazon/sellers/${sellerId}/feedback`,
-      { params: { domain: options.domain, page: options.page } }
-    );
+    return this.client.request<SellerFeedbackResponse>(`/v1/amazon/sellers/${sellerId}/feedback`, {
+      params: { domain: options.domain, page: options.page },
+    });
   }
 }

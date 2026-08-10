@@ -56,9 +56,7 @@ export class UsersClient {
    * ```
    */
   async get(username: string): Promise<UserProfileResponse> {
-    return this.client.request<UserProfileResponse>(
-      `/v1/reddit/users/${username}`
-    );
+    return this.client.request<UserProfileResponse>(`/v1/reddit/users/${username}`);
   }
 
   /**
@@ -95,17 +93,14 @@ export class UsersClient {
       limit?: number;
     } = {}
   ): Promise<UserPostsResponse> {
-    return this.client.request<UserPostsResponse>(
-      `/v1/reddit/users/${username}/posts`,
-      {
-        params: {
-          sort: options.sort,
-          time: options.time,
-          after: options.after,
-          limit: options.limit,
-        },
-      }
-    );
+    return this.client.request<UserPostsResponse>(`/v1/reddit/users/${username}/posts`, {
+      params: {
+        sort: options.sort,
+        time: options.time,
+        after: options.after,
+        limit: options.limit,
+      },
+    });
   }
 
   /**
@@ -141,17 +136,14 @@ export class UsersClient {
       limit?: number;
     } = {}
   ): Promise<UserCommentsResponse> {
-    return this.client.request<UserCommentsResponse>(
-      `/v1/reddit/users/${username}/comments`,
-      {
-        params: {
-          sort: options.sort,
-          time: options.time,
-          after: options.after,
-          limit: options.limit,
-        },
-      }
-    );
+    return this.client.request<UserCommentsResponse>(`/v1/reddit/users/${username}/comments`, {
+      params: {
+        sort: options.sort,
+        time: options.time,
+        after: options.after,
+        limit: options.limit,
+      },
+    });
   }
 
   /**
@@ -171,9 +163,7 @@ export class UsersClient {
    * ```
    */
   async moderated(username: string): Promise<UserModeratedResponse> {
-    return this.client.request<UserModeratedResponse>(
-      `/v1/reddit/users/${username}/moderated`
-    );
+    return this.client.request<UserModeratedResponse>(`/v1/reddit/users/${username}/moderated`);
   }
 
   /**
@@ -193,8 +183,6 @@ export class UsersClient {
    * ```
    */
   async trophies(username: string): Promise<UserTrophiesResponse> {
-    return this.client.request<UserTrophiesResponse>(
-      `/v1/reddit/users/${username}/trophies`
-    );
+    return this.client.request<UserTrophiesResponse>(`/v1/reddit/users/${username}/trophies`);
   }
 }

@@ -38,10 +38,7 @@ export class MediaClient {
    * @returns Full-size image URLs, thumbnails, pixel dimensions and the
    *   source page each image came from.
    */
-  async images(
-    query: string,
-    params: BingImagesParams = {},
-  ): Promise<BingImagesResponse> {
+  async images(query: string, params: BingImagesParams = {}): Promise<BingImagesResponse> {
     return this.client.request<BingImagesResponse>("/v1/bing/images", {
       params: {
         query,
@@ -59,10 +56,7 @@ export class MediaClient {
    * @param params - Optional market, count and safe-search filter.
    * @returns Video URLs, thumbnails, duration, publisher and view counts.
    */
-  async videos(
-    query: string,
-    params: BingVideosParams = {},
-  ): Promise<BingVideosResponse> {
+  async videos(query: string, params: BingVideosParams = {}): Promise<BingVideosResponse> {
     return this.client.request<BingVideosResponse>("/v1/bing/videos", {
       params: {
         query,

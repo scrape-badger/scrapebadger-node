@@ -41,9 +41,7 @@ export class ListingsClient {
    * @param options - Optional parameters (domain, category, page).
    * @returns Bestsellers response with ranked products and pagination.
    */
-  async bestsellers(
-    options: AmazonListingsParams = {}
-  ): Promise<BestsellersResponse> {
+  async bestsellers(options: AmazonListingsParams = {}): Promise<BestsellersResponse> {
     return this.client.request<BestsellersResponse>("/v1/amazon/bestsellers", {
       params: {
         domain: options.domain,
@@ -59,9 +57,7 @@ export class ListingsClient {
    * @param options - Optional parameters (domain, category, page).
    * @returns New-releases response with ranked products and pagination.
    */
-  async newReleases(
-    options: AmazonListingsParams = {}
-  ): Promise<NewReleasesResponse> {
+  async newReleases(options: AmazonListingsParams = {}): Promise<NewReleasesResponse> {
     return this.client.request<NewReleasesResponse>("/v1/amazon/new-releases", {
       params: {
         domain: options.domain,

@@ -30,10 +30,7 @@ export class NewsClient {
    * @param params - Optional market and freshness (`"day"`, `"week"`, `"month"`).
    * @returns Articles carrying publisher, publish dates and real URLs.
    */
-  async news(
-    query: string,
-    params: BingNewsParams = {},
-  ): Promise<BingNewsResponse> {
+  async news(query: string, params: BingNewsParams = {}): Promise<BingNewsResponse> {
     return this.client.request<BingNewsResponse>("/v1/bing/news", {
       params: {
         query,

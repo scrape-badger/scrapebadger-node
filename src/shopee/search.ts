@@ -5,11 +5,7 @@
  */
 
 import type { BaseClient } from "../internal/client.js";
-import type {
-  ShopeeSearchParams,
-  ShopeeCategoryItemsParams,
-  SearchResult,
-} from "./types.js";
+import type { ShopeeSearchParams, ShopeeCategoryItemsParams, SearchResult } from "./types.js";
 
 /**
  * Client for Shopee search and category-items endpoints.
@@ -69,16 +65,13 @@ export class SearchClient {
     categoryId: number,
     options: ShopeeCategoryItemsParams = {}
   ): Promise<SearchResult> {
-    return this.client.request<SearchResult>(
-      `/v1/shopee/category/${categoryId}/items`,
-      {
-        params: {
-          market: options.market,
-          limit: options.limit,
-          offset: options.offset,
-          sort_by: options.sort_by,
-        },
-      }
-    );
+    return this.client.request<SearchResult>(`/v1/shopee/category/${categoryId}/items`, {
+      params: {
+        market: options.market,
+        limit: options.limit,
+        offset: options.offset,
+        sort_by: options.sort_by,
+      },
+    });
   }
 }

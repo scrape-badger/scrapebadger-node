@@ -38,9 +38,7 @@ export class TrendingClient {
    * @param options - Optional parameters (region, count).
    * @returns A cursor-paginated list of trending videos.
    */
-  async videos(
-    options: TikTokTrendingVideosParams = {}
-  ): Promise<VideoListResponse> {
+  async videos(options: TikTokTrendingVideosParams = {}): Promise<VideoListResponse> {
     return this.client.request<VideoListResponse>("/v1/tiktok/trending/videos", {
       params: { region: options.region, count: options.count },
     });
@@ -52,13 +50,10 @@ export class TrendingClient {
    * @param options - Optional parameters (region, period, count).
    * @returns The trending hashtags response.
    */
-  async hashtags(
-    options: TikTokTrendingParams = {}
-  ): Promise<TrendingHashtagsResponse> {
-    return this.client.request<TrendingHashtagsResponse>(
-      "/v1/tiktok/trending/hashtags",
-      { params: { region: options.region, period: options.period, count: options.count } }
-    );
+  async hashtags(options: TikTokTrendingParams = {}): Promise<TrendingHashtagsResponse> {
+    return this.client.request<TrendingHashtagsResponse>("/v1/tiktok/trending/hashtags", {
+      params: { region: options.region, period: options.period, count: options.count },
+    });
   }
 
   /**
@@ -67,12 +62,9 @@ export class TrendingClient {
    * @param options - Optional parameters (region, period, count).
    * @returns The trending songs response.
    */
-  async songs(
-    options: TikTokTrendingParams = {}
-  ): Promise<TrendingSongsResponse> {
-    return this.client.request<TrendingSongsResponse>(
-      "/v1/tiktok/trending/songs",
-      { params: { region: options.region, period: options.period, count: options.count } }
-    );
+  async songs(options: TikTokTrendingParams = {}): Promise<TrendingSongsResponse> {
+    return this.client.request<TrendingSongsResponse>("/v1/tiktok/trending/songs", {
+      params: { region: options.region, period: options.period, count: options.count },
+    });
   }
 }

@@ -5,12 +5,7 @@
  */
 
 import type { BaseClient } from "../internal/client.js";
-import type {
-  BrandsResponse,
-  ColorsResponse,
-  StatusesResponse,
-  MarketsResponse,
-} from "./types.js";
+import type { BrandsResponse, ColorsResponse, StatusesResponse, MarketsResponse } from "./types.js";
 
 /**
  * Client for Vinted reference data endpoints.
@@ -87,9 +82,7 @@ export class ReferenceClient {
    * }
    * ```
    */
-  async colors(
-    options: { market?: string } = {}
-  ): Promise<ColorsResponse> {
+  async colors(options: { market?: string } = {}): Promise<ColorsResponse> {
     return this.client.request<ColorsResponse>("/v1/vinted/colors", {
       params: { market: options.market },
     });
@@ -110,9 +103,7 @@ export class ReferenceClient {
    * }
    * ```
    */
-  async statuses(
-    options: { market?: string } = {}
-  ): Promise<StatusesResponse> {
+  async statuses(options: { market?: string } = {}): Promise<StatusesResponse> {
     return this.client.request<StatusesResponse>("/v1/vinted/statuses", {
       params: { market: options.market },
     });

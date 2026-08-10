@@ -6,14 +6,7 @@
  */
 
 import type { BaseClient } from "../internal/client.js";
-import type {
-  Highlight,
-  Media,
-  Paginated,
-  User,
-  UserAbout,
-  UserShort,
-} from "./types.js";
+import type { Highlight, Media, Paginated, User, UserAbout, UserShort } from "./types.js";
 
 /**
  * Client for Instagram user endpoints.
@@ -48,16 +41,12 @@ export class UsersClient {
    * @deprecated Temporarily unavailable — authenticated data is temporarily offline.
    */
   async about(username: string): Promise<UserAbout> {
-    return this.client.request<UserAbout>(
-      `/v1/instagram/users/${username}/about`
-    );
+    return this.client.request<UserAbout>(`/v1/instagram/users/${username}/about`);
   }
 
   /** Get accounts related/suggested for a user. */
   async related(username: string): Promise<Paginated<UserShort>> {
-    return this.client.request<Paginated<UserShort>>(
-      `/v1/instagram/users/${username}/related`
-    );
+    return this.client.request<Paginated<UserShort>>(`/v1/instagram/users/${username}/related`);
   }
 
   /** Get a user's timeline posts. */
@@ -106,9 +95,7 @@ export class UsersClient {
    * @deprecated Temporarily unavailable — authenticated data is temporarily offline.
    */
   async pinned(username: string): Promise<Paginated<Media>> {
-    return this.client.request<Paginated<Media>>(
-      `/v1/instagram/users/${username}/pinned`
-    );
+    return this.client.request<Paginated<Media>>(`/v1/instagram/users/${username}/pinned`);
   }
 
   /**
@@ -125,16 +112,13 @@ export class UsersClient {
     username: string,
     options: { amount?: number; cursor?: string; order?: string } = {}
   ): Promise<Paginated<UserShort>> {
-    return this.client.request<Paginated<UserShort>>(
-      `/v1/instagram/users/${username}/followers`,
-      {
-        params: {
-          amount: options.amount,
-          cursor: options.cursor,
-          order: options.order,
-        },
-      }
-    );
+    return this.client.request<Paginated<UserShort>>(`/v1/instagram/users/${username}/followers`, {
+      params: {
+        amount: options.amount,
+        cursor: options.cursor,
+        order: options.order,
+      },
+    });
   }
 
   /**
@@ -145,10 +129,9 @@ export class UsersClient {
     username: string,
     options: { amount?: number; cursor?: string } = {}
   ): Promise<Paginated<UserShort>> {
-    return this.client.request<Paginated<UserShort>>(
-      `/v1/instagram/users/${username}/following`,
-      { params: { amount: options.amount, cursor: options.cursor } }
-    );
+    return this.client.request<Paginated<UserShort>>(`/v1/instagram/users/${username}/following`, {
+      params: { amount: options.amount, cursor: options.cursor },
+    });
   }
 
   /**
@@ -173,9 +156,7 @@ export class UsersClient {
    * @deprecated Temporarily unavailable — authenticated data is temporarily offline.
    */
   async stories(username: string): Promise<Paginated<Media>> {
-    return this.client.request<Paginated<Media>>(
-      `/v1/instagram/users/${username}/stories`
-    );
+    return this.client.request<Paginated<Media>>(`/v1/instagram/users/${username}/stories`);
   }
 
   /**
@@ -183,9 +164,7 @@ export class UsersClient {
    * @deprecated Temporarily unavailable — authenticated data is temporarily offline.
    */
   async highlights(username: string): Promise<Paginated<Highlight>> {
-    return this.client.request<Paginated<Highlight>>(
-      `/v1/instagram/users/${username}/highlights`
-    );
+    return this.client.request<Paginated<Highlight>>(`/v1/instagram/users/${username}/highlights`);
   }
 
   private async media(

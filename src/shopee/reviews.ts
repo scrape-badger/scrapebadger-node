@@ -44,17 +44,14 @@ export class ReviewsClient {
     itemId: number,
     options: ShopeeReviewsParams = {}
   ): Promise<ReviewsResult> {
-    return this.client.request<ReviewsResult>(
-      `/v1/shopee/product/${shopId}/${itemId}/reviews`,
-      {
-        params: {
-          market: options.market,
-          limit: options.limit,
-          offset: options.offset,
-          rating: options.rating,
-          filter: options.filter,
-        },
-      }
-    );
+    return this.client.request<ReviewsResult>(`/v1/shopee/product/${shopId}/${itemId}/reviews`, {
+      params: {
+        market: options.market,
+        limit: options.limit,
+        offset: options.offset,
+        rating: options.rating,
+        filter: options.filter,
+      },
+    });
   }
 }

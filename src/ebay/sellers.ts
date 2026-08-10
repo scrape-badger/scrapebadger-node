@@ -43,14 +43,10 @@ export class SellersClient {
    * @returns Seller profile response.
    * @throws NotFoundError - If the seller doesn't exist.
    */
-  async get(
-    username: string,
-    options: EbaySellerParams = {}
-  ): Promise<SellerProfileResponse> {
-    return this.client.request<SellerProfileResponse>(
-      `/v1/ebay/sellers/${username}`,
-      { params: { domain: options.domain } }
-    );
+  async get(username: string, options: EbaySellerParams = {}): Promise<SellerProfileResponse> {
+    return this.client.request<SellerProfileResponse>(`/v1/ebay/sellers/${username}`, {
+      params: { domain: options.domain },
+    });
   }
 
   /**
@@ -60,21 +56,15 @@ export class SellersClient {
    * @param options - Optional parameters (domain, query, page, per_page).
    * @returns Seller items response with result cards and pagination.
    */
-  async items(
-    username: string,
-    options: EbaySellerItemsParams = {}
-  ): Promise<SellerItemsResponse> {
-    return this.client.request<SellerItemsResponse>(
-      `/v1/ebay/sellers/${username}/items`,
-      {
-        params: {
-          domain: options.domain,
-          query: options.query,
-          page: options.page,
-          per_page: options.per_page,
-        },
-      }
-    );
+  async items(username: string, options: EbaySellerItemsParams = {}): Promise<SellerItemsResponse> {
+    return this.client.request<SellerItemsResponse>(`/v1/ebay/sellers/${username}/items`, {
+      params: {
+        domain: options.domain,
+        query: options.query,
+        page: options.page,
+        per_page: options.per_page,
+      },
+    });
   }
 
   /**
@@ -88,9 +78,8 @@ export class SellersClient {
     username: string,
     options: EbaySellerFeedbackParams = {}
   ): Promise<SellerFeedbackResponse> {
-    return this.client.request<SellerFeedbackResponse>(
-      `/v1/ebay/sellers/${username}/feedback`,
-      { params: { domain: options.domain, page: options.page } }
-    );
+    return this.client.request<SellerFeedbackResponse>(`/v1/ebay/sellers/${username}/feedback`, {
+      params: { domain: options.domain, page: options.page },
+    });
   }
 }

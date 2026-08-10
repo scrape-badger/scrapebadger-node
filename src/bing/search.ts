@@ -37,10 +37,7 @@ export class SearchClient {
    * @param params - Optional market, count, offset and safe-search filter.
    * @returns A page of organic results, ads and related searches.
    */
-  async search(
-    query: string,
-    params: BingSearchParams = {},
-  ): Promise<BingSearchResponse> {
+  async search(query: string, params: BingSearchParams = {}): Promise<BingSearchResponse> {
     return this.client.request<BingSearchResponse>("/v1/bing/search", {
       params: {
         query,
@@ -60,7 +57,7 @@ export class SearchClient {
    */
   async autocomplete(
     query: string,
-    params: BingAutocompleteParams = {},
+    params: BingAutocompleteParams = {}
   ): Promise<BingAutocompleteResponse> {
     return this.client.request<BingAutocompleteResponse>("/v1/bing/autocomplete", {
       params: {

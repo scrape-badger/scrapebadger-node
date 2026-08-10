@@ -394,14 +394,7 @@ export type RedfinSort =
 
 /** Home type filter for the /search endpoint. */
 export type RedfinHomeType =
-  | "house"
-  | "condo"
-  | "townhouse"
-  | "multi_family"
-  | "land"
-  | "other"
-  | "mobile"
-  | "coop";
+  "house" | "condo" | "townhouse" | "multi_family" | "land" | "other" | "mobile" | "coop";
 
 /** Options for the /search endpoint (for-sale only). */
 export interface RedfinSearchParams {
