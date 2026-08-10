@@ -57,9 +57,8 @@ export class CommunityClient {
     postId: string,
     options: YoutubePostCommentsParams = {}
   ): Promise<CommentsResponse> {
-    return this.client.request<CommentsResponse>(
-      `/v1/youtube/posts/${postId}/comments`,
-      { params: { continuation: options.continuation, gl: options.gl, hl: options.hl } }
-    );
+    return this.client.request<CommentsResponse>(`/v1/youtube/posts/${postId}/comments`, {
+      params: { continuation: options.continuation, gl: options.gl, hl: options.hl },
+    });
   }
 }

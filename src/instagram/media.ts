@@ -50,10 +50,9 @@ export class MediaClient {
     code: string,
     options: { amount?: number; cursor?: string } = {}
   ): Promise<Paginated<Comment>> {
-    return this.client.request<Paginated<Comment>>(
-      `/v1/instagram/media/${code}/comments`,
-      { params: { amount: options.amount, cursor: options.cursor } }
-    );
+    return this.client.request<Paginated<Comment>>(`/v1/instagram/media/${code}/comments`, {
+      params: { amount: options.amount, cursor: options.cursor },
+    });
   }
 
   /**
@@ -61,9 +60,7 @@ export class MediaClient {
    * @deprecated Temporarily unavailable — authenticated data is temporarily offline.
    */
   async likers(code: string): Promise<Paginated<UserShort>> {
-    return this.client.request<Paginated<UserShort>>(
-      `/v1/instagram/media/${code}/likers`
-    );
+    return this.client.request<Paginated<UserShort>>(`/v1/instagram/media/${code}/likers`);
   }
 
   /**
@@ -82,10 +79,7 @@ export class MediaClient {
   }
 
   /** Get the users who liked a comment. */
-  async commentLikers(
-    code: string,
-    commentId: string
-  ): Promise<Paginated<UserShort>> {
+  async commentLikers(code: string, commentId: string): Promise<Paginated<UserShort>> {
     return this.client.request<Paginated<UserShort>>(
       `/v1/instagram/media/${code}/comments/${commentId}/likers`
     );

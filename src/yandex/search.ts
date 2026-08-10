@@ -6,10 +6,7 @@
  */
 
 import type { BaseClient } from "../internal/client.js";
-import type {
-  YandexSearchParams,
-  YandexSearchResponse,
-} from "./types.js";
+import type { YandexSearchParams, YandexSearchResponse } from "./types.js";
 
 /**
  * Client for the Yandex web-search endpoint.
@@ -34,10 +31,7 @@ export class SearchClient {
    * @param params - Optional domain, page, lr (region id) and lang.
    * @returns A page of web results with organic results, ads and pagination.
    */
-  async search(
-    query: string,
-    params: YandexSearchParams = {},
-  ): Promise<YandexSearchResponse> {
+  async search(query: string, params: YandexSearchParams = {}): Promise<YandexSearchResponse> {
     return this.client.request<YandexSearchResponse>("/v1/yandex/search", {
       params: {
         query,

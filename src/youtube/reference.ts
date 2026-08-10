@@ -40,9 +40,7 @@ export class ReferenceClient {
    * @param options - Optional content region (default: "US").
    * @returns The categories for the region.
    */
-  async categories(
-    options: YoutubeCategoriesParams = {}
-  ): Promise<CategoriesResponse> {
+  async categories(options: YoutubeCategoriesParams = {}): Promise<CategoriesResponse> {
     return this.client.request<CategoriesResponse>("/v1/youtube/categories", {
       params: { gl: options.gl },
     });

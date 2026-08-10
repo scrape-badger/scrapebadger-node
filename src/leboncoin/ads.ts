@@ -6,11 +6,7 @@
  */
 
 import type { BaseClient } from "../internal/client.js";
-import type {
-  LeboncoinSimilarParams,
-  AdResponse,
-  SimilarResponse,
-} from "./types.js";
+import type { LeboncoinSimilarParams, AdResponse, SimilarResponse } from "./types.js";
 
 /**
  * Client for Leboncoin ad endpoints (detail, similar).
@@ -55,9 +51,8 @@ export class AdsClient {
     listId: number | string,
     options: LeboncoinSimilarParams = {}
   ): Promise<SimilarResponse> {
-    return this.client.request<SimilarResponse>(
-      `/v1/leboncoin/ads/${listId}/similar`,
-      { params: { limit: options.limit } }
-    );
+    return this.client.request<SimilarResponse>(`/v1/leboncoin/ads/${listId}/similar`, {
+      params: { limit: options.limit },
+    });
   }
 }

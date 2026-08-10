@@ -45,10 +45,7 @@ export interface PageResult<T> {
 /**
  * Create a paginated response from API response data.
  */
-export function createPaginatedResponse<T>(
-  data: T[],
-  cursor?: string
-): PaginatedResponse<T> {
+export function createPaginatedResponse<T>(data: T[], cursor?: string): PaginatedResponse<T> {
   return {
     data,
     nextCursor: cursor,
@@ -98,7 +95,8 @@ export async function* paginate<T>(
       if (limit > 0 && remaining / limit < RATE_LIMIT_WARN_THRESHOLD) {
         const nowSec = Date.now() / 1000;
         const windowRemainingSec = Math.max(reset - nowSec, 1);
-        const delayMs = remaining > 0 ? (windowRemainingSec / remaining) * 1000 : windowRemainingSec * 1000;
+        const delayMs =
+          remaining > 0 ? (windowRemainingSec / remaining) * 1000 : windowRemainingSec * 1000;
         const resetInSec = Math.round(windowRemainingSec);
         console.warn(
           `\x1b[33m⚠ ScrapeBadger: Rate limit: ${remaining}/${limit} remaining (resets in ${resetInSec}s), throttling pagination\x1b[0m`

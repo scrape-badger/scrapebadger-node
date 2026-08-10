@@ -5,11 +5,7 @@
  */
 
 import type { BaseClient } from "../internal/client.js";
-import type {
-  WalmartProduct,
-  WalmartReviewsParams,
-  WalmartReviewsResponse,
-} from "./types.js";
+import type { WalmartProduct, WalmartReviewsParams, WalmartReviewsResponse } from "./types.js";
 
 /**
  * Client for Walmart product endpoints (detail, reviews).
@@ -56,11 +52,10 @@ export class ProductsClient {
    */
   async reviews(
     itemId: string,
-    params: WalmartReviewsParams = {},
+    params: WalmartReviewsParams = {}
   ): Promise<WalmartReviewsResponse> {
-    return this.client.request<WalmartReviewsResponse>(
-      `/v1/walmart/products/${itemId}/reviews`,
-      { params: { page: params.page, sort: params.sort } },
-    );
+    return this.client.request<WalmartReviewsResponse>(`/v1/walmart/products/${itemId}/reviews`, {
+      params: { page: params.page, sort: params.sort },
+    });
   }
 }

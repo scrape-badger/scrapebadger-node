@@ -45,13 +45,9 @@ export class ItemsClient {
    * console.log(`Photos: ${item.photos.length}`);
    * ```
    */
-  async get(
-    itemId: number,
-    options: { market?: string } = {}
-  ): Promise<ItemDetailResponse> {
-    return this.client.request<ItemDetailResponse>(
-      `/v1/vinted/items/${itemId}`,
-      { params: { market: options.market } }
-    );
+  async get(itemId: number, options: { market?: string } = {}): Promise<ItemDetailResponse> {
+    return this.client.request<ItemDetailResponse>(`/v1/vinted/items/${itemId}`, {
+      params: { market: options.market },
+    });
   }
 }

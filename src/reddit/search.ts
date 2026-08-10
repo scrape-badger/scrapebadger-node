@@ -112,16 +112,13 @@ export class SearchClient {
     after?: string;
     limit?: number;
   }): Promise<SearchSubredditsResponse> {
-    return this.client.request<SearchSubredditsResponse>(
-      "/v1/reddit/search/subreddits",
-      {
-        params: {
-          query: options.query,
-          after: options.after,
-          limit: options.limit,
-        },
-      }
-    );
+    return this.client.request<SearchSubredditsResponse>("/v1/reddit/search/subreddits", {
+      params: {
+        query: options.query,
+        after: options.after,
+        limit: options.limit,
+      },
+    });
   }
 
   /**
@@ -151,16 +148,13 @@ export class SearchClient {
     after?: string;
     limit?: number;
   }): Promise<SearchUsersResponse> {
-    return this.client.request<SearchUsersResponse>(
-      "/v1/reddit/search/users",
-      {
-        params: {
-          query: options.query,
-          after: options.after,
-          limit: options.limit,
-        },
-      }
-    );
+    return this.client.request<SearchUsersResponse>("/v1/reddit/search/users", {
+      params: {
+        query: options.query,
+        after: options.after,
+        limit: options.limit,
+      },
+    });
   }
 
   /**
@@ -196,17 +190,14 @@ export class SearchClient {
     after?: string;
     limit?: number;
   }): Promise<DomainPostsResponse> {
-    return this.client.request<DomainPostsResponse>(
-      "/v1/reddit/search/domain",
-      {
-        params: {
-          domain: options.domain,
-          sort: options.sort,
-          time: options.time,
-          after: options.after,
-          limit: options.limit,
-        },
-      }
-    );
+    return this.client.request<DomainPostsResponse>("/v1/reddit/search/domain", {
+      params: {
+        domain: options.domain,
+        sort: options.sort,
+        time: options.time,
+        after: options.after,
+        limit: options.limit,
+      },
+    });
   }
 }

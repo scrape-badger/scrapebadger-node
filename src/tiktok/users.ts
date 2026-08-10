@@ -72,10 +72,7 @@ export class UsersClient {
    * @param options - Optional parameters (region, count, cursor).
    * @returns A cursor-paginated list of follower authors.
    */
-  async followers(
-    username: string,
-    options: TikTokUserListParams = {}
-  ): Promise<UserListResponse> {
+  async followers(username: string, options: TikTokUserListParams = {}): Promise<UserListResponse> {
     return this.client.request<UserListResponse>(`/v1/tiktok/users/${username}/followers`, {
       params: { region: options.region, count: options.count, cursor: options.cursor },
     });
@@ -92,10 +89,7 @@ export class UsersClient {
    * @param options - Optional parameters (region, count, cursor).
    * @returns A cursor-paginated list of followed authors.
    */
-  async following(
-    username: string,
-    options: TikTokUserListParams = {}
-  ): Promise<UserListResponse> {
+  async following(username: string, options: TikTokUserListParams = {}): Promise<UserListResponse> {
     return this.client.request<UserListResponse>(`/v1/tiktok/users/${username}/following`, {
       params: { region: options.region, count: options.count, cursor: options.cursor },
     });

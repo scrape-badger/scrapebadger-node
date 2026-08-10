@@ -35,7 +35,7 @@ export class ReferenceClient {
    */
   async autocomplete(
     query: string,
-    params: DuckDuckGoAutocompleteParams = {},
+    params: DuckDuckGoAutocompleteParams = {}
   ): Promise<DuckDuckGoAutocompleteResponse> {
     return this.client.request<DuckDuckGoAutocompleteResponse>("/v1/duckduckgo/autocomplete", {
       params: {

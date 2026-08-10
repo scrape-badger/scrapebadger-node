@@ -66,10 +66,9 @@ export class ChannelsClient {
     channelId: string,
     options: YoutubeChannelTabParams = {}
   ): Promise<ChannelTabResponse> {
-    return this.client.request<ChannelTabResponse>(
-      `/v1/youtube/channels/${channelId}/videos`,
-      { params: { continuation: options.continuation, gl: options.gl, hl: options.hl } }
-    );
+    return this.client.request<ChannelTabResponse>(`/v1/youtube/channels/${channelId}/videos`, {
+      params: { continuation: options.continuation, gl: options.gl, hl: options.hl },
+    });
   }
 
   /**
@@ -83,10 +82,9 @@ export class ChannelsClient {
     channelId: string,
     options: YoutubeChannelTabParams = {}
   ): Promise<ChannelTabResponse> {
-    return this.client.request<ChannelTabResponse>(
-      `/v1/youtube/channels/${channelId}/shorts`,
-      { params: { continuation: options.continuation, gl: options.gl, hl: options.hl } }
-    );
+    return this.client.request<ChannelTabResponse>(`/v1/youtube/channels/${channelId}/shorts`, {
+      params: { continuation: options.continuation, gl: options.gl, hl: options.hl },
+    });
   }
 
   /**
@@ -100,10 +98,9 @@ export class ChannelsClient {
     channelId: string,
     options: YoutubeChannelTabParams = {}
   ): Promise<ChannelTabResponse> {
-    return this.client.request<ChannelTabResponse>(
-      `/v1/youtube/channels/${channelId}/streams`,
-      { params: { continuation: options.continuation, gl: options.gl, hl: options.hl } }
-    );
+    return this.client.request<ChannelTabResponse>(`/v1/youtube/channels/${channelId}/streams`, {
+      params: { continuation: options.continuation, gl: options.gl, hl: options.hl },
+    });
   }
 
   /**
@@ -117,10 +114,9 @@ export class ChannelsClient {
     channelId: string,
     options: YoutubeChannelTabParams = {}
   ): Promise<ChannelTabResponse> {
-    return this.client.request<ChannelTabResponse>(
-      `/v1/youtube/channels/${channelId}/playlists`,
-      { params: { continuation: options.continuation, gl: options.gl, hl: options.hl } }
-    );
+    return this.client.request<ChannelTabResponse>(`/v1/youtube/channels/${channelId}/playlists`, {
+      params: { continuation: options.continuation, gl: options.gl, hl: options.hl },
+    });
   }
 
   /**
@@ -134,10 +130,9 @@ export class ChannelsClient {
     channelId: string,
     options: YoutubeChannelTabParams = {}
   ): Promise<CommunityResponse> {
-    return this.client.request<CommunityResponse>(
-      `/v1/youtube/channels/${channelId}/community`,
-      { params: { continuation: options.continuation, gl: options.gl, hl: options.hl } }
-    );
+    return this.client.request<CommunityResponse>(`/v1/youtube/channels/${channelId}/community`, {
+      params: { continuation: options.continuation, gl: options.gl, hl: options.hl },
+    });
   }
 
   /**
@@ -147,14 +142,10 @@ export class ChannelsClient {
    * @param options - Optional region parameters.
    * @returns The channel about payload.
    */
-  async about(
-    channelId: string,
-    options: YoutubeChannelParams = {}
-  ): Promise<ChannelAbout> {
-    return this.client.request<ChannelAbout>(
-      `/v1/youtube/channels/${channelId}/about`,
-      { params: { gl: options.gl, hl: options.hl } }
-    );
+  async about(channelId: string, options: YoutubeChannelParams = {}): Promise<ChannelAbout> {
+    return this.client.request<ChannelAbout>(`/v1/youtube/channels/${channelId}/about`, {
+      params: { gl: options.gl, hl: options.hl },
+    });
   }
 
   /**
@@ -181,21 +172,15 @@ export class ChannelsClient {
    * @param options - The required query plus optional continuation and region.
    * @returns A page of search results scoped to the channel.
    */
-  async search(
-    channelId: string,
-    options: YoutubeChannelSearchParams
-  ): Promise<SearchResponse> {
-    return this.client.request<SearchResponse>(
-      `/v1/youtube/channels/${channelId}/search`,
-      {
-        params: {
-          query: options.query,
-          continuation: options.continuation,
-          gl: options.gl,
-          hl: options.hl,
-        },
-      }
-    );
+  async search(channelId: string, options: YoutubeChannelSearchParams): Promise<SearchResponse> {
+    return this.client.request<SearchResponse>(`/v1/youtube/channels/${channelId}/search`, {
+      params: {
+        query: options.query,
+        continuation: options.continuation,
+        gl: options.gl,
+        hl: options.hl,
+      },
+    });
   }
 
   /**

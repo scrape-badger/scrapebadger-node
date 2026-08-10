@@ -32,10 +32,7 @@ export class ImagesClient {
    * @param query - Search keywords.
    * @param params - Optional domain and page.
    */
-  async search(
-    query: string,
-    params: YandexImagesParams = {},
-  ): Promise<YandexImagesResponse> {
+  async search(query: string, params: YandexImagesParams = {}): Promise<YandexImagesResponse> {
     return this.client.request<YandexImagesResponse>("/v1/yandex/images/search", {
       params: {
         query,
@@ -53,7 +50,7 @@ export class ImagesClient {
    */
   async reverse(
     imageUrl: string,
-    params: YandexReverseParams = {},
+    params: YandexReverseParams = {}
   ): Promise<YandexReverseImageResponse> {
     return this.client.request<YandexReverseImageResponse>("/v1/yandex/images/reverse", {
       params: {

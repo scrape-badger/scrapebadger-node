@@ -43,18 +43,16 @@ export class SearchClient {
    * @deprecated Temporarily unavailable — authenticated data is temporarily offline.
    */
   async users(query: string): Promise<Paginated<UserShort>> {
-    return this.client.request<Paginated<UserShort>>(
-      "/v1/instagram/search/users",
-      { params: { query } }
-    );
+    return this.client.request<Paginated<UserShort>>("/v1/instagram/search/users", {
+      params: { query },
+    });
   }
 
   /** Search hashtags. */
   async hashtags(query: string): Promise<Paginated<Hashtag>> {
-    return this.client.request<Paginated<Hashtag>>(
-      "/v1/instagram/search/hashtags",
-      { params: { query } }
-    );
+    return this.client.request<Paginated<Hashtag>>("/v1/instagram/search/hashtags", {
+      params: { query },
+    });
   }
 
   /**
@@ -62,10 +60,9 @@ export class SearchClient {
    * @deprecated Temporarily unavailable — authenticated data is temporarily offline.
    */
   async places(query: string): Promise<Paginated<Location>> {
-    return this.client.request<Paginated<Location>>(
-      "/v1/instagram/search/places",
-      { params: { query } }
-    );
+    return this.client.request<Paginated<Location>>("/v1/instagram/search/places", {
+      params: { query },
+    });
   }
 
   /**
@@ -73,10 +70,9 @@ export class SearchClient {
    * @deprecated Temporarily unavailable — authenticated data is temporarily offline.
    */
   async reels(query: string): Promise<Paginated<Media>> {
-    return this.client.request<Paginated<Media>>(
-      "/v1/instagram/search/reels",
-      { params: { query } }
-    );
+    return this.client.request<Paginated<Media>>("/v1/instagram/search/reels", {
+      params: { query },
+    });
   }
 
   /**
@@ -84,10 +80,9 @@ export class SearchClient {
    * @deprecated Temporarily unavailable — authenticated data is temporarily offline.
    */
   async music(query: string): Promise<Paginated<Audio>> {
-    return this.client.request<Paginated<Audio>>(
-      "/v1/instagram/search/music",
-      { params: { query } }
-    );
+    return this.client.request<Paginated<Audio>>("/v1/instagram/search/music", {
+      params: { query },
+    });
   }
 
   /** Get blended "top" results (users, hashtags, and places). */
@@ -102,9 +97,8 @@ export class SearchClient {
    * @deprecated Temporarily unavailable — authenticated data is temporarily offline.
    */
   async autocomplete(query: string): Promise<SearchTopResponse> {
-    return this.client.request<SearchTopResponse>(
-      "/v1/instagram/search/autocomplete",
-      { params: { query } }
-    );
+    return this.client.request<SearchTopResponse>("/v1/instagram/search/autocomplete", {
+      params: { query },
+    });
   }
 }

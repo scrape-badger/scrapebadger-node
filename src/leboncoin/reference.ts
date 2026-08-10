@@ -61,13 +61,10 @@ export class ReferenceClient {
    * @param options - Optional parameters (region_id).
    * @returns Departments response.
    */
-  async departments(
-    options: LeboncoinDepartmentsParams = {}
-  ): Promise<DepartmentsResponse> {
-    return this.client.request<DepartmentsResponse>(
-      "/v1/leboncoin/departments",
-      { params: { region_id: options.region_id } }
-    );
+  async departments(options: LeboncoinDepartmentsParams = {}): Promise<DepartmentsResponse> {
+    return this.client.request<DepartmentsResponse>("/v1/leboncoin/departments", {
+      params: { region_id: options.region_id },
+    });
   }
 
   /**
@@ -77,10 +74,9 @@ export class ReferenceClient {
    * @returns Location search response with suggestions.
    */
   async locations(query: string): Promise<LocationSearchResponse> {
-    return this.client.request<LocationSearchResponse>(
-      "/v1/leboncoin/locations/search",
-      { params: { q: query } }
-    );
+    return this.client.request<LocationSearchResponse>("/v1/leboncoin/locations/search", {
+      params: { q: query },
+    });
   }
 
   /**

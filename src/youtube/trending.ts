@@ -59,9 +59,7 @@ export class TrendingClient {
    * @param options - Optional continuation token and region.
    * @returns A page of trending Shorts with a continuation token.
    */
-  async shorts(
-    options: YoutubeTrendingShortsParams = {}
-  ): Promise<TrendingResponse> {
+  async shorts(options: YoutubeTrendingShortsParams = {}): Promise<TrendingResponse> {
     return this.client.request<TrendingResponse>("/v1/youtube/trending/shorts", {
       params: { continuation: options.continuation, gl: options.gl, hl: options.hl },
     });
@@ -74,10 +72,7 @@ export class TrendingClient {
    * @param options - Optional continuation token and region.
    * @returns A page of hashtag results with a continuation token.
    */
-  async hashtag(
-    tag: string,
-    options: YoutubeHashtagParams = {}
-  ): Promise<HashtagResponse> {
+  async hashtag(tag: string, options: YoutubeHashtagParams = {}): Promise<HashtagResponse> {
     return this.client.request<HashtagResponse>(`/v1/youtube/hashtags/${tag}`, {
       params: { continuation: options.continuation, gl: options.gl, hl: options.hl },
     });

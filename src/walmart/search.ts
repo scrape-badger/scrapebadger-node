@@ -45,10 +45,7 @@ export class SearchClient {
    * a crawl with `max_page`. Sponsored ad tiles are dropped, sponsored
    * *products* are returned and flagged `is_sponsored`.
    */
-  async search(
-    query: string,
-    params: WalmartSearchParams = {},
-  ): Promise<WalmartSearchResponse> {
+  async search(query: string, params: WalmartSearchParams = {}): Promise<WalmartSearchResponse> {
     return this.client.request<WalmartSearchResponse>("/v1/walmart/search", {
       params: {
         query,
@@ -71,10 +68,7 @@ export class SearchClient {
    * No `sort`: Walmart's browse pages ignore it (verified). Sort on
    * {@link search} instead.
    */
-  async category(
-    path: string,
-    params: WalmartCategoryParams = {},
-  ): Promise<WalmartSearchResponse> {
+  async category(path: string, params: WalmartCategoryParams = {}): Promise<WalmartSearchResponse> {
     return this.client.request<WalmartSearchResponse>("/v1/walmart/category", {
       params: {
         path,

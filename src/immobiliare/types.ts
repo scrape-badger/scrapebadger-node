@@ -298,23 +298,11 @@ export type ImmobiliareContract = "sale" | "rent";
 
 /** Property category for the /search endpoint. */
 export type ImmobiliareCategory =
-  | "residential"
-  | "commercial"
-  | "garages"
-  | "offices"
-  | "land"
-  | "buildings"
-  | "warehouses";
+  "residential" | "commercial" | "garages" | "offices" | "land" | "buildings" | "warehouses";
 
 /** Sort order for the /search endpoint. */
 export type ImmobiliareSort =
-  | "relevance"
-  | "price_asc"
-  | "price_desc"
-  | "newest"
-  | "oldest"
-  | "surface_desc"
-  | "surface_asc";
+  "relevance" | "price_asc" | "price_desc" | "newest" | "oldest" | "surface_desc" | "surface_asc";
 
 /** Parameters for the autocomplete() method. */
 export interface ImmobiliareAutocompleteParams {

@@ -40,9 +40,7 @@ export class SellersClient {
    * @throws NotFoundError - If the seller doesn't exist.
    */
   async get(userId: string): Promise<SellerResponse> {
-    return this.client.request<SellerResponse>(
-      `/v1/leboncoin/sellers/${userId}`
-    );
+    return this.client.request<SellerResponse>(`/v1/leboncoin/sellers/${userId}`);
   }
 
   /**
@@ -56,9 +54,8 @@ export class SellersClient {
     userId: string,
     options: LeboncoinSellerListingsParams = {}
   ): Promise<SellerListingsResponse> {
-    return this.client.request<SellerListingsResponse>(
-      `/v1/leboncoin/sellers/${userId}/listings`,
-      { params: { page: options.page, limit: options.limit } }
-    );
+    return this.client.request<SellerListingsResponse>(`/v1/leboncoin/sellers/${userId}/listings`, {
+      params: { page: options.page, limit: options.limit },
+    });
   }
 }

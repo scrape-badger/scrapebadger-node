@@ -10,14 +10,17 @@ import { TwitterClient } from "./twitter/client.js";
 import { WebClient } from "./web/client.js";
 import { VintedClient } from "./vinted/client.js";
 import { GoogleClient } from "./google/client.js";
+import { IdealistaClient } from "./idealista/client.js";
 import { RedditClient } from "./reddit/client.js";
 import { ApartmentsClient } from "./apartments/client.js";
 import { InstagramClient } from "./instagram/client.js";
 import { RedfinClient } from "./redfin/client.js";
+import { AccountClient } from "./account/client.js";
 import { AmazonClient } from "./amazon/client.js";
 import { ShopeeClient } from "./shopee/client.js";
 import { TikTokClient } from "./tiktok/client.js";
 import { EbayClient } from "./ebay/client.js";
+import { FacebookClient } from "./facebook/client.js";
 import { WalmartClient } from "./walmart/client.js";
 import { DuckDuckGoClient } from "./duckduckgo/client.js";
 import { BingClient } from "./bing/client.js";
@@ -30,6 +33,7 @@ import { LeboncoinClient } from "./leboncoin/client.js";
 import { ZillowClient } from "./zillow/client.js";
 import { ImmobiliareClient } from "./immobiliare/client.js";
 import { LoopNetClient } from "./loopnet/client.js";
+import { PerplexityClient } from "./perplexity/client.js";
 import { DepopClient } from "./depop/client.js";
 import { LinkedInClient } from "./linkedin/client.js";
 import { ChatGPTClient } from "./chatgpt/client.js";
@@ -81,6 +85,8 @@ export class ScrapeBadger {
 
   /** Google Scraper API client — 19 Google product APIs */
   readonly google: GoogleClient;
+  /** Idealista API client. (Generated from the OpenAPI spec.) */
+  readonly idealista: IdealistaClient;
 
   /** Reddit scraper API client */
   readonly reddit: RedditClient;
@@ -95,6 +101,8 @@ export class ScrapeBadger {
   readonly redfin: RedfinClient;
 
   /** Amazon scraper API client — 14 endpoints */
+  /** Account API client. (Generated from the OpenAPI spec.) */
+  readonly account: AccountClient;
   readonly amazon: AmazonClient;
 
   /** Shopee scraper API client — 6 endpoints across 11 markets */
@@ -105,6 +113,8 @@ export class ScrapeBadger {
 
   /** eBay scraper API client — 12 endpoints across 18 markets */
   readonly ebay: EbayClient;
+  /** Facebook API client. (Generated from the OpenAPI spec.) */
+  readonly facebook: FacebookClient;
 
   /** Walmart scraper API client — 11 endpoints (walmart.com, US-only) */
   readonly walmart: WalmartClient;
@@ -141,6 +151,8 @@ export class ScrapeBadger {
 
   /** LoopNet scraper API client — commercial real estate across US/CA/UK/FR/ES (search, listing, broker, markets, property types) */
   readonly loopnet: LoopNetClient;
+  /** Perplexity API client. (Generated from the OpenAPI spec.) */
+  readonly perplexity: PerplexityClient;
 
   /** Depop scraper API client — search, product, user, user products, markets (www.depop.com, 10 markets) */
   readonly depop: DepopClient;
@@ -197,14 +209,17 @@ export class ScrapeBadger {
     this.web = new WebClient(this.baseClient);
     this.vinted = new VintedClient(this.baseClient);
     this.google = new GoogleClient(this.baseClient);
+    this.idealista = new IdealistaClient(this.baseClient);
     this.reddit = new RedditClient(this.baseClient);
     this.apartments = new ApartmentsClient(this.baseClient);
     this.instagram = new InstagramClient(this.baseClient);
     this.redfin = new RedfinClient(this.baseClient);
+    this.account = new AccountClient(this.baseClient);
     this.amazon = new AmazonClient(this.baseClient);
     this.shopee = new ShopeeClient(this.baseClient);
     this.tiktok = new TikTokClient(this.baseClient);
     this.ebay = new EbayClient(this.baseClient);
+    this.facebook = new FacebookClient(this.baseClient);
     this.walmart = new WalmartClient(this.baseClient);
     this.duckduckgo = new DuckDuckGoClient(this.baseClient);
     this.bing = new BingClient(this.baseClient);
@@ -217,6 +232,7 @@ export class ScrapeBadger {
     this.zillow = new ZillowClient(this.baseClient);
     this.immobiliare = new ImmobiliareClient(this.baseClient);
     this.loopnet = new LoopNetClient(this.baseClient);
+    this.perplexity = new PerplexityClient(this.baseClient);
     this.depop = new DepopClient(this.baseClient);
     this.linkedin = new LinkedInClient(this.baseClient);
     this.chatgpt = new ChatGPTClient(this.baseClient);

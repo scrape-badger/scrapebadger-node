@@ -71,14 +71,10 @@ export class VideosClient {
    * @param options - Optional region parameters and a continuation token.
    * @returns Related results with a continuation token.
    */
-  async related(
-    videoId: string,
-    options: YoutubeRelatedParams = {}
-  ): Promise<RelatedResponse> {
-    return this.client.request<RelatedResponse>(
-      `/v1/youtube/videos/${videoId}/related`,
-      { params: { continuation: options.continuation, gl: options.gl, hl: options.hl } }
-    );
+  async related(videoId: string, options: YoutubeRelatedParams = {}): Promise<RelatedResponse> {
+    return this.client.request<RelatedResponse>(`/v1/youtube/videos/${videoId}/related`, {
+      params: { continuation: options.continuation, gl: options.gl, hl: options.hl },
+    });
   }
 
   /**
@@ -88,21 +84,15 @@ export class VideosClient {
    * @param options - Optional sort order, continuation token, and region.
    * @returns A page of comments with sorting tokens and a continuation token.
    */
-  async comments(
-    videoId: string,
-    options: YoutubeCommentsParams = {}
-  ): Promise<CommentsResponse> {
-    return this.client.request<CommentsResponse>(
-      `/v1/youtube/videos/${videoId}/comments`,
-      {
-        params: {
-          sort_by: options.sort_by,
-          continuation: options.continuation,
-          gl: options.gl,
-          hl: options.hl,
-        },
-      }
-    );
+  async comments(videoId: string, options: YoutubeCommentsParams = {}): Promise<CommentsResponse> {
+    return this.client.request<CommentsResponse>(`/v1/youtube/videos/${videoId}/comments`, {
+      params: {
+        sort_by: options.sort_by,
+        continuation: options.continuation,
+        gl: options.gl,
+        hl: options.hl,
+      },
+    });
   }
 
   /**
@@ -131,14 +121,10 @@ export class VideosClient {
    * @param options - Optional language and region parameters.
    * @returns The transcript with timed segments and full text.
    */
-  async transcript(
-    videoId: string,
-    options: YoutubeTranscriptParams = {}
-  ): Promise<Transcript> {
-    return this.client.request<Transcript>(
-      `/v1/youtube/videos/${videoId}/transcript`,
-      { params: { language: options.language, gl: options.gl, hl: options.hl } }
-    );
+  async transcript(videoId: string, options: YoutubeTranscriptParams = {}): Promise<Transcript> {
+    return this.client.request<Transcript>(`/v1/youtube/videos/${videoId}/transcript`, {
+      params: { language: options.language, gl: options.gl, hl: options.hl },
+    });
   }
 
   /**
@@ -148,14 +134,10 @@ export class VideosClient {
    * @param options - Optional region parameters.
    * @returns The available caption tracks and translation languages.
    */
-  async captions(
-    videoId: string,
-    options: YoutubeCaptionsParams = {}
-  ): Promise<CaptionsResponse> {
-    return this.client.request<CaptionsResponse>(
-      `/v1/youtube/videos/${videoId}/captions`,
-      { params: { gl: options.gl, hl: options.hl } }
-    );
+  async captions(videoId: string, options: YoutubeCaptionsParams = {}): Promise<CaptionsResponse> {
+    return this.client.request<CaptionsResponse>(`/v1/youtube/videos/${videoId}/captions`, {
+      params: { gl: options.gl, hl: options.hl },
+    });
   }
 
   /**
@@ -165,14 +147,10 @@ export class VideosClient {
    * @param options - Optional content region and player client.
    * @returns Streaming metadata with muxed and adaptive formats.
    */
-  async streams(
-    videoId: string,
-    options: YoutubeStreamsParams = {}
-  ): Promise<StreamingData> {
-    return this.client.request<StreamingData>(
-      `/v1/youtube/videos/${videoId}/streams`,
-      { params: { gl: options.gl, client: options.client } }
-    );
+  async streams(videoId: string, options: YoutubeStreamsParams = {}): Promise<StreamingData> {
+    return this.client.request<StreamingData>(`/v1/youtube/videos/${videoId}/streams`, {
+      params: { gl: options.gl, client: options.client },
+    });
   }
 
   /**
@@ -182,21 +160,15 @@ export class VideosClient {
    * @param options - Optional continuation token, replay flag, and region.
    * @returns A page of live-chat messages with a continuation token.
    */
-  async liveChat(
-    videoId: string,
-    options: YoutubeLiveChatParams = {}
-  ): Promise<LiveChatResponse> {
-    return this.client.request<LiveChatResponse>(
-      `/v1/youtube/videos/${videoId}/live_chat`,
-      {
-        params: {
-          continuation: options.continuation,
-          replay: options.replay,
-          gl: options.gl,
-          hl: options.hl,
-        },
-      }
-    );
+  async liveChat(videoId: string, options: YoutubeLiveChatParams = {}): Promise<LiveChatResponse> {
+    return this.client.request<LiveChatResponse>(`/v1/youtube/videos/${videoId}/live_chat`, {
+      params: {
+        continuation: options.continuation,
+        replay: options.replay,
+        gl: options.gl,
+        hl: options.hl,
+      },
+    });
   }
 
   /**

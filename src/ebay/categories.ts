@@ -6,11 +6,7 @@
  */
 
 import type { BaseClient } from "../internal/client.js";
-import type {
-  EbayCategoryParams,
-  CategoryResponse,
-  CategoriesResponse,
-} from "./types.js";
+import type { EbayCategoryParams, CategoryResponse, CategoriesResponse } from "./types.js";
 
 /**
  * Client for eBay category endpoints (browse, list).
@@ -41,23 +37,17 @@ export class CategoriesClient {
    * @param options - Optional parameters (domain, page, per_page, sort_by, min_price, max_price).
    * @returns Category response with result cards, facets, and pagination.
    */
-  async browse(
-    categoryId: string,
-    options: EbayCategoryParams = {}
-  ): Promise<CategoryResponse> {
-    return this.client.request<CategoryResponse>(
-      `/v1/ebay/categories/${categoryId}/items`,
-      {
-        params: {
-          domain: options.domain,
-          page: options.page,
-          per_page: options.per_page,
-          sort_by: options.sort_by,
-          min_price: options.min_price,
-          max_price: options.max_price,
-        },
-      }
-    );
+  async browse(categoryId: string, options: EbayCategoryParams = {}): Promise<CategoryResponse> {
+    return this.client.request<CategoryResponse>(`/v1/ebay/categories/${categoryId}/items`, {
+      params: {
+        domain: options.domain,
+        page: options.page,
+        per_page: options.per_page,
+        sort_by: options.sort_by,
+        min_price: options.min_price,
+        max_price: options.max_price,
+      },
+    });
   }
 
   /**

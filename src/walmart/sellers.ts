@@ -56,11 +56,10 @@ export class SellersClient {
   async products(
     sellerId: string,
     query: string,
-    params: WalmartSellerProductsParams = {},
+    params: WalmartSellerProductsParams = {}
   ): Promise<WalmartSearchResponse> {
-    return this.client.request<WalmartSearchResponse>(
-      `/v1/walmart/sellers/${sellerId}/products`,
-      { params: { query, page: params.page, sort: params.sort } },
-    );
+    return this.client.request<WalmartSearchResponse>(`/v1/walmart/sellers/${sellerId}/products`, {
+      params: { query, page: params.page, sort: params.sort },
+    });
   }
 }

@@ -5,10 +5,7 @@
  */
 
 import type { BaseClient } from "../internal/client.js";
-import type {
-  DuckDuckGoSearchParams,
-  DuckDuckGoSearchResponse,
-} from "./types.js";
+import type { DuckDuckGoSearchParams, DuckDuckGoSearchResponse } from "./types.js";
 
 /**
  * Client for the DuckDuckGo web-search endpoint.
@@ -35,7 +32,7 @@ export class SearchClient {
    */
   async search(
     query: string,
-    params: DuckDuckGoSearchParams = {},
+    params: DuckDuckGoSearchParams = {}
   ): Promise<DuckDuckGoSearchResponse> {
     return this.client.request<DuckDuckGoSearchResponse>("/v1/duckduckgo/search", {
       params: {

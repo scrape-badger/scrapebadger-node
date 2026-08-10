@@ -3,9 +3,4 @@
  */
 
 export { WebClient } from "./client.js";
-export type {
-  ScrapeOptions,
-  ScrapeResult,
-  DetectOptions,
-  DetectResult,
-} from "./types.js";
+export type { ScrapeOptions, ScrapeResult, DetectOptions, DetectResult } from "./types.js";
