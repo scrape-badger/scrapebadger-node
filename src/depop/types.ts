@@ -76,6 +76,8 @@ export interface DepopProductDetail {
   price?: string | null;
   currency?: string | null;
   availability?: string | null;
+  /** Seller's average dispatch estimate as shown on the listing, e.g. "3 days" or "24 hours". */
+  dispatch_time?: string | null;
   seller_username?: string | null;
   images: string[];
   url: string;
