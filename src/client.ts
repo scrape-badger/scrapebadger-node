@@ -33,6 +33,7 @@ import { LoopNetClient } from "./loopnet/client.js";
 import { DepopClient } from "./depop/client.js";
 import { LinkedInClient } from "./linkedin/client.js";
 import { ChatGPTClient } from "./chatgpt/client.js";
+import { GeminiClient } from "./gemini/client.js";
 
 /**
  * ScrapeBadger API client.
@@ -150,6 +151,9 @@ export class ScrapeBadger {
   /** ChatGPT scraper API client — ask, brand visibility, models (the real chatgpt.com, anonymous) */
   readonly chatgpt: ChatGPTClient;
 
+  /** Gemini scraper API client — ask, brand visibility (the real gemini.google.com, anonymous) */
+  readonly gemini: GeminiClient;
+
   /**
    * Create a new ScrapeBadger client.
    *
@@ -216,5 +220,6 @@ export class ScrapeBadger {
     this.depop = new DepopClient(this.baseClient);
     this.linkedin = new LinkedInClient(this.baseClient);
     this.chatgpt = new ChatGPTClient(this.baseClient);
+    this.gemini = new GeminiClient(this.baseClient);
   }
 }
