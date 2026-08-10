@@ -96,6 +96,7 @@ const client = new ScrapeBadger();
 | **Apartments.com** | US rental listings with UNIT-LEVEL pricing — search by location with bed/price filters, plus per-unit rent, beds, baths, sqft and availability for every rentable unit |
 | **Baidu** | 4 endpoints (baidu.com, China's #1 search engine) — web search with language and date-window filters, news vertical, image search, autocomplete. Results carry the **real target URL**, not just Baidu's tracking redirect | [Baidu Docs](https://docs.scrapebadger.com/baidu/overview) |
 | **ChatGPT** | Prompt the real chatgpt.com anonymously — structured answer with citations anchored to character offsets, the full retrieved search trail, and AEO/GEO brand-visibility analysis | [ChatGPT Guide](docs/chatgpt.md) |
+| **Gemini** | Prompt the real gemini.google.com anonymously — structured answer with cited web sources, the full retrieved search trail, and AEO/GEO brand-visibility analysis | [Gemini Docs](https://docs.scrapebadger.com/gemini/overview) |
 
 ## Error Handling
 
