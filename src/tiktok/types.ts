@@ -588,6 +588,23 @@ export interface TikTokAd {
   /** epoch ms */
   last_shown_date?: number | null;
   videos: TikTokAdVideo[];
+  /** ad caption / creative title */
+  title?: string | null;
+  /** e.g. "10K-100K" */
+  estimated_audience?: string | null;
+  impression?: number | null;
+  /** spend bracket when disclosed (often empty) */
+  spent?: string | null;
+  /** e.g. "Reach", "Traffic" */
+  advertising_objective?: string | null;
+  /** e.g. "Learn more" (populated on detail) */
+  call_to_action?: string | null;
+  /** ad landing page (populated on detail) */
+  external_url?: string | null;
+  show_mode?: number | null;
+  sor_audit_status?: string | null;
+  rejection_info?: Record<string, unknown> | null;
+  image_urls: string[];
 }
 
 export interface AdLibraryPage {
@@ -602,6 +619,86 @@ export interface AdLibraryPage {
 export interface AdLibrarySearchResponse {
   ads: TikTokAd[];
   pagination: AdLibraryPage;
+  region: string;
+}
+
+/** The advertiser behind an ad (from the ad-detail response). */
+export interface AdAdvertiser {
+  name?: string | null;
+  /** advertiser business id — feeds ads/search?advertiser_id= */
+  adv_biz_ids?: string | null;
+  registry_location?: string | null;
+  sponsor?: string | null;
+  /** linked TikTok account, when disclosed */
+  tt_user?: Record<string, unknown> | null;
+}
+
+/** One age/gender impression bucket within a region. */
+export interface AdTargetingBreakdown {
+  age?: string | null;
+  gender?: string | null;
+  /** bracketed range, e.g. "0-1K", "2K" */
+  impressions?: string | null;
+}
+
+/** Per-region impression totals with age/gender breakdowns. */
+export interface AdTargetingRegion {
+  region?: string | null;
+  impressions?: string | null;
+  breakdowns: AdTargetingBreakdown[];
+}
+
+/** Location targeting + the only place real impression numbers live. */
+export interface AdTargetingLocation {
+  total_region?: number | null;
+  total_impressions?: string | null;
+  data: AdTargetingRegion[];
+}
+
+/** Targeting + impression breakdown disclosed for an ad (EU-DSA). */
+export interface AdTargeting {
+  location?: AdTargetingLocation | null;
+  /** per-region flag dicts (dynamic bucket keys) */
+  age: Record<string, unknown>[];
+  gender: Record<string, unknown>[];
+  target_audience_size?: string | null;
+  audience?: string | null;
+  /** comma-joined string, e.g. "Home Design, Education" */
+  interest?: string | null;
+  video_interactions?: string | null;
+  creator_interactions?: string | null;
+  countries: string[];
+  cities: string[];
+  provinces: string[];
+  languages: string[];
+  device_models: string[];
+  operating_systems: string[];
+  high_spending_power?: string | null;
+  audience_exclude?: string | null;
+}
+
+/** Response from the /ads/{ad_id} endpoint. */
+export interface AdDetailResponse {
+  ad: TikTokAd;
+  advertiser: AdAdvertiser;
+  targeting: AdTargeting;
+  display_mode?: string | null;
+  region: string;
+}
+
+/** One advertiser match from the advertiser lookup. */
+export interface AdvertiserSuggestion {
+  name?: string | null;
+  /** advertiser business id (upstream field: `ids`) */
+  id?: string | null;
+}
+
+/** Response from the /ads/advertisers endpoint. */
+export interface AdvertiserSearchResponse {
+  advertisers: AdvertiserSuggestion[];
+  /** ad_keyword suggestions, when present */
+  keywords: string[];
+  query: string;
   region: string;
 }
 
@@ -769,4 +866,20 @@ export interface TikTokAdSearchParams {
   search_id?: string;
   /** Number of items to return (1-50) */
   count?: number;
+}
+
+/** Options for the advertiser lookup endpoint. */
+export interface TikTokAdvertiserSearchParams {
+  /** Advertiser name (or partial) to look up */
+  query: string;
+  /** EU region code (the Ad Library is EU-only, default "DE") */
+  region?: string;
+  /** Max suggestions (1-50, default 10) */
+  count?: number;
+}
+
+/** Options for the ad-detail endpoint. */
+export interface TikTokAdDetailParams {
+  /** EU region code (the Ad Library is EU-only, default "DE") */
+  region?: string;
 }

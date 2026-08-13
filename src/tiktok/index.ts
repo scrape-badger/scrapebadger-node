@@ -48,6 +48,12 @@ export type {
   TikTokAdVideo,
   TikTokAd,
   AdLibraryPage as TikTokAdLibraryPage,
+  AdAdvertiser as TikTokAdAdvertiser,
+  AdTargetingBreakdown as TikTokAdTargetingBreakdown,
+  AdTargetingRegion as TikTokAdTargetingRegion,
+  AdTargetingLocation as TikTokAdTargetingLocation,
+  AdTargeting as TikTokAdTargeting,
+  AdvertiserSuggestion as TikTokAdvertiserSuggestion,
   RegionInfo as TikTokRegionInfo,
   // Response envelopes
   ProfileResponse as TikTokProfileResponse,
@@ -63,6 +69,8 @@ export type {
   TrendingHashtagsResponse as TikTokTrendingHashtagsResponse,
   TrendingSongsResponse as TikTokTrendingSongsResponse,
   AdLibrarySearchResponse as TikTokAdLibrarySearchResponse,
+  AdDetailResponse as TikTokAdDetailResponse,
+  AdvertiserSearchResponse as TikTokAdvertiserSearchResponse,
   RegionsResponse as TikTokRegionsResponse,
   // Request params
   TikTokUserParams,
@@ -80,4 +88,6 @@ export type {
   TikTokTrendingVideosParams,
   TikTokTrendingParams,
   TikTokAdSearchParams,
+  TikTokAdvertiserSearchParams,
+  TikTokAdDetailParams,
 } from "./types.js";
