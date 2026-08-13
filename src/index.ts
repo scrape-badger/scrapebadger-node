@@ -133,6 +133,15 @@ export * from "./chatgpt/index.js";
 // Re-export Gemini module — GeminiClient + Gemini*-prefixed sub-clients and types
 export * from "./gemini/index.js";
 
+// Re-export Google Play module — GooglePlayClient + GooglePlay*-prefixed types
+export * from "./googleplay/index.js";
+
+// Re-export App Store module — AppStoreClient + AppStore*-prefixed types
+export * from "./appstore/index.js";
+
+// Re-export Google Ads Transparency module — GoogleAdsClient + GoogleAds*-prefixed types
+export * from "./googleads/index.js";
+
 // Re-export Leboncoin module — LeboncoinClient + Leboncoin*-prefixed sub-clients and types
 export * from "./leboncoin/index.js";
 

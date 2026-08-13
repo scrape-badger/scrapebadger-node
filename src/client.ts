@@ -34,6 +34,9 @@ import { DepopClient } from "./depop/client.js";
 import { LinkedInClient } from "./linkedin/client.js";
 import { ChatGPTClient } from "./chatgpt/client.js";
 import { GeminiClient } from "./gemini/client.js";
+import { GooglePlayClient } from "./googleplay/client.js";
+import { AppStoreClient } from "./appstore/client.js";
+import { GoogleAdsClient } from "./googleads/client.js";
 
 /**
  * ScrapeBadger API client.
@@ -154,6 +157,15 @@ export class ScrapeBadger {
   /** Gemini scraper API client — ask, brand visibility (the real gemini.google.com, anonymous) */
   readonly gemini: GeminiClient;
 
+  /** Google Play scraper API client — search, app detail, reviews, permissions, similar, developer, category, charts, reference */
+  readonly googlePlay: GooglePlayClient;
+
+  /** App Store scraper API client — search, app detail, reviews, developer, charts, genres, markets (per-storefront) */
+  readonly appStore: AppStoreClient;
+
+  /** Google Ads Transparency scraper API client — creative search, creative detail, advertiser autocomplete, advertiser spend */
+  readonly googleAds: GoogleAdsClient;
+
   /**
    * Create a new ScrapeBadger client.
    *
@@ -221,5 +233,8 @@ export class ScrapeBadger {
     this.linkedin = new LinkedInClient(this.baseClient);
     this.chatgpt = new ChatGPTClient(this.baseClient);
     this.gemini = new GeminiClient(this.baseClient);
+    this.googlePlay = new GooglePlayClient(this.baseClient);
+    this.appStore = new AppStoreClient(this.baseClient);
+    this.googleAds = new GoogleAdsClient(this.baseClient);
   }
 }
