@@ -10,12 +10,15 @@ import { TwitterClient } from "./twitter/client.js";
 import { WebClient } from "./web/client.js";
 import { VintedClient } from "./vinted/client.js";
 import { GoogleClient } from "./google/client.js";
+import { GooglePlayClient } from "./google_play/client.js";
 import { IdealistaClient } from "./idealista/client.js";
 import { RedditClient } from "./reddit/client.js";
 import { ApartmentsClient } from "./apartments/client.js";
+import { AppStoreClient } from "./app_store/client.js";
 import { InstagramClient } from "./instagram/client.js";
 import { RedfinClient } from "./redfin/client.js";
 import { AccountClient } from "./account/client.js";
+import { AirbnbClient } from "./airbnb/client.js";
 import { AmazonClient } from "./amazon/client.js";
 import { ShopeeClient } from "./shopee/client.js";
 import { TikTokClient } from "./tiktok/client.js";
@@ -85,6 +88,8 @@ export class ScrapeBadger {
 
   /** Google Scraper API client — 19 Google product APIs */
   readonly google: GoogleClient;
+  /** Google_Play API client. (Generated from the OpenAPI spec.) */
+  readonly google_play: GooglePlayClient;
   /** Idealista API client. (Generated from the OpenAPI spec.) */
   readonly idealista: IdealistaClient;
 
@@ -93,6 +98,8 @@ export class ScrapeBadger {
 
   /** Apartments.com scraper API client — search + property with unit-level pricing (US) */
   readonly apartments: ApartmentsClient;
+  /** App_Store API client. (Generated from the OpenAPI spec.) */
+  readonly app_store: AppStoreClient;
 
   /** Instagram scraper API client — users, media, search, hashtags, locations, audio */
   readonly instagram: InstagramClient;
@@ -103,6 +110,8 @@ export class ScrapeBadger {
   /** Amazon scraper API client — 14 endpoints */
   /** Account API client. (Generated from the OpenAPI spec.) */
   readonly account: AccountClient;
+  /** Airbnb API client. (Generated from the OpenAPI spec.) */
+  readonly airbnb: AirbnbClient;
   readonly amazon: AmazonClient;
 
   /** Shopee scraper API client — 6 endpoints across 11 markets */
@@ -209,12 +218,15 @@ export class ScrapeBadger {
     this.web = new WebClient(this.baseClient);
     this.vinted = new VintedClient(this.baseClient);
     this.google = new GoogleClient(this.baseClient);
+    this.google_play = new GooglePlayClient(this.baseClient);
     this.idealista = new IdealistaClient(this.baseClient);
     this.reddit = new RedditClient(this.baseClient);
     this.apartments = new ApartmentsClient(this.baseClient);
+    this.app_store = new AppStoreClient(this.baseClient);
     this.instagram = new InstagramClient(this.baseClient);
     this.redfin = new RedfinClient(this.baseClient);
     this.account = new AccountClient(this.baseClient);
+    this.airbnb = new AirbnbClient(this.baseClient);
     this.amazon = new AmazonClient(this.baseClient);
     this.shopee = new ShopeeClient(this.baseClient);
     this.tiktok = new TikTokClient(this.baseClient);
