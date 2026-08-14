@@ -12,6 +12,21 @@ export class FacebookClient {
     this.client = client;
   }
 
+  /** Search advertiser pages. Generated from the OpenAPI spec; returns the raw response object. */
+  async searchAdvertiserPages(
+    params: Record<string, string | number | boolean | undefined> = {}
+  ): Promise<Record<string, unknown>> {
+    return this.client.request("/v1/facebook/ads/pages/search", { params });
+  }
+
+  /** Get advertiser page info. Generated from the OpenAPI spec; returns the raw response object. */
+  async getAdvertiserPageInfo(
+    pageId: string,
+    params: Record<string, string | number | boolean | undefined> = {}
+  ): Promise<Record<string, unknown>> {
+    return this.client.request(`/v1/facebook/ads/pages/${pageId}`, { params });
+  }
+
   /** Search the Ad Library. Generated from the OpenAPI spec; returns the raw response object. */
   async searchTheAdLibrary(
     params: Record<string, string | number | boolean | undefined> = {}
