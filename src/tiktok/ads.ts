@@ -66,9 +66,7 @@ export class AdsClient {
    * @param params - `query` (required), plus optional `region` and `count`.
    * @returns Matching advertisers, each with a business `id`.
    */
-  async searchAdvertisers(
-    params: TikTokAdvertiserSearchParams,
-  ): Promise<AdvertiserSearchResponse> {
+  async searchAdvertisers(params: TikTokAdvertiserSearchParams): Promise<AdvertiserSearchResponse> {
     return this.client.request<AdvertiserSearchResponse>("/v1/tiktok/ads/advertisers", {
       params: {
         query: params.query,
@@ -85,10 +83,7 @@ export class AdsClient {
    * @param params - Optional `region` (EU-only, default "DE").
    * @returns The ad, its advertiser, and per-region age/gender impression targeting.
    */
-  async getDetail(
-    adId: string,
-    params: TikTokAdDetailParams = {},
-  ): Promise<AdDetailResponse> {
+  async getDetail(adId: string, params: TikTokAdDetailParams = {}): Promise<AdDetailResponse> {
     return this.client.request<AdDetailResponse>(`/v1/tiktok/ads/${adId}`, {
       params: { region: params.region },
     });
