@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.38.0] - 2026-08-19
+
+### Added
+- **New `booking` namespace — the Booking.com API.** Five operations on
+  `client.booking`: `searchProperties`, `searchDestinations`,
+  `getPropertyDetail`, `getPropertyReviews` and `getRoomTypesAndLiveRates`.
+  Global coverage, any Booking-supported currency and locale, no upstream
+  Booking account or key required.
+- `getRoomTypesAndLiveRates` returns the **full per-room rate table** for a
+  property and dates — every room type with every rate bookable on it (price,
+  price before discount, price per night, discounts, badges, occupancy, meal
+  plan), plus per-room facilities, alternative bed layouts, photos and a priced
+  child/crib/extra-bed policy. `searchProperties` returns only the single
+  cheapest rate per property.
+
 ## [0.37.0] - 2026-08-14
 
 ### Added
