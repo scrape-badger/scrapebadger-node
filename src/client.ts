@@ -27,6 +27,7 @@ import { FacebookClient } from "./facebook/client.js";
 import { WalmartClient } from "./walmart/client.js";
 import { DuckDuckGoClient } from "./duckduckgo/client.js";
 import { BingClient } from "./bing/client.js";
+import { BookingClient } from "./booking/client.js";
 import { BaiduClient } from "./baidu/client.js";
 import { YahooClient } from "./yahoo/client.js";
 import { YandexClient } from "./yandex/client.js";
@@ -133,6 +134,8 @@ export class ScrapeBadger {
 
   /** Bing scraper API client — 6 endpoints (search, images, videos, news, autocomplete, markets) */
   readonly bing: BingClient;
+  /** Booking API client. (Generated from the OpenAPI spec.) */
+  readonly booking: BookingClient;
 
   /** Baidu scraper API client — search, news, images, autocomplete (baidu.com, China's #1 search engine) */
   readonly baidu: BaiduClient;
@@ -235,6 +238,7 @@ export class ScrapeBadger {
     this.walmart = new WalmartClient(this.baseClient);
     this.duckduckgo = new DuckDuckGoClient(this.baseClient);
     this.bing = new BingClient(this.baseClient);
+    this.booking = new BookingClient(this.baseClient);
     this.baidu = new BaiduClient(this.baseClient);
     this.yahoo = new YahooClient(this.baseClient);
     this.yandex = new YandexClient(this.baseClient);
