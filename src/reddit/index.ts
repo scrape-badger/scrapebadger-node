@@ -14,6 +14,7 @@ export { UsersClient as RedditUsersClient } from "./users.js";
 export type {
   // Core entity types
   RedditAward,
+  RedditGalleryImage,
   RedditPost,
   RedditComment,
   RedditSubreddit,
