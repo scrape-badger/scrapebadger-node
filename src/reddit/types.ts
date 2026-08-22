@@ -36,6 +36,24 @@ export interface RedditAward {
 }
 
 /**
+ * One image of a multi-image gallery post, at full source resolution.
+ */
+export interface RedditGalleryImage {
+  /** Reddit's identifier for this image within the gallery */
+  media_id: string;
+  /** Full-resolution source URL (the .gif for animated items) */
+  url: string;
+  /** Source width in pixels */
+  width: number | null;
+  /** Source height in pixels */
+  height: number | null;
+  /** MIME type, e.g. "image/jpg" or "image/gif" */
+  mime_type: string | null;
+  /** Animated items only: the mp4 Reddit transcodes for playback; null for stills */
+  mp4_url: string | null;
+}
+
+/**
  * A Reddit post (link or self post).
  */
 export interface RedditPost {
@@ -195,6 +213,11 @@ export interface RedditPost {
   secure_media: Record<string, unknown> | null;
   /** Secure media embed metadata */
   secure_media_embed: Record<string, unknown> | null;
+  /**
+   * Gallery posts (`is_gallery`): the images, in the order the poster set.
+   * Empty for every other kind of post.
+   */
+  gallery_images: RedditGalleryImage[];
   // Awards
   /** All awards received by the post */
   all_awardings: RedditAward[];
