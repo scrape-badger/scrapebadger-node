@@ -340,14 +340,21 @@ export interface ShoppingClickParams {
 }
 
 /**
- * Params for `/v1/google/shopping/offers` — resolve a product by barcode
- * (GTIN-8/UPC-A/EAN-13/GTIN-14) and return its multi-seller Google
- * Shopping offers. Returns 422 for an invalid/checksum-failing barcode and
- * 404 when the barcode can't be resolved to a product.
+ * Params for `/v1/google/shopping/offers` — multi-seller Google Shopping
+ * offers for a product identified by `barcode` (GTIN-8/UPC-A/EAN-13/GTIN-14,
+ * resolved via Google web search first) OR by its Google Shopping
+ * `catalog_id` (sellers read straight off Google's product page). Exactly
+ * one of the two is required (400 otherwise); 422 for an invalid/
+ * checksum-failing barcode, 404 when nothing resolves.
  */
 export interface ShoppingOffersParams {
   /** Product barcode: a GTIN-8, UPC-A, EAN-13, or GTIN-14. */
-  barcode: string;
+  barcode?: string;
+  /**
+   * Google Shopping `catalogid` — the `catalog_id` on `shopping.search`
+   * tiles, or `prds=catalogid:…` in a Google Shopping URL.
+   */
+  catalog_id?: string;
   /** ISO-3166 alpha-2 country code (e.g. `us`). */
   gl?: string;
   /** UI/results language (e.g. `en`). Defaults to `en`. */
