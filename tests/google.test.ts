@@ -331,6 +331,21 @@ describe("ShoppingClient", () => {
     expect(url.searchParams.get("gl")).toBe("us");
     expect(response.barcode).toBe("0190198001751");
   });
+
+  it("offers accepts a Google Shopping catalog_id instead of a barcode", async () => {
+    mockFetch({ catalog_id: "762120719996356571", total_offers: 19, offers: [] });
+    const client = makeClient();
+    const response = await client.google.shopping.offers({
+      catalog_id: "762120719996356571",
+      gl: "de",
+      hl: "de",
+    });
+    const url = capturedUrl();
+    expect(url.pathname).toBe("/v1/google/shopping/offers");
+    expect(url.searchParams.get("catalog_id")).toBe("762120719996356571");
+    expect(url.searchParams.has("barcode")).toBe(false);
+    expect(response.total_offers).toBe(19);
+  });
 });
 
 // ---------------------------------------------------------------------------

@@ -61,9 +61,11 @@ export class ShoppingClient {
   }
 
   /**
-   * Resolve a product by `barcode` (GTIN-8/UPC-A/EAN-13/GTIN-14) and return
-   * its multi-seller Google Shopping offers. Throws on a 422 (invalid or
-   * checksum-failing barcode) or 404 (barcode not resolvable to a product).
+   * Multi-seller Google Shopping offers for a product, by `barcode`
+   * (GTIN-8/UPC-A/EAN-13/GTIN-14, resolved via Google web search first) or
+   * by Google Shopping `catalog_id` (sellers read off Google's product page).
+   * Throws on 400 (not exactly one identifier), 422 (invalid barcode) or 404
+   * (nothing resolves).
    */
   async offers(params: ShoppingOffersParams): Promise<GoogleResponse> {
     return this.client.request<GoogleResponse>("/v1/google/shopping/offers", {
