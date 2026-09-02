@@ -26,7 +26,10 @@ export class HashtagsClient {
     this.client = client;
   }
 
-  /** Get a hashtag's info (media count, cover). */
+  /**
+   * Get a hashtag's info (media count, cover).
+   * @deprecated Temporarily unavailable — authenticated data is temporarily offline.
+   */
   async get(tag: string): Promise<Hashtag> {
     return this.client.request<Hashtag>(`/v1/instagram/hashtags/${tag}`);
   }
@@ -42,7 +45,10 @@ export class HashtagsClient {
     return mediaFeed(this.client, `/v1/instagram/hashtags/${tag}/top`, options);
   }
 
-  /** Get the most recent media for a hashtag. */
+  /**
+   * Get the most recent media for a hashtag.
+   * @deprecated Temporarily unavailable — authenticated data is temporarily offline.
+   */
   async recent(
     tag: string,
     options: { amount?: number; cursor?: string } = {}

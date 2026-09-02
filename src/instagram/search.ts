@@ -48,7 +48,10 @@ export class SearchClient {
     });
   }
 
-  /** Search hashtags. */
+  /**
+   * Search hashtags.
+   * @deprecated Temporarily unavailable — authenticated data is temporarily offline.
+   */
   async hashtags(query: string): Promise<Paginated<Hashtag>> {
     return this.client.request<Paginated<Hashtag>>("/v1/instagram/search/hashtags", {
       params: { query },
@@ -85,7 +88,10 @@ export class SearchClient {
     });
   }
 
-  /** Get blended "top" results (users, hashtags, and places). */
+  /**
+   * Get blended "top" results (users, hashtags, and places).
+   * @deprecated Temporarily unavailable — authenticated data is temporarily offline.
+   */
   async top(query: string): Promise<SearchTopResponse> {
     return this.client.request<SearchTopResponse>("/v1/instagram/search/top", {
       params: { query },

@@ -44,7 +44,10 @@ export class UsersClient {
     return this.client.request<UserAbout>(`/v1/instagram/users/${username}/about`);
   }
 
-  /** Get accounts related/suggested for a user. */
+  /**
+   * Get accounts related/suggested for a user.
+   * @deprecated Temporarily unavailable — authenticated data is temporarily offline.
+   */
   async related(username: string): Promise<Paginated<UserShort>> {
     return this.client.request<Paginated<UserShort>>(`/v1/instagram/users/${username}/related`);
   }
