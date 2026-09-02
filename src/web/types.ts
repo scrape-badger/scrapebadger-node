@@ -97,6 +97,28 @@ export interface ScrapeResult {
   ai_extraction: Record<string, unknown> | string | unknown[] | null;
   ai_model: string | null;
   ai_error: string | null;
+  /**
+   * Whether the `wait_for` selector appeared within `wait_timeout`. Null when
+   * no `wait_for` was requested. A miss never arrives as a success — the API
+   * answers `422 wait_for_timeout` and nothing is charged.
+   */
+  wait_for_found?: boolean | null;
+  /**
+   * One entry per executed `js_scenario` step, in order: `step`, `action`,
+   * `selector`, `ok`, `error`, `url` (the page URL right after the step).
+   * Execution stops at the first failed step; a failed step is a free
+   * `422 js_scenario_failed`. Null when no scenario ran.
+   */
+  js_scenario_report?: JsScenarioStepReport[] | null;
+}
+
+export interface JsScenarioStepReport {
+  step: number;
+  action: string;
+  selector: string | null;
+  ok: boolean;
+  error: string | null;
+  url: string | null;
 }
 
 export interface DetectOptions {
