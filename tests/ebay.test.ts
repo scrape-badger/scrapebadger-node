@@ -119,6 +119,8 @@ const COMPLETED_FIXTURE: EbaySearchResponse = {
   results: [{ ...SEARCH_RESULT, sold_date: "2 Jul 2026", sold_date_at: "2026-07-02" }],
 };
 
+const BY_IMAGE_FIXTURE: EbaySearchResponse = { ...SEARCH_FIXTURE, query: null };
+
 const ITEM_FIXTURE: EbayItemDetailResponse = {
   domain: "com",
   item: {
@@ -384,6 +386,71 @@ describe("EbayClient.search", () => {
     expect(url).toContain("min_price=100");
     expect(url).toContain("max_price=500");
     expect(url).toContain("free_shipping=true");
+  });
+
+  it("searchByImage POSTs to /v1/ebay/search/by-image with a JSON body", async () => {
+    mockFetch(BY_IMAGE_FIXTURE);
+    const result = await makeClient().ebay.search.searchByImage({
+      image_url: "https://example.com/sneaker.jpg",
+    });
+
+    const { url, init } = capturedRequest();
+    expect(init.method).toBe("POST");
+    expect(url).toBe("https://api.scrapebadger.com/v1/ebay/search/by-image");
+    expect(JSON.parse(init.body as string)).toEqual({
+      image_url: "https://example.com/sneaker.jpg",
+    });
+    expect(result.query).toBeNull();
+    expect(result.results[0].item_id).toBe("123456789012");
+  });
+
+  it("searchByImage passes the image and every filter in the body, and never sort_by", async () => {
+    mockFetch(BY_IMAGE_FIXTURE);
+    await makeClient().ebay.search.searchByImage({
+      image_base64: "aGVsbG8=",
+      domain: "co.uk",
+      category_id: "175672",
+      page: 2,
+      per_page: 120,
+      condition: "graded",
+      buying_format: "auction",
+      min_price: 100,
+      max_price: 500,
+      free_shipping: true,
+      location: "domestic",
+      language: "japanese",
+    });
+
+    const { init } = capturedRequest();
+    const body = JSON.parse(init.body as string) as Record<string, unknown>;
+    expect(body).toEqual({
+      image_base64: "aGVsbG8=",
+      domain: "co.uk",
+      category_id: "175672",
+      page: 2,
+      per_page: 120,
+      condition: "graded",
+      buying_format: "auction",
+      min_price: 100,
+      max_price: 500,
+      free_shipping: true,
+      location: "domestic",
+      language: "japanese",
+    });
+    expect(body).not.toHaveProperty("sort_by");
+  });
+
+  it("searchByImage rejects neither or both image inputs without calling fetch", async () => {
+    mockFetch(BY_IMAGE_FIXTURE);
+    const search = makeClient().ebay.search;
+
+    await expect(search.searchByImage({})).rejects.toThrow(
+      "provide exactly one of image_url or image_base64"
+    );
+    await expect(
+      search.searchByImage({ image_url: "https://example.com/a.jpg", image_base64: "aGVsbG8=" })
+    ).rejects.toThrow("provide exactly one of image_url or image_base64");
+    expect(fetch).not.toHaveBeenCalled();
   });
 
   it("completed sends GET to /v1/ebay/completed and returns sold results", async () => {

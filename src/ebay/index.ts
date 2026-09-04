@@ -50,8 +50,11 @@ export type {
   EbaySortBy,
   EbayCondition,
   EbayBuyingFormat,
+  EbayLocation,
+  EbayLanguage,
   // Request params
   EbaySearchParams,
+  EbaySearchByImageParams,
   EbayCompletedParams,
   EbayItemParams,
   EbayReviewsParams,

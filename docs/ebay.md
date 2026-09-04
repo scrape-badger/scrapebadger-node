@@ -1,6 +1,6 @@
 # eBay API
 
-The ScrapeBadger eBay API provides access to eBay marketplace data across 12 endpoints over 18 markets: keyword search, completed/sold listings, item detail, item reviews, seller profile/items/feedback, category browse, category list, autocomplete, and reference markets. All methods are available via `client.ebay`.
+The ScrapeBadger eBay API provides access to eBay marketplace data across 12 endpoints over 18 markets: keyword search, search by image, completed/sold listings, item detail, item reviews, seller profile/items/feedback, category browse, category list, autocomplete, and reference markets. All methods are available via `client.ebay`.
 
 [Back to main README](../README.md)
 
@@ -8,7 +8,7 @@ The ScrapeBadger eBay API provides access to eBay marketplace data across 12 end
 
 | Sub-client | Methods | Endpoints |
 |------------|---------|-----------|
-| `client.ebay.search` | `search`, `completed`, `autocomplete` | `/v1/ebay/search`, `/v1/ebay/completed`, `/v1/ebay/autocomplete` |
+| `client.ebay.search` | `search`, `searchByImage`, `completed`, `autocomplete` | `/v1/ebay/search`, `/v1/ebay/search/by-image`, `/v1/ebay/completed`, `/v1/ebay/autocomplete` |
 | `client.ebay.items` | `get`, `reviews` | `/v1/ebay/items/{itemId}`, `.../reviews` |
 | `client.ebay.sellers` | `get`, `items`, `feedback` | `/v1/ebay/sellers/{username}`, `.../items`, `.../feedback` |
 | `client.ebay.categories` | `browse`, `list` | `/v1/ebay/categories/{categoryId}/items`, `/v1/ebay/categories` |
@@ -17,8 +17,10 @@ The ScrapeBadger eBay API provides access to eBay marketplace data across 12 end
 ## Param enums
 
 - `sort_by`: `best_match` | `ending_soonest` | `newly_listed` | `price_low_to_high` | `price_high_to_low`
-- `condition`: `new` | `open_box` | `refurbished` | `used` | `for_parts`
+- `condition`: `new` | `open_box` | `refurbished` | `used` | `for_parts` | `graded` | `ungraded` (`graded`/`ungraded` are eBay's trading-card conditions)
 - `buying_format`: `auction` | `buy_it_now` | `best_offer`
+- `location`: `domestic` | `worldwide` (search by image)
+- `language`: `english` | `japanese` | `chinese` | `korean` (search by image)
 - `per_page`: `60` | `120` | `240` (clamped)
 - `domain` (default `"com"`): `com`, `co.uk`, `de`, `fr`, `it`, `es`, `com.au`, `ca`, `at`, `ch`, `be`, `ie`, `nl`, `pl`, `com.hk`, `com.sg`, `com.my`, `ph` (aliases: `us`→`com`, `uk`/`gb`→`co.uk`, `au`→`com.au`)
 
@@ -66,6 +68,36 @@ const sold = await client.ebay.search.completed({ query: "nintendo switch" });
 
 // Autocomplete
 const suggestions = await client.ebay.search.autocomplete("ipho");
+```
+
+### Search by Image
+
+`searchByImage` runs eBay's own visual search — what the camera icon in eBay's
+search bar does. Supply the picture as `image_url` (a public http(s) URL we
+download) or as `image_base64` (JPEG or PNG, at most 10 MB decoded; a
+`data:image/jpeg;base64,...` URL is also accepted). Exactly one of the two is
+required — passing neither or both throws before the request is sent.
+
+It costs 10 credits, returns the same shape as `search` with `query: null`, and
+takes no `sort_by`: eBay ignores sorting on a visual results page.
+
+```typescript
+import { readFileSync } from "node:fs";
+
+const visual = await client.ebay.search.searchByImage({
+  image_url: "https://example.com/sneaker.jpg",
+  domain: "com",
+  condition: "used",
+  max_price: 200,
+});
+for (const item of visual.results) {
+  console.log(`${item.position}. ${item.title} - ${item.price?.raw ?? "N/A"}`);
+}
+
+// Or upload the image yourself
+const byUpload = await client.ebay.search.searchByImage({
+  image_base64: readFileSync("./photo.jpg").toString("base64"),
+});
 ```
 
 ### Item Detail / Reviews
