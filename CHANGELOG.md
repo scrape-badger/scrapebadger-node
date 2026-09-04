@@ -5,6 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.42.0] - 2026-09-04
+
+### Added
+- **`ebay.search.searchByImage()` — eBay's own visual search**, what the camera
+  icon in eBay's search bar does. `POST /v1/ebay/search/by-image`, 10 credits.
+  Supply the picture as `image_url` (a public http(s) URL the API downloads) or
+  as `image_base64` (a bare JPEG/PNG payload or a `data:image/jpeg;base64,...`
+  URL, at most 10 MB decoded) — exactly one of the two, enforced client-side so
+  the wrong shape costs no round trip. Returns the same `SearchResponse` as
+  `search()` with `query: null`. Deliberately no `sort_by`: eBay ignores sorting
+  on a visual results page. Takes `domain`, `category_id`, `page`, `per_page`,
+  `condition`, `buying_format`, `min_price`, `max_price`, `free_shipping`, plus
+  two filters the keyword endpoints do not expose — `location`
+  (`domestic`/`worldwide`) and `language` (`english`/`japanese`/`chinese`/
+  `korean`). New types `EbaySearchByImageParams`, `EbayLocation`,
+  `EbayLanguage`. (SB-001070)
+
+### Fixed
+- **`EbayCondition` gains `graded` and `ungraded`** — eBay's trading-card
+  conditions (slabbed vs raw). The API has accepted them on `search`,
+  `completed` and search-by-image alike; the union here was stale, so every eBay
+  method picks up the fix.
+
 ## [0.41.0] - 2026-09-02
 
 ### Added
