@@ -20,6 +20,15 @@ export interface ChatGPTAskParams {
   country?: string;
   /** Whether ChatGPT should browse (default: "auto") */
   web_search?: ChatGPTWebSearchMode;
+  /**
+   * Public http(s) URL of an image to attach. ChatGPT looks at the picture and
+   * answers about it (JPEG/PNG/GIF/WEBP/BMP, up to 5 MB). An image ask takes
+   * noticeably longer — allow 90-150s.
+   *
+   * ChatGPT will NOT generate an image: anonymous chatgpt.com gates that behind a
+   * login.
+   */
+  image_url?: string;
 }
 
 /** Parameters for the brand-visibility endpoint. */
@@ -106,6 +115,14 @@ export interface ChatGPTSearchResult {
 // =============================================================================
 
 /** A ChatGPT answer with its sources. */
+/** An image the answer itself displayed. */
+export interface MediaItem {
+  /** Image URL. */
+  url: string;
+  /** Alt text, when one was supplied. */
+  title?: string | null;
+}
+
 export interface ChatGPTAskResponse {
   /** The prompt that was sent */
   prompt: string;
@@ -119,6 +136,11 @@ export interface ChatGPTAskResponse {
   search_results: ChatGPTSearchResult[];
   /** Distinct domains across the sources */
   source_domains: string[];
+  /**
+   * Images the answer displayed. Never a generated image — see
+   * `image_url` on the params.
+   */
+  images: MediaItem[];
   /** Whether ChatGPT ACTUALLY browsed the web */
   /** True when the render budget expired mid-answer; `answer` is partial. */
   truncated: boolean;
