@@ -84,7 +84,7 @@ const client = new ScrapeBadger();
 | **Amazon** | 14 endpoints — search, autocomplete, product detail, offers, reviews, bestsellers, new releases, deals, category browse, seller profile/products/feedback, markets, categories | [Amazon Guide](docs/amazon.md) |
 | **Shopee** | 6 endpoints across 11 markets (sg, my, ph, id, vn, th, tw, br, co, cl, mx) — product search, category items, product detail, reviews, category tree, markets | [Shopee Guide](docs/shopee.md) |
 | **TikTok** | 26 endpoints — user profile/videos/followers/following/liked/reposts, video detail/comments/replies/related/transcript, oEmbed, hashtag detail/videos, music detail/videos, search (general/videos/users/hashtags), trending (videos/hashtags/songs), ad library, regions | [TikTok Guide](docs/tiktok.md) |
-| **eBay** | 12 endpoints across 18 markets — search, completed/sold listings, item detail, item reviews, seller profile/items/feedback, category browse, categories, autocomplete, markets | [eBay Guide](docs/ebay.md) |
+| **eBay** | 12 endpoints across 18 markets — search, search by image, completed/sold listings, item detail, item reviews, seller profile/items/feedback, category browse, categories, autocomplete, markets | [eBay Guide](docs/ebay.md) |
 | **Walmart** | 11 endpoints (walmart.com, US-only) — search, category browse, deals feed, autocomplete, product detail, reviews, seller profile/products, store detail with nearby stores, markets |
 | **Bing** | 6 endpoints — web search (with ads + related searches), image search, video search, news vertical, autocomplete, markets |
 | **DuckDuckGo** | 7 endpoints — web search (with instant-answer abstract), image search, news vertical, video search, autocomplete, instant answers, regions |

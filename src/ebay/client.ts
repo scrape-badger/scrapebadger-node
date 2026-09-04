@@ -15,7 +15,7 @@ import { ReferenceClient } from "./reference.js";
  * eBay API client with access to all eBay endpoints.
  *
  * Provides sub-clients for different resource types:
- * - `search` - Active search, completed/sold search, and autocomplete
+ * - `search` - Active search, search by image, completed/sold search, and autocomplete
  * - `items` - Item detail and catalog product reviews
  * - `sellers` - Seller profile, storefront items, and feedback
  * - `categories` - Category browse and reference category list
@@ -27,6 +27,11 @@ import { ReferenceClient } from "./reference.js";
  *
  * // Search active listings
  * const results = await client.ebay.search.search({ query: "nintendo switch" });
+ *
+ * // Visual search — eBay's camera icon
+ * const visual = await client.ebay.search.searchByImage({
+ *   image_url: "https://example.com/sneaker.jpg",
+ * });
  *
  * // Sold-price history
  * const sold = await client.ebay.search.completed({ query: "nintendo switch" });
@@ -48,7 +53,7 @@ import { ReferenceClient } from "./reference.js";
  * ```
  */
 export class EbayClient {
-  /** Client for active search, completed/sold search, and autocomplete */
+  /** Client for active search, search by image, completed/sold search, and autocomplete */
   readonly search: SearchClient;
 
   /** Client for item detail and catalog product reviews */

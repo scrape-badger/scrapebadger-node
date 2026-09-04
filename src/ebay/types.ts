@@ -430,11 +430,28 @@ export interface CategoriesResponse {
 export type EbaySortBy =
   "best_match" | "ending_soonest" | "newly_listed" | "price_low_to_high" | "price_high_to_low";
 
-/** Item condition filter. */
-export type EbayCondition = "new" | "open_box" | "refurbished" | "used" | "for_parts";
+/**
+ * Item condition filter.
+ *
+ * `graded` / `ungraded` are eBay's trading-card conditions (slabbed vs raw).
+ */
+export type EbayCondition =
+  | "new"
+  | "open_box"
+  | "refurbished"
+  | "used"
+  | "for_parts"
+  | "graded"
+  | "ungraded";
 
 /** Buying-format filter. */
 export type EbayBuyingFormat = "auction" | "buy_it_now" | "best_offer";
+
+/** Item-location filter. */
+export type EbayLocation = "domestic" | "worldwide";
+
+/** Listing-language filter (an eBay item aspect). */
+export type EbayLanguage = "english" | "japanese" | "chinese" | "korean";
 
 /** Parameters for searching active eBay listings. */
 export interface EbaySearchParams {
@@ -460,6 +477,44 @@ export interface EbaySearchParams {
   max_price?: number;
   /** Restrict to free-shipping listings */
   free_shipping?: boolean;
+}
+
+/**
+ * Parameters for searching active eBay listings by image.
+ *
+ * Exactly one of `image_url` / `image_base64` is required. There is no
+ * `sort_by`: eBay ignores sorting on a visual results page.
+ */
+export interface EbaySearchByImageParams {
+  /** Public http(s) URL of the image to search with */
+  image_url?: string;
+  /**
+   * The image itself, base64-encoded. JPEG and PNG only, at most 10 MB
+   * decoded. A `data:image/jpeg;base64,...` URL is also accepted.
+   */
+  image_base64?: string;
+  /** Marketplace domain (default: "com") */
+  domain?: string;
+  /** Restrict to a category id */
+  category_id?: string;
+  /** Page number (1-indexed) */
+  page?: number;
+  /** Results per page (60, 120 or 240; clamped) */
+  per_page?: number;
+  /** Item condition filter */
+  condition?: EbayCondition;
+  /** Buying-format filter */
+  buying_format?: EbayBuyingFormat;
+  /** Minimum price filter */
+  min_price?: number;
+  /** Maximum price filter */
+  max_price?: number;
+  /** Restrict to free-shipping listings */
+  free_shipping?: boolean;
+  /** Item-location filter */
+  location?: EbayLocation;
+  /** Listing-language filter */
+  language?: EbayLanguage;
 }
 
 /** Parameters for searching completed / sold eBay listings. */
