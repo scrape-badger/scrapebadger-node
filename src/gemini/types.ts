@@ -20,6 +20,15 @@ export interface GeminiAskParams {
   country?: string;
   /** Whether Gemini should ground with web search (default: "auto") */
   web_search?: GeminiWebSearchMode;
+  /**
+   * Public http(s) URL of an image to attach. Gemini looks at the picture and
+   * answers about it (JPEG/PNG/GIF/WEBP/BMP, up to 5 MB). An image ask takes
+   * noticeably longer — allow 90-150s.
+   *
+   * Gemini will NOT generate an image: anonymous gemini.google.com gates that behind a
+   * login.
+   */
+  image_url?: string;
 }
 
 /** Parameters for the brand-visibility endpoint. */
@@ -90,6 +99,14 @@ export interface GeminiSearchResult {
 // =============================================================================
 
 /** A Gemini answer with its sources. */
+/** An image the answer itself displayed. */
+export interface MediaItem {
+  /** Image URL. */
+  url: string;
+  /** Alt text, when one was supplied. */
+  title?: string | null;
+}
+
 export interface GeminiAskResponse {
   /** The prompt that was sent */
   prompt: string;
@@ -103,6 +120,11 @@ export interface GeminiAskResponse {
   search_results: GeminiSearchResult[];
   /** Distinct domains across the sources */
   source_domains: string[];
+  /**
+   * Images the answer displayed. Never a generated image — see
+   * `image_url` on the params.
+   */
+  images: MediaItem[];
   /** True when the render budget expired mid-answer; `answer` is partial. */
   truncated: boolean;
   /** Whether Gemini ACTUALLY grounded the answer with a web search */

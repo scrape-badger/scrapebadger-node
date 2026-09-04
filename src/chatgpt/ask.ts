@@ -40,6 +40,9 @@ export class AskClient {
    * @param params.prompt - The prompt to send (max 4096 characters).
    * @param params.country - ISO-3166 alpha-2 egress country (default: "US").
    * @param params.web_search - "auto", "force", or "off" (default: "auto").
+   * @param params.image_url - Public image URL to attach; ChatGPT answers about
+   *   the picture. It will NOT generate one — anonymous chatgpt.com requires a login
+   *   for that. Allow 90-150s for an image ask.
    * @returns The answer, its citations, and the full retrieved search set.
    *
    * @example
@@ -61,6 +64,7 @@ export class AskClient {
         prompt: params.prompt,
         country: params.country,
         web_search: params.web_search,
+        image_url: params.image_url,
       },
     });
   }
