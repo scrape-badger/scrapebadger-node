@@ -38,9 +38,12 @@ export class AskClient {
    * @param params.prompt - The prompt to send (max 4096 characters).
    * @param params.country - ISO-3166 alpha-2 egress country (default: "US").
    * @param params.web_search - "auto", "force", or "off" (default: "auto").
-   * @param params.image_url - Public image URL to attach; Gemini answers about
-   *   the picture. It will NOT generate one — anonymous gemini.google.com requires a login
-   *   for that. Allow 90-150s for an image ask.
+   * @param params.image_url - NOT SUPPORTED; returns 422 and is never billed.
+   *   Signed-out Gemini accepts the upload and then refuses to answer about it
+   *   (PERMISSION_DENIED from its own generate call), so the API fails fast
+   *   rather than charging for a request that cannot succeed. Use
+   *   `chatgpt.ask` for image input. Gemini will not generate one either —
+   *   anonymous gemini.google.com requires a login for that.
    * @returns The answer, its citations, and the full retrieved search set.
    *
    * @example
