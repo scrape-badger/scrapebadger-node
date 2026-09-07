@@ -175,8 +175,34 @@ export class BaseClient {
     let lastError: Error | undefined;
 
     for (let attempt = 0; attempt <= this.config.maxRetries; attempt++) {
+      let retryAfterMs = 0;
       try {
         const httpResponse = await this.fetchWithTimeout(url, options);
+        const retryAfter = httpResponse.headers.get("Retry-After")?.trim();
+        if (retryAfter) {
+          let requestedDelay = 0;
+          if (/^\d+$/.test(retryAfter)) {
+            requestedDelay = Number(retryAfter) * 1000;
+          } else if (
+            /^(?:(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun), \d{2} [A-Z][a-z]{2} \d{4}|(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday), \d{2}-[A-Z][a-z]{2}-\d{2}) \d{2}:\d{2}:\d{2} GMT$/.test(
+              retryAfter
+            )
+          ) {
+            // Date.parse also accepts non-HTTP dates, so check the shape first.
+            requestedDelay = Date.parse(retryAfter) - Date.now();
+          } else if (
+            /^(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun) [A-Z][a-z]{2} [ \d]\d \d{2}:\d{2}:\d{2} \d{4}$/.test(
+              retryAfter
+            )
+          ) {
+            // HTTP's obsolete asctime format is UTC despite having no zone.
+            requestedDelay = Date.parse(`${retryAfter} GMT`) - Date.now();
+          }
+          // Ignore unusable values, including delays that overflow Node timers.
+          if (requestedDelay > 0 && requestedDelay <= 2_147_483_647) {
+            retryAfterMs = requestedDelay;
+          }
+        }
         const data = await this.handleResponse<T>(httpResponse);
         const rateLimit = this.parseRateLimitHeaders(httpResponse.headers);
         return { data, rateLimit };
@@ -195,7 +221,7 @@ export class BaseClient {
         }
 
         // Calculate delay with exponential backoff
-        const delay = this.config.retryDelay * Math.pow(2, attempt);
+        const delay = Math.max(this.config.retryDelay * Math.pow(2, attempt), retryAfterMs);
         const delaySec = Math.round(delay / 1000);
         const attemptNum = attempt + 1;
         const maxRetries = this.config.maxRetries;
@@ -209,7 +235,7 @@ export class BaseClient {
           if (error.retryAfter) {
             const retryDelay = (error.retryAfter - Date.now() / 1000) * 1000;
             if (retryDelay > 0 && retryDelay < 60000) {
-              await this.sleep(retryDelay);
+              await this.sleep(Math.max(retryDelay, retryAfterMs));
               continue;
             }
           }
