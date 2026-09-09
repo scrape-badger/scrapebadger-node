@@ -5,10 +5,10 @@
  */
 
 import type { BaseClient } from "../internal/client.js";
-import type { PropertyResponse } from "./types.js";
+import type { BuildingResponse, PropertyResponse } from "./types.js";
 
 /**
- * Client for the zillow property detail endpoint.
+ * Client for the zillow property- and building-detail endpoints.
  *
  * @example
  * ```typescript
@@ -16,6 +16,11 @@ import type { PropertyResponse } from "./types.js";
  *
  * const { property } = await client.zillow.properties.getProperty("2078029085");
  * console.log(property.street_address, property.price);
+ *
+ * const { building } = await client.zillow.properties.getBuilding(
+ *   "https://www.zillow.com/apartments/kansas-city-mo/brookside-51/CkBJqt/",
+ * );
+ * console.log(building.name, building.rent_min, building.units?.length);
  * ```
  */
 export class PropertiesClient {
@@ -37,5 +42,27 @@ export class PropertiesClient {
    */
   async getProperty(zpid: string): Promise<PropertyResponse> {
     return this.client.request<PropertyResponse>(`/v1/zillow/property/${zpid}`);
+  }
+
+  /**
+   * Get a Zillow multifamily building (apartment community) by its URL.
+   *
+   * Zillow serves multi-unit rentals on `/apartments/...` and `/b/...` pages,
+   * which {@link getProperty} cannot read. Pass the `detail_url` of a search
+   * result whose `home_type` is `"BUILDING"`.
+   *
+   * Returns floor plans and every available unit with rent, base rent,
+   * required monthly fees, sqft, beds/baths and move-in date, plus amenities,
+   * unit features, policies, special offers, office hours, pet policy,
+   * schools, photos and walk/transit/bike scores.
+   *
+   * @param url - Full Zillow building URL.
+   * @returns Building detail wrapped in `{ building }`.
+   * @throws NotFoundError - If the building doesn't exist.
+   */
+  async getBuilding(url: string): Promise<BuildingResponse> {
+    return this.client.request<BuildingResponse>("/v1/zillow/building", {
+      params: { url },
+    });
   }
 }

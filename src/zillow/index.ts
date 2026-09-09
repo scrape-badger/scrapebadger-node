@@ -22,6 +22,7 @@ export type {
   MarketInfo as ZillowMarketInfo,
   // Search results
   Listing as ZillowListing,
+  UnitSummary as ZillowUnitSummary,
   // Property detail
   Address as ZillowAddress,
   ListingSubType as ZillowListingSubType,
@@ -35,6 +36,10 @@ export type {
   MortgageRates as ZillowMortgageRates,
   HomeFacts as ZillowHomeFacts,
   Property as ZillowProperty,
+  // Multifamily building detail
+  BuildingUnit as ZillowBuildingUnit,
+  BuildingFloorPlan as ZillowBuildingFloorPlan,
+  Building as ZillowBuilding,
   // Agent profile
   AgentReview as ZillowAgentReview,
   PastSale as ZillowPastSale,
@@ -45,6 +50,7 @@ export type {
   // Response envelopes
   SearchResponse as ZillowSearchResponse,
   PropertyResponse as ZillowPropertyResponse,
+  BuildingResponse as ZillowBuildingResponse,
   AgentResponse as ZillowAgentResponse,
   AutocompleteResponse as ZillowAutocompleteResponse,
   MarketsResponse as ZillowMarketsResponse,

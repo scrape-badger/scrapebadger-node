@@ -10,6 +10,7 @@ import { ZillowClient } from "../src/zillow/client.js";
 import type {
   ZillowSearchResponse,
   ZillowPropertyResponse,
+  ZillowBuildingResponse,
   ZillowAgentResponse,
   ZillowAutocompleteResponse,
   ZillowMarketsResponse,
@@ -73,6 +74,24 @@ describe("ZillowClient", () => {
     const res: ZillowPropertyResponse = await makeClient().zillow.properties.getProperty("42");
     expect(capturedUrl()).toContain("/v1/zillow/property/42");
     expect(res.property.zpid).toBe("42");
+  });
+
+  it("getBuilding() routes to /v1/zillow/building with the url param", async () => {
+    mockFetch({
+      building: {
+        name: "Brookside 51",
+        rent_min: 2015,
+        units: [{ unit_number: "Unit 243", beds: 1, sqft: 795, price: 2015 }],
+      },
+    });
+    const buildingUrl = "https://www.zillow.com/apartments/kansas-city-mo/brookside-51/CkBJqt/";
+    const res: ZillowBuildingResponse =
+      await makeClient().zillow.properties.getBuilding(buildingUrl);
+    const url = capturedUrl();
+    expect(url).toContain("/v1/zillow/building");
+    expect(url).toContain(encodeURIComponent(buildingUrl));
+    expect(res.building.name).toBe("Brookside 51");
+    expect(res.building.units?.[0]?.price).toBe(2015);
   });
 
   it("getAgent() routes to /v1/zillow/agent with params", async () => {

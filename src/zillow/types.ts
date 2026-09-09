@@ -85,6 +85,19 @@ export interface MarketInfo {
  * Merges the search `listResult` top-level with its richer
  * `hdpData.homeInfo` sub-object.
  */
+/**
+ * A building card's per-bedroom rent rollup.
+ *
+ * Kept as rendered text ("$2,015+") because a card advertises a starting price
+ * with a qualifier, not a resolvable single number.
+ */
+export interface UnitSummary {
+  beds?: string | null;
+  price_text?: string | null;
+  price_min?: number | null;
+  room_for_rent?: boolean | null;
+}
+
 export interface Listing {
   position: number;
   zpid?: string | null;
@@ -147,6 +160,14 @@ export interface Listing {
   open_house_start?: string | null;
   open_house_end?: string | null;
   photos?: string[];
+  // Multi-unit rental buildings. A building card has no single price — its
+  // inventory is a per-bedroom rollup — so `price` is the cheapest advertised
+  // unit and these carry the rest.
+  is_building?: boolean | null;
+  building_name?: string | null;
+  lot_id?: string | null;
+  units_available?: number | null;
+  unit_summaries?: UnitSummary[];
 }
 
 // =============================================================================
@@ -657,9 +678,131 @@ export interface SearchResponse {
   scraped_at?: string | null;
 }
 
+// =============================================================================
+// Multifamily building detail
+// =============================================================================
+
+/**
+ * One rentable unit inside a multifamily floor plan.
+ *
+ * `price` is the total monthly leasing price Zillow advertises; `base_rent`
+ * excludes the mandatory monthly fees, which are carried separately. Which of
+ * the two the building headlines is `list_price_includes_required_fees`.
+ */
+export interface BuildingUnit {
+  unit_number?: string | null;
+  zpid?: string | null;
+  beds?: number | null;
+  baths?: number | null;
+  sqft?: number | null;
+  price?: number | null;
+  base_rent?: number | null;
+  required_monthly_fee_min?: number | null;
+  required_monthly_fee_max?: number | null;
+  list_price_includes_required_fees?: boolean | null;
+  available_from_utc?: number | null;
+  available_from_at?: string | null;
+  allowed_pets?: string[];
+}
+
+/** A floor-plan model, which groups one or more units of the same layout. */
+export interface BuildingFloorPlan {
+  name?: string | null;
+  beds?: number | null;
+  baths?: number | null;
+  sqft?: number | null;
+  price_min?: number | null;
+  price_max?: number | null;
+  base_rent_min?: number | null;
+  base_rent_max?: number | null;
+  required_monthly_fee_min?: number | null;
+  required_monthly_fee_max?: number | null;
+  available_from_utc?: number | null;
+  available_from_at?: string | null;
+  lease_term?: string | null;
+  description?: string | null;
+  photos?: string[];
+  units?: BuildingUnit[];
+  units_available?: number;
+}
+
+/**
+ * A Zillow multifamily building (an apartment community, not a home).
+ *
+ * Zillow serves multi-unit rentals on `/apartments/...` and `/b/...` pages,
+ * which the property endpoint cannot read.
+ */
+export interface Building {
+  url?: string | null;
+  lot_id?: string | null;
+  zpid?: string | null;
+  name?: string | null;
+  building_type?: string | null;
+  home_types?: string[];
+  provider_listing_id?: string | null;
+
+  street_address?: string | null;
+  full_address?: string | null;
+  city?: string | null;
+  state?: string | null;
+  zipcode?: string | null;
+  county?: string | null;
+  country?: string | null;
+  neighborhood?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
+  time_zone?: string | null;
+
+  phone?: string | null;
+  contact_name?: string | null;
+  rental_applications_accepted?: string | null;
+
+  currency?: string | null;
+  rent_min?: number | null;
+  rent_max?: number | null;
+  base_rent_min?: number | null;
+  base_rent_max?: number | null;
+  list_price_includes_required_fees?: boolean | null;
+  units_available?: number | null;
+  unit_count?: number | null;
+
+  description?: string | null;
+  building_details?: string[];
+  amenities?: string[];
+  unit_features?: string[];
+  policies?: string[];
+  special_features?: string[];
+  special_offers?: string[];
+  office_hours?: string[];
+  allowed_pets?: string[];
+
+  walk_score?: number | null;
+  transit_score?: number | null;
+  bike_score?: number | null;
+
+  is_waitlisted?: boolean | null;
+  is_low_income?: boolean | null;
+  is_senior_housing?: boolean | null;
+  is_student_housing?: boolean | null;
+
+  floor_plans?: BuildingFloorPlan[];
+  /** Every unit across every floor plan — the shape most rent-comp callers want. */
+  units?: BuildingUnit[];
+  schools?: School[];
+  photos?: Photo[];
+
+  scraped_utc?: number | null;
+  scraped_at?: string | null;
+}
+
 /** Response from the /property endpoints. */
 export interface PropertyResponse {
   property: Property;
+}
+
+/** Response from the /building endpoint. */
+export interface BuildingResponse {
+  building: Building;
 }
 
 /** Response from the /agent endpoint. */
