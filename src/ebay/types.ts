@@ -436,13 +436,7 @@ export type EbaySortBy =
  * `graded` / `ungraded` are eBay's trading-card conditions (slabbed vs raw).
  */
 export type EbayCondition =
-  | "new"
-  | "open_box"
-  | "refurbished"
-  | "used"
-  | "for_parts"
-  | "graded"
-  | "ungraded";
+  "new" | "open_box" | "refurbished" | "used" | "for_parts" | "graded" | "ungraded";
 
 /** Buying-format filter. */
 export type EbayBuyingFormat = "auction" | "buy_it_now" | "best_offer";
