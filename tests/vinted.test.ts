@@ -605,3 +605,25 @@ describe("VintedClient.reference.markets", () => {
     expect(result.markets[1].code).toBe("de");
   });
 });
+
+it("sends nested mobile inputs and preserves search continuation", async () => {
+  mockFetch({ data: { items: [] } });
+  const client = makeClient();
+  const payload = { market: "fr", parameters: { catalog_id: "1242", attributes: [] } };
+  await client.vinted.readVintedMobileData("sold-comparables", payload);
+  const [url, init] = vi.mocked(fetch).mock.calls[0]!;
+  expect(String(url)).toContain("/v1/vinted/mobile/sold-comparables");
+  expect(JSON.parse(init!.body as string)).toEqual(payload);
+  mockFetch({ items: [], pagination: { time: 123 }, market: "fr" });
+  await client.vinted.search.search({
+    query: "nike",
+    size_ids: "206",
+    material_ids: "43",
+    time: 123,
+    search_session_id: "test",
+  });
+  const searchUrl = new URL(String(vi.mocked(fetch).mock.calls[0]![0]));
+  expect(searchUrl.searchParams.get("size_ids")).toBe("206");
+  expect(searchUrl.searchParams.get("time")).toBe("123");
+  expect(searchUrl.searchParams.get("search_session_id")).toBe("test");
+});

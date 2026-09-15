@@ -93,6 +93,10 @@ export class SearchClient {
         status_ids: params.status_ids,
         order: params.order,
         seller_country: params.seller_country,
+        size_ids: params.size_ids,
+        material_ids: params.material_ids,
+        time: params.time,
+        search_session_id: params.search_session_id,
       },
     });
   }

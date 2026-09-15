@@ -78,6 +78,8 @@ export interface VintedSellerSummary extends VintedUserSummary {
  * A Vinted item summary as returned in search results and listings.
  */
 export interface VintedItemSummary {
+  display_title?: string | null;
+  display_subtitle?: string | null;
   /** Unique item identifier */
   id: number;
   /** Item title */
@@ -85,7 +87,7 @@ export interface VintedItemSummary {
   /** Item price */
   price: VintedPrice;
   /** Brand name */
-  brand_title: string;
+  brand_title: string | null;
   /** Size label */
   size_title: string;
   /** Item condition status, localized to the market */
@@ -286,6 +288,7 @@ export interface VintedMarket {
  * Pagination metadata for list responses.
  */
 export interface VintedPagination {
+  time?: number | null;
   /** Current page number */
   current_page: number;
   /** Total number of pages */
@@ -391,6 +394,10 @@ export interface MarketsResponse {
  * Parameters for searching Vinted items.
  */
 export interface VintedSearchParams {
+  size_ids?: string;
+  material_ids?: string;
+  time?: number;
+  search_session_id?: string;
   /** Search query string */
   query: string;
   /** Market code (default: "fr") */
