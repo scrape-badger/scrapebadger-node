@@ -495,7 +495,7 @@ describe("VintedClient.reference.brands", () => {
     mockFetch(BRANDS_FIXTURE);
     const client = makeClient();
 
-    const result = await client.vinted.reference.brands();
+    const result = await client.vinted.reference.brands({ keyword: "nike" });
 
     const { url, init } = capturedRequest();
     expect(init.method ?? "GET").toBe("GET");
@@ -520,14 +520,18 @@ describe("VintedClient.reference.brands", () => {
     expect(url).toContain("per_page=10");
   });
 
-  it("does not include undefined optional params", async () => {
+  it("omits undefined optional params but always sends keyword", async () => {
+    // keyword is REQUIRED — the API answers 422 without it. This test used to
+    // call brands() with no arguments and assert the URL carried no keyword at
+    // all; fetch was mocked, so the suite encoded a request the real API
+    // rejects.
     mockFetch(BRANDS_FIXTURE);
     const client = makeClient();
 
-    await client.vinted.reference.brands();
+    await client.vinted.reference.brands({ keyword: "nike" });
 
     const { url } = capturedRequest();
-    expect(url).not.toContain("keyword=");
+    expect(url).toContain("keyword=nike");
     expect(url).not.toContain("market=");
     expect(url).not.toContain("per_page=");
   });
