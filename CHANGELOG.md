@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.48.0 — 2026-09-18
+
+- **`vinted.reference.brands` now requires `keyword`.** `GET /v1/vinted/brands` answers `422` without one, so the parameter was never optional — a call that omitted it type-checked and then failed at runtime. Calls that pass a keyword are unaffected.
+
 ## 0.47.1 — 2026-09-15
 
 - **Retried HTTP errors honor `Retry-After`.** The shared retry loop now waits for the server's `Retry-After` — delay-seconds or any of the three HTTP-date forms (the obsolete asctime form read as UTC) — and never below the existing exponential backoff; retry limits, network retries and the server delay floor are unchanged. Malformed, expired or timer-overflowing values fall back to the previous behaviour. This is what keeps a client from re-hitting the AI Mode and SERP capacity `503` early.
