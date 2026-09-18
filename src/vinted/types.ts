@@ -121,6 +121,13 @@ export interface VintedItemSummary {
    * or null. Populated only when the `seller_country` search filter is used.
    */
   seller_country_code: string | null;
+  /**
+   * Visual similarity to the query image, 0-1, where the query image's own
+   * listing scores 1.0. Populated only by `searchByImage`, and only on the
+   * calls where Vinted returns a ranking; null otherwise. A null says nothing
+   * about the item.
+   */
+  similarity_score: number | null;
 }
 
 /**
