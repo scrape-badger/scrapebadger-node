@@ -37,8 +37,9 @@ export class ReferenceClient {
   /**
    * Search for brands by keyword.
    *
-   * @param options - Optional parameters.
-   * @param options.keyword - Brand name to search for.
+   * @param options - Search parameters.
+   * @param options.keyword - Brand name to search for. Required — the API
+   * answers 422 without it, so this was never optional.
    * @param options.market - Market code (default: "fr").
    * @param options.per_page - Number of results per page.
    * @returns Brands matching the keyword.
@@ -56,7 +57,7 @@ export class ReferenceClient {
    * ```
    */
   async brands(
-    options: { keyword?: string; market?: string; per_page?: number } = {}
+    options: { keyword: string; market?: string; per_page?: number }
   ): Promise<BrandsResponse> {
     return this.client.request<BrandsResponse>("/v1/vinted/brands", {
       params: {
