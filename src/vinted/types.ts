@@ -122,10 +122,12 @@ export interface VintedItemSummary {
    */
   seller_country_code: string | null;
   /**
-   * Visual similarity to the query image, 0-1, where the query image's own
-   * listing scores 1.0. Populated only by `searchByImage`, and only on the
-   * calls where Vinted returns a ranking; null otherwise. A null says nothing
-   * about the item.
+   * Visual similarity to the query image, on Vinted's own unbounded scale --
+   * it read 0-1 in Sep 2026 and ~36-44 since, and can change again without
+   * notice. ORDINAL ONLY: rank against the other items in the same response,
+   * never against a fixed threshold and never across responses. Populated
+   * only by `searchByImage`, and only on the calls where Vinted returns a
+   * ranking; null otherwise. A null says nothing about the item.
    */
   similarity_score: number | null;
 }
@@ -148,9 +150,18 @@ export interface VintedItemDetail extends VintedItemSummary {
   category: string[];
   /**
    * Vinted's relative "listed" label, localized (e.g. "Il y a une semaine").
-   * Not an ISO timestamp.
+   * Not an ISO timestamp — some markets render it without a number at all
+   * ("godziny"), so it cannot be parsed into a date. Use `uploaded_at`.
    */
   upload_date: string;
+  /**
+   * Approximate absolute upload time, ISO 8601 UTC (e.g.
+   * "2026-09-23T11:28:44Z"), derived from the earliest photo Vinted
+   * timestamps. A lower bound on age: replacing a photo after listing moves
+   * it forward. Null when Vinted stamps no photo. Item detail only — search
+   * and image search responses carry no photo timestamps.
+   */
+  uploaded_at: string | null;
   /** Whether the item can be purchased */
   can_buy: boolean;
   /** Whether instant buy is enabled */
