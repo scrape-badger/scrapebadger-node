@@ -98,6 +98,8 @@ export interface TikTokVideoMeta {
   download_addr?: string | null;
   /** clean MP4 */
   download_no_watermark_addr?: string | null;
+  /** Required CDN headers from video detail; use with its matching media URLs. */
+  media_headers?: Record<string, string> | null;
   has_watermark?: boolean | null;
   volume_loudness?: number | null;
   volume_peak?: number | null;
