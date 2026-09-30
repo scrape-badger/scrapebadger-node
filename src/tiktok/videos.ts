@@ -100,7 +100,7 @@ export class VideosClient {
    */
   async related(videoId: string, options: TikTokRelatedParams = {}): Promise<VideoListResponse> {
     return this.client.request<VideoListResponse>(`/v1/tiktok/videos/${videoId}/related`, {
-      params: { region: options.region, count: options.count },
+      params: { region: options.region, count: options.count, cursor: options.cursor },
     });
   }
 

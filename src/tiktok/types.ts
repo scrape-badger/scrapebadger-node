@@ -778,6 +778,8 @@ export interface TikTokRelatedParams {
   region?: string;
   /** Number of items to return (1-50) */
   count?: number;
+  /** Opaque continuation cursor; expires after 15 minutes. */
+  cursor?: string;
 }
 
 /** Options for the transcript endpoint. */
@@ -842,7 +844,7 @@ export interface TikTokTrendingVideosParams {
 export interface TikTokTrendingParams {
   /** Content region (ISO 3166-1 alpha-2, default "US") */
   region?: string;
-  /** Trailing window in days (default 7) */
+  /** Historical windows are unavailable; omit this parameter. */
   period?: number;
   /** Number of items to return (1-50) */
   count?: number;

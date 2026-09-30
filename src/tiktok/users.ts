@@ -64,9 +64,7 @@ export class UsersClient {
   /**
    * Get a TikTok user's followers (best-effort; often guest-gated).
    *
-   * @deprecated Requires an authenticated session; currently returns 410.
-   * Kept for forward-compatibility — the endpoint may be re-enabled when
-   * session-based access is supported.
+   * Public data is available without a TikTok account. Hidden lists return 403.
    *
    * @param username - The user's @handle.
    * @param options - Optional parameters (region, count, cursor).
@@ -81,9 +79,7 @@ export class UsersClient {
   /**
    * Get accounts a TikTok user follows (best-effort).
    *
-   * @deprecated Requires an authenticated session; currently returns 410.
-   * Kept for forward-compatibility — the endpoint may be re-enabled when
-   * session-based access is supported.
+   * Public data is available without a TikTok account. Hidden lists return 403.
    *
    * @param username - The user's @handle.
    * @param options - Optional parameters (region, count, cursor).
@@ -98,9 +94,7 @@ export class UsersClient {
   /**
    * Get a TikTok user's liked videos (only if their Liked tab is public).
    *
-   * @deprecated Requires an authenticated session; currently returns 410.
-   * Kept for forward-compatibility — the endpoint may be re-enabled when
-   * session-based access is supported.
+   * Public data is available without a TikTok account. Hidden lists return 403.
    *
    * @param username - The user's @handle.
    * @param options - Optional parameters (region, count).
@@ -108,7 +102,7 @@ export class UsersClient {
    */
   async liked(username: string, options: TikTokUserListParams = {}): Promise<VideoListResponse> {
     return this.client.request<VideoListResponse>(`/v1/tiktok/users/${username}/liked`, {
-      params: { region: options.region, count: options.count },
+      params: { region: options.region, count: options.count, cursor: options.cursor },
     });
   }
 
@@ -121,7 +115,7 @@ export class UsersClient {
    */
   async reposts(username: string, options: TikTokUserListParams = {}): Promise<VideoListResponse> {
     return this.client.request<VideoListResponse>(`/v1/tiktok/users/${username}/reposts`, {
-      params: { region: options.region, count: options.count },
+      params: { region: options.region, count: options.count, cursor: options.cursor },
     });
   }
 }
