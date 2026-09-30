@@ -589,11 +589,23 @@ export interface LensSearchParams {
   language?: string;
   gl?: string;
   hl?: string;
-  /** Bias towards shoppable product matches. */
+  /**
+   * NOT YET SUPPORTED. Accepted for API compatibility and echoed in the
+   * response's `warnings` array; it does not change the results.
+   */
   product?: boolean;
-  /** Include the visual-matches carousel (default: true). */
+  /**
+   * Visual matches are the only surface this endpoint serves, so they are
+   * always returned. `false` is echoed in `warnings`. (default: true)
+   */
   visual_matches?: boolean;
-  /** Restrict to exact-match results only. */
+  /**
+   * NOT YET SUPPORTED. Accepted for API compatibility and echoed in
+   * `warnings`. Google renders its Exact-matches tab client-side and
+   * ScrapeBadger cannot reach it yet, so the response is the full match
+   * grid — it CONTAINS the pages hosting the same image, but Google does
+   * not label which ones those are.
+   */
   exact_matches?: boolean;
 }
 

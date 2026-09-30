@@ -15,12 +15,19 @@ import type { GoogleResponse, LensSearchParams } from "./types.js";
  * parsed from. `related_searches` chips come alongside. Legacy
  * `results` alias retained for backwards compat.
  *
+ * Also carries a `warnings` array naming any parameter that could not be
+ * applied. `product` and `exact_matches` are accepted for API
+ * compatibility but are NOT YET SUPPORTED — Google renders those tabs
+ * client-side — so they always land in `warnings`. `query` does work.
+ *
  * @example
  * ```typescript
  * const out = await client.google.lens.search({
  *   url: "https://example.com/photo.jpg",
- *   product: true, // bias towards shoppable matches
+ *   query: "wallpaper", // text refinement — honoured
  * });
+ * // GoogleResponse is Record<string, unknown>, so narrow before use.
+ * console.warn(out.warnings as string[] | undefined);
  * for (const match of out.lens_results) {
  *   console.log(match.title, match.price?.value, match.price?.currency);
  * }
