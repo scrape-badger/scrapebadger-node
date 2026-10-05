@@ -18,8 +18,8 @@ import type { GoogleResponse, LensSearchParams } from "./types.js";
  * Also carries a `warnings` array naming any parameter that could not be
  * applied. `exact_matches: true` returns just the pages hosting the image,
  * flagged `exact_match`, for most images; when Google does not expose that
- * set the grid comes back and `warnings` says so. `product` is still not
- * supported and always lands in `warnings`.
+ * set the grid comes back and `warnings` says so. `product: true` narrows the same grid to the tiles Google marked
+ * buyable.
  *
  * @example
  * ```typescript
