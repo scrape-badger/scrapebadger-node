@@ -205,6 +205,15 @@ export interface RedditPost {
   thumbnail_width: number | null;
   /** Thumbnail height in pixels */
   thumbnail_height: number | null;
+  /**
+   * Full-resolution original behind the ~140px thumbnail — the only
+   * full-size image a link post has; the poster frame for video.
+   */
+  preview_image: string | null;
+  /** Preview image width in pixels */
+  preview_image_width: number | null;
+  /** Preview image height in pixels */
+  preview_image_height: number | null;
   /** Media metadata */
   media: Record<string, unknown> | null;
   /** Media embed metadata */
