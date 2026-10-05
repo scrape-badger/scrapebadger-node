@@ -16,9 +16,10 @@ import type { GoogleResponse, LensSearchParams } from "./types.js";
  * `results` alias retained for backwards compat.
  *
  * Also carries a `warnings` array naming any parameter that could not be
- * applied. `product` and `exact_matches` are accepted for API
- * compatibility but are NOT YET SUPPORTED — Google renders those tabs
- * client-side — so they always land in `warnings`. `query` does work.
+ * applied. `exact_matches: true` returns just the pages hosting the image,
+ * flagged `exact_match`, for most images; when Google does not expose that
+ * set the grid comes back and `warnings` says so. `product` is still not
+ * supported and always lands in `warnings`.
  *
  * @example
  * ```typescript
