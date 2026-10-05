@@ -49,6 +49,7 @@ export {
   TimeoutError,
   InsufficientCreditsError,
   AccountRestrictedError,
+  PermissionDeniedError,
   ConflictError,
   WebSocketStreamError,
 } from "./internal/exceptions.js";

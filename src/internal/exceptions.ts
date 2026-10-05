@@ -25,6 +25,32 @@ export class AuthenticationError extends ScrapeBadgerError {
 }
 
 /**
+ * Raised when the API key is not permitted to call this API (HTTP 403,
+ * `error: "insufficient_scope"`). Keys can be restricted to specific APIs in
+ * the dashboard; a refused call is not charged.
+ *
+ * Extends `AuthenticationError`, which is what a 403 threw before 0.52.0.
+ */
+export class PermissionDeniedError extends AuthenticationError {
+  /** The API the request needed, e.g. `"twitter"` */
+  readonly requiredScope: string | undefined;
+  /** The APIs this key may call */
+  readonly allowedScopes: string[];
+
+  constructor(
+    message = "This API key is not permitted to call this API.",
+    requiredScope?: string,
+    allowedScopes: string[] = []
+  ) {
+    super(message);
+    this.name = "PermissionDeniedError";
+    this.requiredScope = requiredScope;
+    this.allowedScopes = allowedScopes;
+    Object.setPrototypeOf(this, PermissionDeniedError.prototype);
+  }
+}
+
+/**
  * Raised when rate limit is exceeded.
  */
 export class RateLimitError extends ScrapeBadgerError {
