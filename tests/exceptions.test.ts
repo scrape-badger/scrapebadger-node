@@ -206,4 +206,36 @@ describe("Exceptions", () => {
       }
     });
   });
+
+  describe("IPNotAllowedError", () => {
+    it("is thrown on 403 ip_not_allowed with the client IP", async () => {
+      const { BaseClient } = await import("../src/internal/client.js");
+      const { resolveConfig } = await import("../src/internal/config.js");
+      const { IPNotAllowedError, PermissionDeniedError } = await import("../src/internal/exceptions.js");
+      const client = new BaseClient(resolveConfig({ apiKey: "test-key", maxRetries: 0 }));
+      vi.stubGlobal(
+        "fetch",
+        vi.fn().mockResolvedValue(
+          new Response(
+            JSON.stringify({
+              detail: "This request came from 203.0.113.9, which is not on its allowlist.",
+              error: "ip_not_allowed",
+              client_ip: "203.0.113.9",
+            }),
+            { status: 403, headers: { "Content-Type": "application/json" } }
+          )
+        )
+      );
+      try {
+        await client.request("/v1/google/search");
+        expect.fail("Should have thrown IPNotAllowedError");
+      } catch (err) {
+        expect(err).toBeInstanceOf(IPNotAllowedError);
+        expect(err).toBeInstanceOf(PermissionDeniedError);
+        expect((err as InstanceType<typeof IPNotAllowedError>).clientIp).toBe("203.0.113.9");
+      } finally {
+        vi.unstubAllGlobals();
+      }
+    });
+  });
 });
