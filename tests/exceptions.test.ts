@@ -166,4 +166,44 @@ describe("Exceptions", () => {
       }
     });
   });
+
+  describe("PermissionDeniedError", () => {
+    it("is thrown on 403 insufficient_scope with the scopes attached", async () => {
+      const { BaseClient } = await import("../src/internal/client.js");
+      const { resolveConfig } = await import("../src/internal/config.js");
+      const { PermissionDeniedError, AuthenticationError } = await import(
+        "../src/internal/exceptions.js"
+      );
+
+      const client = new BaseClient(resolveConfig({ apiKey: "test-key", maxRetries: 0 }));
+      vi.stubGlobal(
+        "fetch",
+        vi.fn().mockResolvedValue(
+          new Response(
+            JSON.stringify({
+              detail: "This API key does not have permission to use the Twitter / X API.",
+              error: "insufficient_scope",
+              required_scope: "twitter",
+              allowed_scopes: ["google", "amazon"],
+            }),
+            { status: 403, headers: { "Content-Type": "application/json" } }
+          )
+        )
+      );
+
+      try {
+        await client.request("/v1/twitter/users/x/by_username");
+        expect.fail("Should have thrown PermissionDeniedError");
+      } catch (err) {
+        expect(err).toBeInstanceOf(PermissionDeniedError);
+        expect(err).toBeInstanceOf(AuthenticationError); // pre-0.52 handlers still match
+        const e = err as InstanceType<typeof PermissionDeniedError>;
+        expect(e.requiredScope).toBe("twitter");
+        expect(e.allowedScopes).toEqual(["google", "amazon"]);
+        expect(e.message).toContain("Twitter / X");
+      } finally {
+        vi.unstubAllGlobals();
+      }
+    });
+  });
 });

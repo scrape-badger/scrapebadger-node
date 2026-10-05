@@ -13,6 +13,7 @@ import {
   TimeoutError,
   InsufficientCreditsError,
   AccountRestrictedError,
+  PermissionDeniedError,
   ConflictError,
   ScrapeBadgerError,
 } from "./exceptions.js";
@@ -52,6 +53,9 @@ interface ErrorResponse {
   reset_at?: number;
   reason?: string;
   credits_balance?: number;
+  error?: string;
+  required_scope?: string;
+  allowed_scopes?: string[];
 }
 
 /**
@@ -341,6 +345,13 @@ export class BaseClient {
         throw new InsufficientCreditsError(message, errorData.credits_balance);
 
       case 403:
+        if (errorData.error === "insufficient_scope") {
+          throw new PermissionDeniedError(
+            message,
+            errorData.required_scope,
+            errorData.allowed_scopes ?? []
+          );
+        }
         if (message.toLowerCase().includes("restricted")) {
           throw new AccountRestrictedError(message, errorData.reason);
         }
