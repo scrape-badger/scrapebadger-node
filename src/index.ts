@@ -50,6 +50,7 @@ export {
   InsufficientCreditsError,
   AccountRestrictedError,
   PermissionDeniedError,
+  IPNotAllowedError,
   ConflictError,
   WebSocketStreamError,
 } from "./internal/exceptions.js";

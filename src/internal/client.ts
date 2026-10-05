@@ -14,6 +14,7 @@ import {
   InsufficientCreditsError,
   AccountRestrictedError,
   PermissionDeniedError,
+  IPNotAllowedError,
   ConflictError,
   ScrapeBadgerError,
 } from "./exceptions.js";
@@ -56,6 +57,7 @@ interface ErrorResponse {
   error?: string;
   required_scope?: string;
   allowed_scopes?: string[];
+  client_ip?: string | null;
 }
 
 /**
@@ -345,6 +347,9 @@ export class BaseClient {
         throw new InsufficientCreditsError(message, errorData.credits_balance);
 
       case 403:
+        if (errorData.error === "ip_not_allowed") {
+          throw new IPNotAllowedError(message, errorData.client_ip ?? null);
+        }
         if (errorData.error === "insufficient_scope") {
           throw new PermissionDeniedError(
             message,
