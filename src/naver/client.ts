@@ -1,0 +1,84 @@
+/**
+ * Naver API client.
+ *
+ * Provides access to all Naver API endpoints through specialized sub-clients.
+ * Naver is South Korea's #1 portal — every request is served from
+ * ScrapeBadger's own Korea exits.
+ */
+
+import type { BaseClient } from "../internal/client.js";
+import { SearchClient } from "./search.js";
+import { PlacesClient } from "./places.js";
+import { ShoppingClient } from "./shopping.js";
+import { StoresClient } from "./stores.js";
+import { ContentClient } from "./content.js";
+import { ReviewsClient } from "./reviews.js";
+import { ProductsClient } from "./products.js";
+import { ShoppingLiveClient } from "./live.js";
+
+/**
+ * Naver API client with access to all Naver endpoints.
+ *
+ * Sub-clients:
+ * - `search` - Web / news / blog search and autocomplete
+ * - `places` - Local search, Place detail, reviews and photos
+ * - `shopping` - Shopping search, rankings, DataLab insight and category trees
+ * - `stores` - SmartStore / brand-store profile, categories, products, bestsellers
+ * - `content` - Web, cafe, kin, image, video and clip SERP verticals
+ * - `reviews` - Commerce reviews, Q&A, product-group graphs and summaries
+ * - `products` - Commerce product detail
+ * - `live` - Shopping Live broadcasts, channels and shortclips
+ *
+ * @example
+ * ```typescript
+ * const client = new ScrapeBadger({ apiKey: "key" });
+ *
+ * const serp = await client.naver.search.search("커피머신");
+ * const place = await client.naver.places.get("1234567890");
+ * const products = await client.naver.shopping.searchProducts("무선 이어폰");
+ * const store = await client.naver.stores.get("plusink");
+ * const product = await client.naver.products.get("55667788", { store_url: "drbrian" });
+ * const broadcast = await client.naver.live.broadcast("1234567");
+ * ```
+ */
+export class NaverClient {
+  /** Web / news / blog search and autocomplete */
+  readonly search: SearchClient;
+
+  /** Local search, Place detail, reviews and photos */
+  readonly places: PlacesClient;
+
+  /** Shopping search, rankings, DataLab insight and category trees */
+  readonly shopping: ShoppingClient;
+
+  /** SmartStore / brand-store profile, categories, products and bestsellers */
+  readonly stores: StoresClient;
+
+  /** Web, cafe, kin, image, video and clip SERP verticals */
+  readonly content: ContentClient;
+
+  /** Commerce reviews, Q&A, product-group graphs and summaries */
+  readonly reviews: ReviewsClient;
+
+  /** Commerce product detail */
+  readonly products: ProductsClient;
+
+  /** Shopping Live broadcasts, channels and shortclips */
+  readonly live: ShoppingLiveClient;
+
+  /**
+   * Create a new Naver client.
+   *
+   * @param client - The base HTTP client for making requests.
+   */
+  constructor(client: BaseClient) {
+    this.search = new SearchClient(client);
+    this.places = new PlacesClient(client);
+    this.shopping = new ShoppingClient(client);
+    this.stores = new StoresClient(client);
+    this.content = new ContentClient(client);
+    this.reviews = new ReviewsClient(client);
+    this.products = new ProductsClient(client);
+    this.live = new ShoppingLiveClient(client);
+  }
+}
