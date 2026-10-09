@@ -106,6 +106,9 @@ export * from "./bing/index.js";
 // Re-export Baidu module — BaiduClient + Baidu*-prefixed types
 export * from "./baidu/index.js";
 
+// Re-export Naver module — NaverClient + Naver*-prefixed sub-clients and types
+export * from "./naver/index.js";
+
 // Re-export Yahoo module — YahooClient + Yahoo*-prefixed sub-clients and types
 export * from "./yahoo/index.js";
 

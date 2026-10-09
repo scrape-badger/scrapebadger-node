@@ -29,6 +29,7 @@ import { DuckDuckGoClient } from "./duckduckgo/client.js";
 import { BingClient } from "./bing/client.js";
 import { BookingClient } from "./booking/client.js";
 import { BaiduClient } from "./baidu/client.js";
+import { NaverClient } from "./naver/client.js";
 import { YahooClient } from "./yahoo/client.js";
 import { YandexClient } from "./yandex/client.js";
 import { YoutubeClient } from "./youtube/client.js";
@@ -140,6 +141,9 @@ export class ScrapeBadger {
   /** Baidu scraper API client — search, news, images, autocomplete (baidu.com, China's #1 search engine) */
   readonly baidu: BaiduClient;
 
+  /** Naver scraper API client — 55 endpoints (search, places, shopping, stores, content, reviews, products, shopping live; naver.com, South Korea) */
+  readonly naver: NaverClient;
+
   /** Yahoo scraper API client — 6 endpoints (search, images, videos, news, autocomplete, markets) across 35 markets */
   readonly yahoo: YahooClient;
 
@@ -240,6 +244,7 @@ export class ScrapeBadger {
     this.bing = new BingClient(this.baseClient);
     this.booking = new BookingClient(this.baseClient);
     this.baidu = new BaiduClient(this.baseClient);
+    this.naver = new NaverClient(this.baseClient);
     this.yahoo = new YahooClient(this.baseClient);
     this.yandex = new YandexClient(this.baseClient);
     this.youtube = new YoutubeClient(this.baseClient);
