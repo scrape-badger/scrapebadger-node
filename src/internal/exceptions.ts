@@ -58,7 +58,10 @@ export class IPNotAllowedError extends PermissionDeniedError {
   /** The address ScrapeBadger saw (null when relayed, e.g. via the hosted MCP server) */
   readonly clientIp: string | null;
 
-  constructor(message = "This API key may not be used from this IP address.", clientIp: string | null = null) {
+  constructor(
+    message = "This API key may not be used from this IP address.",
+    clientIp: string | null = null
+  ) {
     super(message);
     this.name = "IPNotAllowedError";
     this.clientIp = clientIp;

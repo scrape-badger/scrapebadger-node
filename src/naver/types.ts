@@ -193,12 +193,7 @@ export interface NaverShoppingKeywordPeriodsParams {
 
 /** Sort order for the catalog search. */
 export type NaverCatalogSort =
-  | "RECOMMEND"
-  | "LOW_PRICE"
-  | "HIGH_PRICE"
-  | "PURCHASE"
-  | "REVIEW"
-  | "RECENT";
+  "RECOMMEND" | "LOW_PRICE" | "HIGH_PRICE" | "PURCHASE" | "REVIEW" | "RECENT";
 
 /** Options for {@link ShoppingClient.searchCatalog}. */
 export interface NaverShoppingSearchCatalogParams {
