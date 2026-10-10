@@ -24,6 +24,7 @@ import { FinanceClient } from "../src/google/finance.js";
 import { AiModeClient } from "../src/google/ai-mode.js";
 import { LensClient } from "../src/google/lens.js";
 import { ProductsClient } from "../src/google/products.js";
+import { AdsClient } from "../src/google/ads.js";
 
 function makeClient(): ScrapeBadger {
   return new ScrapeBadger({
@@ -81,6 +82,7 @@ describe("GoogleClient wiring", () => {
     expect(client.google.aiMode).toBeInstanceOf(AiModeClient);
     expect(client.google.lens).toBeInstanceOf(LensClient);
     expect(client.google.products).toBeInstanceOf(ProductsClient);
+    expect(client.google.ads).toBeInstanceOf(AdsClient);
   });
 });
 
@@ -374,6 +376,120 @@ describe("PatentsClient", () => {
     const url = capturedUrl();
     expect(url.pathname).toBe("/v1/google/patents/detail");
     expect(url.searchParams.get("patent_id")).toBe("US10123456B2");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Ads Transparency Center
+// ---------------------------------------------------------------------------
+
+describe("AdsClient", () => {
+  it("search forwards filters to /ads/search", async () => {
+    mockFetch({ region: "anywhere", creatives: [] });
+    const client = makeClient();
+    await client.google.ads.search({
+      advertiser_id: "AR01614014350098432001",
+      region: "anywhere",
+      format: "VIDEO",
+      start_date: "2026-01-01",
+      end_date: "2026-02-01",
+      num: 100,
+      cursor: "tok",
+    });
+    const url = capturedUrl();
+    expect(url.pathname).toBe("/v1/google/ads/search");
+    expect(url.searchParams.get("advertiser_id")).toBe("AR01614014350098432001");
+    expect(url.searchParams.get("region")).toBe("anywhere");
+    expect(url.searchParams.get("format")).toBe("VIDEO");
+    expect(url.searchParams.get("start_date")).toBe("2026-01-01");
+    expect(url.searchParams.get("end_date")).toBe("2026-02-01");
+    expect(url.searchParams.get("num")).toBe("100");
+    expect(url.searchParams.get("cursor")).toBe("tok");
+  });
+
+  it("searchAdvertisers forwards num up to 3000, num_domains and fuzzy", async () => {
+    const body = {
+      query: "rufwear",
+      region: "US",
+      country: null,
+      fuzzy: true,
+      variants: ["rufwear", "ruf"],
+      variants_failed: [],
+      next_page_token: null,
+      advertisers: [
+        {
+          advertiser_id: "AR1",
+          name: "Ruff Wear, Inc.",
+          region: "US",
+          domain: null,
+          verified: true,
+          ads_count: 120,
+          details_link: null,
+          similarity: 0.93,
+          matched_query: "ruf",
+        },
+      ],
+    };
+    mockFetch(body);
+    const client = makeClient();
+    const res = await client.google.ads.searchAdvertisers({
+      query: "rufwear",
+      num: 3000,
+      num_domains: 0,
+      country: "US",
+      fuzzy: true,
+    });
+    const url = capturedUrl();
+    expect(url.pathname).toBe("/v1/google/ads/advertisers");
+    expect(url.searchParams.get("query")).toBe("rufwear");
+    expect(url.searchParams.get("num")).toBe("3000");
+    expect(url.searchParams.get("num_domains")).toBe("0");
+    expect(url.searchParams.get("country")).toBe("US");
+    expect(url.searchParams.get("fuzzy")).toBe("true");
+    expect(res.variants).toEqual(["rufwear", "ruf"]);
+    expect(res.advertisers[0]?.similarity).toBe(0.93);
+    expect(res.advertisers[0]?.matched_query).toBe("ruf");
+  });
+
+  it("searchAdvertisers passes the domain-row cursor", async () => {
+    mockFetch({ advertisers: [] });
+    const client = makeClient();
+    await client.google.ads.searchAdvertisers({ query: "nike", cursor: "next" });
+    const url = capturedUrl();
+    expect(url.searchParams.get("cursor")).toBe("next");
+    expect(url.searchParams.has("fuzzy")).toBe(false);
+  });
+
+  it("advertiser calls /ads/advertiser", async () => {
+    mockFetch({ advertiser_id: "AR1", region: "GB" });
+    const client = makeClient();
+    await client.google.ads.advertiser({
+      advertiser_id: "AR1",
+      region: "GB",
+      start_date: "2026-09-01",
+      end_date: "2026-09-30",
+    });
+    const url = capturedUrl();
+    expect(url.pathname).toBe("/v1/google/ads/advertiser");
+    expect(url.searchParams.get("advertiser_id")).toBe("AR1");
+    expect(url.searchParams.get("region")).toBe("GB");
+    expect(url.searchParams.get("start_date")).toBe("2026-09-01");
+    expect(url.searchParams.get("end_date")).toBe("2026-09-30");
+  });
+
+  it("creative calls /ads/creative", async () => {
+    mockFetch({ creative_id: "CR1", region: "US", variations: [], political: null });
+    const client = makeClient();
+    await client.google.ads.creative({
+      advertiser_id: "AR1",
+      creative_id: "CR1",
+      political: true,
+    });
+    const url = capturedUrl();
+    expect(url.pathname).toBe("/v1/google/ads/creative");
+    expect(url.searchParams.get("advertiser_id")).toBe("AR1");
+    expect(url.searchParams.get("creative_id")).toBe("CR1");
+    expect(url.searchParams.get("political")).toBe("true");
   });
 });
 

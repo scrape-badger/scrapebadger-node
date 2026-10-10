@@ -120,7 +120,13 @@ export interface NewsSearchParams {
  * back to a plain `string` when you know the topic code out-of-band.
  */
 export type NewsTopic =
-  "WORLD" | "BUSINESS" | "TECHNOLOGY" | "ENTERTAINMENT" | "SPORTS" | "SCIENCE" | "HEALTH";
+  | "WORLD"
+  | "BUSINESS"
+  | "TECHNOLOGY"
+  | "ENTERTAINMENT"
+  | "SPORTS"
+  | "SCIENCE"
+  | "HEALTH";
 
 export interface NewsTopicsParams {
   // Accept the canonical codes as a `NewsTopic` union, but also allow any
@@ -227,7 +233,11 @@ export interface TrendsTrendingNowParams {
 }
 
 export type TrendsDataType =
-  "TIMESERIES" | "GEO_MAP" | "GEO_MAP_0" | "RELATED_TOPICS" | "RELATED_QUERIES";
+  | "TIMESERIES"
+  | "GEO_MAP"
+  | "GEO_MAP_0"
+  | "RELATED_TOPICS"
+  | "RELATED_QUERIES";
 
 export interface TrendsSearchParams {
   /** Search term(s). Comma-separated (max 5) for TIMESERIES / GEO_MAP. */
@@ -704,4 +714,214 @@ export interface FlightsSearchParams {
    * Round-trip initial search only.
    */
   sort_by?: FlightsSortBy;
+}
+
+// ===== Ads Transparency Center =====
+
+/** Creative format on the Ads Transparency Center. */
+export type GoogleAdsFormat = "TEXT" | "IMAGE" | "VIDEO";
+
+/**
+ * Params for `/v1/google/ads/search`. Free text is domain-based and will not
+ * find a brand by name — resolve the name with `searchAdvertisers` first.
+ */
+export interface GoogleAdsSearchParams {
+  /** Advertiser ID as shown in the Transparency Center URL, e.g. `AR01614014350098432001`. */
+  advertiser_id?: string;
+  /** Free text — an advertiser name or a verified domain such as `tesla.com`. */
+  query?: string;
+  /** ISO 3166-1 alpha-2 region the ad was served in, or `anywhere`. Default `US`. */
+  region?: string;
+  /**
+   * `SEARCH`, `MAPS`, `PLAY`, `SHOPPING` or `YOUTUBE`. Validated but not yet
+   * applied upstream — see `filters_applied.platform`.
+   */
+  platform?: "SEARCH" | "MAPS" | "PLAY" | "SHOPPING" | "YOUTUBE";
+  format?: GoogleAdsFormat;
+  /** Only creatives still running on/after this date (YYYY-MM-DD). */
+  start_date?: string;
+  /** Only creatives first shown on/before this date (YYYY-MM-DD). */
+  end_date?: string;
+  /**
+   * Restrict to political ads. Validated but not yet applied upstream — see
+   * `filters_applied.political`.
+   */
+  political?: boolean;
+  /** Results per page (1-100, default 40). */
+  num?: number;
+  /** `next_page_token` from a previous response. */
+  cursor?: string;
+}
+
+/** Params for `/v1/google/ads/advertisers`. */
+export interface GoogleAdsAdvertisersParams {
+  /** Advertiser name or domain (at least 2 characters). */
+  query: string;
+  /** Echoed on the response only. Use `country` to filter advertisers. */
+  region?: string;
+  /**
+   * Advertisers to return (1-3000, default 10). One call returns every match
+   * up to this — advertisers do not page.
+   */
+  num?: number;
+  /** Domain rows to return (0-100, default 10). */
+  num_domains?: number;
+  /** ISO 3166-1 alpha-2: only advertisers registered in this country. Domain rows are not filtered. */
+  country?: string;
+  /** `next_page_token` from a previous response: the next page of domain rows. Not with `fuzzy`. */
+  cursor?: string;
+  /**
+   * Also find misspelled and look-alike advertisers: searches up to 7 variants
+   * of the query and ranks everything by `similarity`. Billed as 3 lookups.
+   */
+  fuzzy?: boolean;
+}
+
+/** Params for `/v1/google/ads/advertiser`. */
+export interface GoogleAdsAdvertiserParams {
+  /** Advertiser ID, e.g. `AR01614014350098432001`. */
+  advertiser_id: string;
+  /** ISO 3166-1 alpha-2 region. Spend is region-scoped; `anywhere` falls back to `US`. */
+  region?: string;
+  /** Window start (YYYY-MM-DD). Defaults to 30 days ago. */
+  start_date?: string;
+  /** Window end (YYYY-MM-DD). Defaults to today. */
+  end_date?: string;
+}
+
+/** Params for `/v1/google/ads/creative`. */
+export interface GoogleAdsCreativeParams {
+  /** Advertiser ID, e.g. `AR01614014350098432001`. */
+  advertiser_id: string;
+  /** Creative ID, e.g. `CR10484731423840108545`. */
+  creative_id: string;
+  /** ISO 3166-1 alpha-2 region, or `anywhere`. Default `US`. */
+  region?: string;
+  /** Also fetch the advertiser's political-ad spend disclosure for `region`. */
+  political?: boolean;
+}
+
+/**
+ * One creative from a creative search. Every timestamp comes twice: `*_utc`
+ * as unix seconds and `*_at` as ISO-8601 UTC.
+ */
+export interface GoogleAdsCreative {
+  creative_id: string | null;
+  advertiser_id: string | null;
+  advertiser_name: string | null;
+  target_domain: string | null;
+  format: GoogleAdsFormat | null;
+  media_url: string | null;
+  preview_html: string | null;
+  first_shown_utc: number | null;
+  first_shown_at: string | null;
+  last_shown_utc: number | null;
+  last_shown_at: string | null;
+  days_shown: number | null;
+  details_link: string | null;
+}
+
+/** Which requested filters the upstream RPC actually honoured. */
+export interface GoogleAdsFiltersApplied {
+  region: boolean;
+  advertiser_id: boolean;
+  query: boolean;
+  format: boolean;
+  date_range: boolean;
+  platform: boolean;
+  political: boolean;
+}
+
+export interface GoogleAdsSearchResponse {
+  region: string;
+  total_results: number | null;
+  returned_results: number;
+  next_page_token: string | null;
+  filters_applied: GoogleAdsFiltersApplied;
+  creatives: GoogleAdsCreative[];
+}
+
+/** One advertiser (or bare domain) row from an advertiser search. */
+export interface GoogleAdsAdvertiserRow {
+  advertiser_id: string | null;
+  name: string | null;
+  region: string | null;
+  domain: string | null;
+  verified: boolean | null;
+  ads_count: number | null;
+  details_link: string | null;
+  /** `fuzzy` only: 0-1 closeness to the query. */
+  similarity: number | null;
+  /** `fuzzy` only: the variant (or look-alike domain) that surfaced this row. */
+  matched_query: string | null;
+}
+
+export interface GoogleAdsAdvertisersResponse {
+  query: string;
+  region: string;
+  country: string | null;
+  fuzzy: boolean;
+  /** `fuzzy` only: the query variants that were searched. */
+  variants: string[];
+  /** `fuzzy` only: the variants whose lookup failed. */
+  variants_failed: string[];
+  /** Pages the domain rows (pass back as `cursor`); advertisers do not page. */
+  next_page_token: string | null;
+  advertisers: GoogleAdsAdvertiserRow[];
+}
+
+export interface GoogleAdsAdvertiserResponse {
+  advertiser_id: string;
+  advertiser_name: string | null;
+  region: string;
+  verified: boolean | null;
+  ads_count: number | null;
+  currency: string | null;
+  spend: number | null;
+  start_date: string | null;
+  end_date: string | null;
+  details_link: string | null;
+  /** Share of disclosed spend by creative format. */
+  ad_mix: Array<{ format: GoogleAdsFormat | null; share: number | null; spend: number | null }>;
+  /** Disclosed spend per day of the window; `date` is YYYYMMDD. */
+  spend_by_date: Array<{ date: string | null; share: number | null; spend: number | null }>;
+}
+
+export interface GoogleAdsCreativeResponse {
+  creative_id: string | null;
+  advertiser_id: string | null;
+  advertiser_name: string | null;
+  target_domain: string | null;
+  region: string;
+  format: GoogleAdsFormat | null;
+  media_url: string | null;
+  first_shown_utc: number | null;
+  first_shown_at: string | null;
+  last_shown_utc: number | null;
+  last_shown_at: string | null;
+  days_shown: number | null;
+  details_link: string | null;
+  /** Every rendered size/variant of the creative. */
+  variations: Array<{
+    media_url: string | null;
+    preview_html: string | null;
+    width: number | null;
+    height: number | null;
+  }>;
+  /** Political-ad disclosure; only with `political: true`. */
+  political: {
+    currency: string | null;
+    spend: number | null;
+    spend_min: number | null;
+    spend_max: number | null;
+    impressions_min: number | null;
+    impressions_max: number | null;
+    ads_count: number | null;
+    regions: Array<{
+      region: string | null;
+      currency: string | null;
+      spend: number | null;
+      ads_count: number | null;
+    }>;
+  } | null;
 }

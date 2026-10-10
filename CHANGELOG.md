@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.56.0 — 2026-10-10
+
+- **`web.screenshot()` — a PNG of any page.** `POST /v1/web/screenshot` renders the URL in the browser engine and returns the PNG base64-encoded in `screenshot`, plus the decoded bytes in `png` (write it straight to a file). Options: `fullPage`, `width` (320–3840), `height` (240–4320), `waitFor`, `country`, `proxyTier`. A page that loads without a screenshot is a `502` and costs nothing.
+- **`web.extractData()` — CSS/XPath selectors and AI extraction by field.** `POST /v1/web/extract` takes `extractRules` (field → selector, or `{ selector, type, all, output }`), `aiExtractRules` (field → description) and `aiQuery`, and returns `ExtractResult` with selector results in `data` and the AI answer in `ai_extraction`. Broken selectors are a free `422`. The existing `web.extract(url, prompt)` is unchanged.
+- **`web.scrape()` viewport options:** `screenshotFullPage` (with `screenshot: true`, capture the whole scrollable page instead of the viewport), `windowWidth` and `windowHeight`.
+- **Google Ads Transparency Center via `client.google.ads`, with typed responses:** `search` (creatives by advertiser ID or domain, with format and date filters), `searchAdvertisers` (name or domain → advertiser IDs; up to `num: 3000` advertisers and `num_domains: 100` domain rows; `fuzzy: true` also finds misspelled and look-alike advertisers and adds per-row `similarity` / `matched_query`, plus `variants` / `variants_failed`), `advertiser` (disclosed spend, ad mix, per-day spend) and `creative` (one creative with every variation and optional political disclosure).
+- **Naver API via `client.naver`** — search, places, shopping (incl. Shopping Live), stores, products and reviews. Merged after 0.54.0; first published in this release.
+- **Deprecated: `web.submitBatchScrapingJob()` and `web.getBatchJobStatus()`.** Batch jobs were never available — the API answers `501` (not billed). Both now emit a `DeprecationWarning`; send concurrent `scrape()` calls instead.
+- The `User-Agent` reports the real SDK version again (it was stuck at `0.47.1`).
+
 ## 0.54.0 — 2026-10-05
 
 - **Reddit posts carry a full-resolution `preview_image`.** `thumbnail` is a signed ~140px crop that cannot be resized (changing `width`/`height` breaks the signature). Posts now also return `preview_image`, `preview_image_width` and `preview_image_height`: Reddit's original-size preview. For link posts it is the only full-size image; for native video it is the poster frame. `None`/`null` when Reddit has no preview (most text posts).
