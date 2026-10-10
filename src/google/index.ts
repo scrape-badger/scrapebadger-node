@@ -21,6 +21,7 @@ export { LensClient } from "./lens.js";
 export { ShortsClient } from "./shorts.js";
 export { FlightsClient } from "./flights.js";
 export { ProductsClient } from "./products.js";
+export { AdsClient } from "./ads.js";
 
 export type {
   AiListItem,
@@ -36,6 +37,18 @@ export type {
   FlightsStopsFilter,
   FlightsTravelClass,
   FlightsTripType,
+  GoogleAdsAdvertiserParams,
+  GoogleAdsAdvertiserResponse,
+  GoogleAdsAdvertiserRow,
+  GoogleAdsAdvertisersParams,
+  GoogleAdsAdvertisersResponse,
+  GoogleAdsCreative,
+  GoogleAdsCreativeParams,
+  GoogleAdsCreativeResponse,
+  GoogleAdsFiltersApplied,
+  GoogleAdsFormat,
+  GoogleAdsSearchParams,
+  GoogleAdsSearchResponse,
   GoogleResponse,
   GoogleSearchParams,
   HotelsDetailsParams,

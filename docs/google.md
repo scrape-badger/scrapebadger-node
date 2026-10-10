@@ -271,6 +271,32 @@ const lens = await client.google.lens.search({
 const product = await client.google.products.detail({ product_id: "1234567890" });
 ```
 
+### Ads Transparency Center
+
+```typescript
+// Free-text ad search is domain-based: resolve a brand name to IDs first.
+const found = await client.google.ads.searchAdvertisers({ query: "rufwear", fuzzy: true });
+for (const row of found.advertisers) {
+  console.log(row.name, row.advertiser_id, row.similarity, row.matched_query);
+}
+
+const advertiserId = found.advertisers[0]?.advertiser_id ?? "";
+const ads = await client.google.ads.search({ advertiser_id: advertiserId, format: "VIDEO" });
+const creative = await client.google.ads.creative({
+  advertiser_id: advertiserId,
+  creative_id: ads.creatives[0]?.creative_id ?? "",
+});
+
+// Disclosed spend, ad-format mix and per-day spend for one region
+const spend = await client.google.ads.advertiser({ advertiser_id: advertiserId, region: "US" });
+```
+
+`searchAdvertisers` returns up to `num: 3000` advertisers in one call (they do
+not page) plus up to `num_domains: 100` domain rows, which page with
+`next_page_token` → `cursor`. `fuzzy: true` also finds misspellings and
+look-alikes and lists the `variants` it searched. The ads methods return typed
+responses (`GoogleAdsSearchResponse`, `GoogleAdsAdvertisersResponse`, …).
+
 ## API Reference
 
 ### Google Sub-clients
@@ -293,6 +319,7 @@ const product = await client.google.products.detail({ product_id: "1234567890" }
 | `client.google.aiMode` | Generative AI answers (udm=50) |
 | `client.google.lens` | Visual image search by URL |
 | `client.google.products` | Immersive product detail |
+| `client.google.ads` | Ads Transparency Center: creatives, advertisers, spend |
 
 ### Methods
 
@@ -328,6 +355,10 @@ const product = await client.google.products.detail({ product_id: "1234567890" }
 | `aiMode` | `search(params)` | AI-generated answer |
 | `lens` | `search(params)` | Visual search by URL |
 | `products` | `detail(params)` | Immersive product |
+| `ads` | `search(params)` | Ad creatives by advertiser ID or domain |
+| `ads` | `searchAdvertisers(params)` | Advertiser IDs by name or domain (`fuzzy` for typos) |
+| `ads` | `advertiser(params)` | Disclosed spend and ad mix |
+| `ads` | `creative(params)` | One creative with variations |
 
 All methods are async and return `Promise<GoogleResponse>` (aliased as `Record<string, unknown>`). Cast to your own types as needed.
 
@@ -424,7 +455,9 @@ import type {
 |---|---|
 | `search`, `images`, `videos`, `maps/search`, `shopping/search`, `jobs/search`, `scholar/search`, `patents/search`, `finance/quote`, `trends/*` (except trending) | **2** |
 | `maps/place`, `maps/reviews`, `patents/detail`, `ai-mode/search`, `lens/search`, `hotels/search`, `products/detail` | **3** |
-| `hotels/details`, `shopping/product` | **5** |
+| `hotels/details`, `shopping/product`, `ads/advertisers`, `ads/advertiser`, `ads/creative` | **5** |
+| `ads/search` | **10** |
+| `ads/advertisers` with `fuzzy=true` | **15** |
 | `shopping/offers` | **14** |
 | `news/*`, `autocomplete`, `trends/trending`, `maps/photos`, `maps/posts`, `shopping/product/click` | **1** |
 | Failed requests | **0** |

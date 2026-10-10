@@ -46,6 +46,40 @@ const result = await client.web.extract(
 console.log(result.ai_extraction); // Structured data from LLM
 ```
 
+### Screenshots
+
+```typescript
+import { writeFile } from "node:fs/promises";
+
+const shot = await client.web.screenshot("https://scrapebadger.com", {
+  fullPage: true, // whole scrollable page, not just the viewport
+  width: 1280,
+});
+await writeFile("page.png", shot.png); // shot.screenshot is the base64 string
+```
+
+`scrape(url, { screenshot: true })` takes the equivalent `screenshotFullPage`,
+`windowWidth` and `windowHeight` options and returns the PNG as a `data:` URI in
+`screenshot_url`.
+
+### Selector and AI Extraction
+
+```typescript
+const result = await client.web.extractData("https://news.ycombinator.com", {
+  extractRules: {
+    top_story: ".titleline a",
+    links: { selector: ".titleline a::attr(href)", all: true },
+  },
+  aiQuery: "What is the top story about, in one sentence?",
+});
+console.log(result.data); // { top_story: "...", links: [...] }
+console.log(result.ai_extraction); // { answer: "..." }
+```
+
+A selector starting with `/` or `(` is XPath; anything else is CSS. Pass
+`aiExtractRules: { field: "description" }` to have the AI return exactly those
+keys.
+
 ### Detect Anti-Bot Protection
 
 ```typescript
@@ -75,7 +109,10 @@ const result = await client.web.scrape("https://scrapebadger.com", {
 |--------|-------------|
 | `scrape(url, options?)` | Scrape a URL with optional JS rendering, anti-bot bypass, screenshots, video, and AI extraction |
 | `extract(url, prompt, options?)` | Convenience wrapper — scrapes with AI extraction enabled |
+| `screenshot(url, options?)` | Render a URL in the browser and return a PNG (`fullPage`, `width`, `height`) |
+| `extractData(url, options)` | Extract fields with CSS/XPath `extractRules`, `aiExtractRules` and/or `aiQuery` |
 | `detect(url, options?)` | Detect anti-bot and CAPTCHA systems on a URL |
+| `submitBatchScrapingJob`, `getBatchJobStatus` | **Deprecated** — batch is not available (`501`); send concurrent `scrape` calls |
 
 ## Types
 
@@ -92,6 +129,9 @@ const result = await client.web.scrape("https://scrapebadger.com", {
 | `country` | `string` | Geo-target country code |
 | `maxCost` | `number` | Maximum credit cost |
 | `jsScenario` | `array` | Browser automation steps |
+| `screenshot` | `boolean` | Capture a PNG of the viewport (in `screenshot_url`) |
+| `screenshotFullPage` | `boolean` | With `screenshot`, capture the whole scrollable page |
+| `windowWidth` / `windowHeight` | `number` | Browser viewport size in pixels |
 
 ### ScrapeResult
 
@@ -100,6 +140,23 @@ const result = await client.web.scrape("https://scrapebadger.com", {
 | `content` | `string` | Scraped page content |
 | `credits_used` | `number` | Credits consumed |
 | `ai_extraction` | `any` | AI-extracted structured data (when using `extract`) |
+
+### ScreenshotResult
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `screenshot` | `string` | The PNG, base64-encoded |
+| `png` | `Uint8Array` | The decoded PNG bytes |
+| `credits_used` | `number` | Credits consumed |
+
+### ExtractResult
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `data` | `object \| null` | One key per `extractRules` field (first match, a list with `all`, or `null`) |
+| `ai_extraction` | `any` | The AI's JSON answer to `aiExtractRules` / `aiQuery` |
+| `ai_error` | `string \| null` | Why AI extraction failed, when it did |
+| `credits_used` | `number` | Credits consumed |
 
 ### DetectOptions
 

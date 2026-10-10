@@ -27,8 +27,19 @@ export interface ScrapeOptions {
   country?: string;
   /** Custom HTTP headers */
   customHeaders?: Record<string, string>;
-  /** Capture full-page screenshot */
+  /**
+   * Capture a PNG screenshot (forces the browser engine). Returned in
+   * `screenshot_url` as a `data:image/png;base64,` URI. Captures the viewport
+   * unless `screenshotFullPage` is set. For a screenshot-only call,
+   * {@link WebClient.screenshot} returns the bare PNG.
+   */
   screenshot?: boolean;
+  /** With `screenshot: true`, capture the whole scrollable page instead of the viewport */
+  screenshotFullPage?: boolean;
+  /** Browser viewport width in pixels (320-3840) */
+  windowWidth?: number;
+  /** Browser viewport height in pixels (240-4320) */
+  windowHeight?: number;
   /** Record browser session as video (+3 credits) */
   video?: boolean;
   /** Attempt anti-bot bypass */
@@ -119,6 +130,97 @@ export interface JsScenarioStepReport {
   ok: boolean;
   error: string | null;
   url: string | null;
+}
+
+/** Proxy pool for a fetch. Same pricing as on `/v1/web/scrape`. */
+export type ProxyTier = "simple" | "premium" | "ultra";
+
+export interface ScreenshotOptions {
+  /** Capture the whole scrollable page instead of the viewport */
+  fullPage?: boolean;
+  /** Viewport width in pixels (320-3840) */
+  width?: number;
+  /** Viewport height in pixels (240-4320) */
+  height?: number;
+  /** CSS selector to wait for before capturing */
+  waitFor?: string;
+  /** ISO country code for proxy geo-targeting */
+  country?: string;
+  /** Proxy pool (default "simple") */
+  proxyTier?: ProxyTier;
+}
+
+export interface ScreenshotResult {
+  success: boolean;
+  url: string;
+  status_code: number;
+  /** Always `image/png`. */
+  content_type: string;
+  /** The PNG, base64-encoded (no `data:` prefix). */
+  screenshot: string;
+  /**
+   * The PNG decoded to bytes — write it straight to a file, e.g.
+   * `await writeFile("page.png", result.png)`.
+   */
+  png: Uint8Array;
+  engine_used: string | null;
+  credits_used: number;
+  duration_ms: number;
+}
+
+/** One `extractRules` field in its long form. */
+export interface ExtractRule {
+  /** CSS or XPath selector. */
+  selector: string;
+  /** Selector language; inferred from the selector when unset. */
+  type?: "css" | "xpath";
+  /** Return every match as a list, not just the first. */
+  all?: boolean;
+  /** An element's text content (default), or its outer HTML. */
+  output?: "text" | "html";
+}
+
+export interface ExtractDataOptions {
+  /**
+   * Field -> selector. A selector starting with `/` or `(` is XPath, anything
+   * else CSS (`::text` and `::attr(name)` supported). Results land in `data`.
+   */
+  extractRules?: Record<string, string | ExtractRule>;
+  /** Field -> plain-language description; the AI returns exactly these keys. */
+  aiExtractRules?: Record<string, string>;
+  /**
+   * Freeform question about the page. With `aiExtractRules` the answer is
+   * added under an `answer` key.
+   */
+  aiQuery?: string;
+  /** Render the page in a browser before extracting */
+  renderJs?: boolean;
+  /** CSS selector to wait for before extracting (browser render) */
+  waitFor?: string;
+  /** ISO country code for proxy geo-targeting */
+  country?: string;
+  /** Proxy pool (default "simple") */
+  proxyTier?: ProxyTier;
+}
+
+export interface ExtractResult {
+  success: boolean;
+  url: string;
+  status_code: number;
+  /**
+   * One key per `extractRules` field: the first match, a list with
+   * `all: true`, or null when nothing matched. Null when no `extractRules`
+   * were given.
+   */
+  data: Record<string, string | string[] | null> | null;
+  /** The AI's JSON answer. Null when no AI was requested. */
+  ai_extraction: Record<string, unknown> | string | unknown[] | null;
+  ai_model: string | null;
+  /** Why AI extraction failed, when it did. Selector results in `data` are still returned. */
+  ai_error: string | null;
+  engine_used: string | null;
+  credits_used: number;
+  duration_ms: number;
 }
 
 export interface DetectOptions {

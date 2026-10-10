@@ -23,9 +23,9 @@ The official Node.js/TypeScript client library for the [ScrapeBadger](https://sc
 - **Resilient Retries** - Exponential backoff with colored console warnings
 - **Typed Exceptions** - Distinct error classes for every failure scenario
 - **37+ Twitter endpoints** - Tweets, users, lists, communities, trends, geo, real-time streams
-- **19 Google product APIs** - Search (with optional deferred AI Overview follow-up), Maps, News, Hotels, Trends (incl. topic autocomplete), Jobs, Shopping (+ merchant URL enrichment, barcode offers), Patents, Scholar (search + profiles + author + author citation + cite formats), Images, Videos, Finance, AI Mode, Lens, **Local Pack**, **Shorts**, **Flights**, Products
+- **20 Google product APIs** - Search (with optional deferred AI Overview follow-up), Maps, News, Hotels, Trends (incl. topic autocomplete), Jobs, Shopping (+ merchant URL enrichment, barcode offers), Patents, Scholar (search + profiles + author + author citation + cite formats), Images, Videos, Finance, AI Mode, Lens, **Local Pack**, **Shorts**, **Flights**, Products, **Ads Transparency Center**
 - **Vinted scraping** - Search items, item details, user profiles, brands, colors, markets
-- **Web scraping** - Anti-bot bypass, JS rendering, and AI data extraction
+- **Web scraping** - Anti-bot bypass, JS rendering, screenshots, and selector/AI data extraction
 
 ## Installation
 
@@ -75,9 +75,9 @@ const client = new ScrapeBadger();
 
 | API | Description | Documentation |
 |-----|-------------|---------------|
-| **Web Scraping** | Scrape any website with JS rendering, anti-bot bypass, and AI extraction | [Web Scraping Guide](docs/web-scraping.md) |
+| **Web Scraping** | Scrape any website with JS rendering, anti-bot bypass, screenshots, and selector/AI extraction | [Web Scraping Guide](docs/web-scraping.md) |
 | **Twitter** | 37+ endpoints for tweets, users, lists, communities, trends, and real-time streams | [Twitter Guide](docs/twitter.md) |
-| **Google** | 19 products — Search, Maps, News, Hotels, Trends, Jobs, Shopping, Patents, Scholar, Images, Videos, Finance, AI Mode, Lens, Autocomplete, Local, Shorts, Flights, Products | [Google Guide](docs/google.md) |
+| **Google** | 20 products — Search, Maps, News, Hotels, Trends, Jobs, Shopping, Patents, Scholar, Images, Videos, Finance, AI Mode, Lens, Autocomplete, Local, Shorts, Flights, Products, Ads Transparency | [Google Guide](docs/google.md) |
 | **Vinted** | Search items, get details, user profiles, and reference data across all Vinted markets | [Vinted Guide](docs/vinted.md) |
 | **Reddit** | Search posts/subreddits/users, subreddit details, post comments, user profiles, wiki pages, trophies | [Reddit Guide](docs/reddit.md) |
 | **Instagram** | User profile/about/related/posts/videos/reels/tagged/pinned/followers/following/stories/highlights, media detail/comments/replies/likers/oEmbed, search (users/hashtags/places/top/reels/music/autocomplete), hashtag/location/audio feeds | [Instagram Guide](docs/instagram.md) |
