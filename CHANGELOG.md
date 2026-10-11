@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.58.0 — 2026-10-11
 
 - **Wallapop API via `client.wallapop`, with typed responses** — Spain, Italy and Portugal (`market`: es, it, pt). `search` (listing search with Wallapop's own filters: location/radius, category, price, condition, brand/model/colour, listing age, shippable/warranty/refurbished, and the cars vertical — year, km, gearbox, horsepower; 40 per page, cursor via `nextPage`), `getItem`, `getUser`, `getUserItems`, `getUserReviews`, `autocomplete`, `listCategories`, `listFilters`, `listFilterOptions` and `listMarkets`. Item and user ids are URL-encoded; boolean filters are sent only when `true`.
 
