@@ -97,6 +97,9 @@ export * from "./ebay/index.js";
 // Re-export Walmart module — WalmartClient + Walmart*-prefixed sub-clients and types
 export * from "./walmart/index.js";
 
+// Re-export Gumtree module — GumtreeClient + Gumtree*-prefixed types
+export * from "./gumtree/index.js";
+
 // Re-export DuckDuckGo module — DuckDuckGoClient + DuckDuckGo*-prefixed sub-clients and types
 export * from "./duckduckgo/index.js";
 

@@ -25,6 +25,7 @@ import { TikTokClient } from "./tiktok/client.js";
 import { EbayClient } from "./ebay/client.js";
 import { FacebookClient } from "./facebook/client.js";
 import { WalmartClient } from "./walmart/client.js";
+import { GumtreeClient } from "./gumtree/client.js";
 import { DuckDuckGoClient } from "./duckduckgo/client.js";
 import { BingClient } from "./bing/client.js";
 import { BookingClient } from "./booking/client.js";
@@ -130,6 +131,9 @@ export class ScrapeBadger {
 
   /** Walmart scraper API client — 11 endpoints (walmart.com, US-only) */
   readonly walmart: WalmartClient;
+
+  /** Gumtree scraper API client — 8 endpoints (gumtree.com, UK-only) */
+  readonly gumtree: GumtreeClient;
 
   /** DuckDuckGo scraper API client — search, images, news, videos, autocomplete, instant, regions */
   readonly duckduckgo: DuckDuckGoClient;
@@ -244,6 +248,7 @@ export class ScrapeBadger {
     this.ebay = new EbayClient(this.baseClient);
     this.facebook = new FacebookClient(this.baseClient);
     this.walmart = new WalmartClient(this.baseClient);
+    this.gumtree = new GumtreeClient(this.baseClient);
     this.duckduckgo = new DuckDuckGoClient(this.baseClient);
     this.bing = new BingClient(this.baseClient);
     this.booking = new BookingClient(this.baseClient);

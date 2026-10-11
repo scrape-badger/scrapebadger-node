@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.59.0 — 2026-10-12
+
+- **Gumtree API — 8 endpoints via `client.gumtree`, with typed responses.** UK classifieds (gumtree.com): `search` (`query`, `category` slug, `location` slug/town/postcode with a `distance` radius in miles, `min_price`/`max_price` in GBP, `sort`, `seller_type`, `urgent_only`, `with_photos`, category-specific `filters: "key:value,..."`, `page` 1–50), `searchFilters` (a category's filters, sort orders and radius options with live counts), `getListing` (description, every attribute incl. full vehicle spec and history-check flags, images, location, seller with rating, verification and masked phone, similar listings), `getSellerListings`, `autocomplete`, `locationAutocomplete`, `listLocations` and `listCategories`. Dates come as both Unix `*_utc` and ISO 8601 `*_at`. Types are exported with a `Gumtree` prefix (e.g. `GumtreeListingDetail`).
+
 ## 0.58.0 — 2026-10-11
 
 - **Wallapop API via `client.wallapop`, with typed responses** — Spain, Italy and Portugal (`market`: es, it, pt). `search` (listing search with Wallapop's own filters: location/radius, category, price, condition, brand/model/colour, listing age, shippable/warranty/refurbished, and the cars vertical — year, km, gearbox, horsepower; 40 per page, cursor via `nextPage`), `getItem`, `getUser`, `getUserItems`, `getUserReviews`, `autocomplete`, `listCategories`, `listFilters`, `listFilterOptions` and `listMarkets`. Item and user ids are URL-encoded; boolean filters are sent only when `true`.
