@@ -40,6 +40,7 @@ import { ImmobiliareClient } from "./immobiliare/client.js";
 import { LoopNetClient } from "./loopnet/client.js";
 import { PerplexityClient } from "./perplexity/client.js";
 import { DepopClient } from "./depop/client.js";
+import { WallapopClient } from "./wallapop/client.js";
 import { LinkedInClient } from "./linkedin/client.js";
 import { ChatGPTClient } from "./chatgpt/client.js";
 import { GeminiClient } from "./gemini/client.js";
@@ -173,6 +174,9 @@ export class ScrapeBadger {
   /** Depop scraper API client — search, product, user, user products, markets (www.depop.com, 10 markets) */
   readonly depop: DepopClient;
 
+  /** Wallapop scraper API client — search, item, user, user items/reviews, autocomplete, categories, filters, markets (es, it, pt) */
+  readonly wallapop: WallapopClient;
+
   /** LinkedIn scraper API client — 11 no-auth endpoints (jobs, company, school, profile, post, article, learning, geo) */
   readonly linkedin: LinkedInClient;
 
@@ -255,6 +259,7 @@ export class ScrapeBadger {
     this.loopnet = new LoopNetClient(this.baseClient);
     this.perplexity = new PerplexityClient(this.baseClient);
     this.depop = new DepopClient(this.baseClient);
+    this.wallapop = new WallapopClient(this.baseClient);
     this.linkedin = new LinkedInClient(this.baseClient);
     this.chatgpt = new ChatGPTClient(this.baseClient);
     this.gemini = new GeminiClient(this.baseClient);

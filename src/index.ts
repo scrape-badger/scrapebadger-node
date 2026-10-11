@@ -129,6 +129,9 @@ export * from "./loopnet/index.js";
 // Re-export Depop module — DepopClient + Depop*-prefixed types
 export * from "./depop/index.js";
 
+// Re-export Wallapop module — WallapopClient + Wallapop*-prefixed types
+export * from "./wallapop/index.js";
+
 // Re-export LinkedIn module — LinkedInClient + LinkedIn*-prefixed types
 export * from "./linkedin/index.js";
 

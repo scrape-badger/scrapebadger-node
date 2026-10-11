@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- **Wallapop API via `client.wallapop`, with typed responses** — Spain, Italy and Portugal (`market`: es, it, pt). `search` (listing search with Wallapop's own filters: location/radius, category, price, condition, brand/model/colour, listing age, shippable/warranty/refurbished, and the cars vertical — year, km, gearbox, horsepower; 40 per page, cursor via `nextPage`), `getItem`, `getUser`, `getUserItems`, `getUserReviews`, `autocomplete`, `listCategories`, `listFilters`, `listFilterOptions` and `listMarkets`. Item and user ids are URL-encoded; boolean filters are sent only when `true`.
+
 ## 0.57.0 — 2026-10-12
 
 - **`facebook.getGroupPosts(groupId, { sort })`.** `"newest"` (the API default) returns a group's feed newest first by post time, and each page continues with older posts. `"relevance"` keeps Facebook's top-posts ranking, which moves older posts with fresh comments up. Facebook serves 3 posts per page to logged-out clients on every plan; keep the same `sort` while following `end_cursor`.

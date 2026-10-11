@@ -79,6 +79,7 @@ const client = new ScrapeBadger();
 | **Twitter** | 37+ endpoints for tweets, users, lists, communities, trends, and real-time streams | [Twitter Guide](docs/twitter.md) |
 | **Google** | 20 products — Search, Maps, News, Hotels, Trends, Jobs, Shopping, Patents, Scholar, Images, Videos, Finance, AI Mode, Lens, Autocomplete, Local, Shorts, Flights, Products, Ads Transparency | [Google Guide](docs/google.md) |
 | **Vinted** | Search items, get details, user profiles, and reference data across all Vinted markets | [Vinted Guide](docs/vinted.md) |
+| **Wallapop** | 10 endpoints across 3 markets (es, it, pt) — listing search with Wallapop's own filters (incl. cars: year, km, gearbox, horsepower), listing detail, seller profile/listings/reviews, autocomplete, categories, search filters and filter options, markets | [Wallapop Docs](https://docs.scrapebadger.com/wallapop/overview) |
 | **Reddit** | Search posts/subreddits/users, subreddit details, post comments, user profiles, wiki pages, trophies | [Reddit Guide](docs/reddit.md) |
 | **Instagram** | User profile/about/related/posts/videos/reels/tagged/pinned/followers/following/stories/highlights, media detail/comments/replies/likers/oEmbed, search (users/hashtags/places/top/reels/music/autocomplete), hashtag/location/audio feeds | [Instagram Guide](docs/instagram.md) |
 | **Amazon** | 14 endpoints — search, autocomplete, product detail, offers, reviews, bestsellers, new releases, deals, category browse, seller profile/products/feedback, markets, categories | [Amazon Guide](docs/amazon.md) |
