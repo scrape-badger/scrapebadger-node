@@ -305,6 +305,8 @@ export interface GumtreeSellerListingsResponse {
   total_results: number | null;
   page: number;
   total_pages: number | null;
+  /** `za`: another page follows (the site gives no total upfront). `null` elsewhere. */
+  has_next?: boolean | null;
   result_count: number;
   listings: GumtreeListingSummary[];
 }
