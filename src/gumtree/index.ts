@@ -33,9 +33,16 @@ export type {
   GumtreeLocationAutocompleteResponse,
   GumtreeTreeNode,
   GumtreeTreeResponse,
+  // Markets
+  GumtreeMarketInfo,
+  GumtreeMarketsResponse,
   // Request params
+  GumtreeMarket,
   GumtreeSort,
   GumtreeSellerType,
   GumtreeSearchParams,
   GumtreeSearchFiltersParams,
+  GumtreeMarketParams,
+  GumtreeSellerListingsParams,
+  GumtreeTreeParams,
 } from "./types.js";
