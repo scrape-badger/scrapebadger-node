@@ -132,7 +132,7 @@ export class ScrapeBadger {
   /** Walmart scraper API client — 11 endpoints (walmart.com, US-only) */
   readonly walmart: WalmartClient;
 
-  /** Gumtree scraper API client — 8 endpoints (gumtree.com, UK-only) */
+  /** Gumtree scraper API client — 9 endpoints (gumtree.com, gumtree.com.au, gumtree.co.za) */
   readonly gumtree: GumtreeClient;
 
   /** DuckDuckGo scraper API client — search, images, news, videos, autocomplete, instant, regions */
