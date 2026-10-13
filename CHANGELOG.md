@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.60.1 — 2026-10-13
+
+- **Gumtree South Africa ids are refs.** gumtree.co.za re-platformed on 2026-10-12 and the API now serves `market: "za"` from the new site: category, location and listing ids are refs such as `"p6dnh"` (Cars & Bakkies), `"dkp8y"` (Gauteng) and `"ls26bvmcpnsqmz7l9jz"` (a listing), e.g. `search({ market: "za", category: "p6dnh", location: "dkp8y", filters: "make:toyota" })`. The id types follow: `GumtreeTreeNode.id`, `GumtreeTreeResponse.id`, `GumtreeCategoryRef.id`, `GumtreeCategoryFacet.id`, `GumtreeLocationSuggestion.id`, `category_id` and `category_ids` are `number | string` (uk/au still return numbers), and `listCategories` / `listLocations` take a bare `number | string` parent id or `{ parent_id: number | string }` — a bare string ref was previously dropped. za filter keys are the site's own (`make`, `model`, `fuelType`, `year`, `mileageKm` …), and za search pages through the first 375 matches.
+
 ## 0.60.0 — 2026-10-12
 
 - **Gumtree Australia + South Africa.** Every `client.gumtree` method takes an optional `market`: `"uk"` (gumtree.com, GBP — the default when unset, so existing calls are unchanged), `"au"` (gumtree.com.au, AUD) or `"za"` (gumtree.co.za, ZAR). uk takes slugs for `category`/`location`; au and za take the numeric ids (as strings) from `listCategories`, `listLocations` and `locationAutocomplete` of the same market, e.g. `search({ market: "za", category: "9077", location: "3100003" })`. `search` `distance` is miles (uk) or km (au) and not offered by za; `urgent_only`/`with_photos` are uk only; `seller_type` is uk and za. za listing ids are the full 26-digit ad id.

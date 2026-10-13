@@ -34,12 +34,16 @@ const CATEGORIES: GumtreeTreeResponse = samples["GET /v1/gumtree/categories?pare
 const LOCATIONS: GumtreeTreeResponse = samples["GET /v1/gumtree/locations?parent_id=10000393"];
 const MARKETS: GumtreeMarketsResponse = samples["GET /v1/gumtree/markets"];
 const ZA_SEARCH: GumtreeSearchResponse =
-  samples["GET /v1/gumtree/search?market=za&category=9077&location=3100003"];
+  samples[
+    "GET /v1/gumtree/search?market=za&category=p6dnh&location=dkp8y&filters=make:toyota&sort=date"
+  ];
 const ZA_LISTING: GumtreeListingDetail =
-  samples["GET /v1/gumtree/listings/10013681289561010209976109?market=za"];
+  samples["GET /v1/gumtree/listings/ls26bvmcpnsqmz7l9jz?market=za"];
+const ZA_CATEGORIES: GumtreeTreeResponse =
+  samples["GET /v1/gumtree/categories?market=za&parent_id=l4dq6"];
 const AU_SEARCH: GumtreeSearchResponse = samples["GET /v1/gumtree/search?market=au"];
 const AU_LISTING: GumtreeListingDetail = samples["GET /v1/gumtree/listings/1339574407?market=au"];
-const ZA_LISTING_ID = "10013681289561010209976109";
+const ZA_LISTING_ID = "ls26bvmcpnsqmz7l9jz";
 
 function makeClient(): ScrapeBadger {
   return new ScrapeBadger({
@@ -125,28 +129,29 @@ describe("GumtreeClient", () => {
     });
   });
 
-  it("search sends market with au/za numeric ids", async () => {
+  it("search sends market with za refs", async () => {
     mockFetch(ZA_SEARCH);
     const result = await makeClient().gumtree.search({
       market: "za",
-      category: "9077",
-      location: "3100003",
-      filters: "ma:toyota",
+      category: "p6dnh",
+      location: "dkp8y",
+      filters: "make:toyota",
     });
     expect(Object.fromEntries(requestedUrl().searchParams)).toEqual({
       market: "za",
-      category: "9077",
-      location: "3100003",
-      filters: "ma:toyota",
+      category: "p6dnh",
+      location: "dkp8y",
+      filters: "make:toyota",
     });
     expect(result).toEqual(ZA_SEARCH);
     expect(result.market).toBe("za");
     expect(result.currency).toBe("ZAR");
+    expect([result.category_id, result.total_pages]).toEqual(["p6dnh", 19]);
     const car = result.listings[0];
-    expect(car?.short_id).toBe("1368127981");
-    expect(car?.price_type).toBe("FIXED");
-    expect(car?.seller_name).toBe("Kevin Noel Ngandu");
-    expect(result.listings[1]?.price_type).toBe("MAKE_OFFER");
+    expect(car?.id).toBe("ls26bvmcpnsqmz7l9jz");
+    expect(car?.short_id).toBeNull();
+    expect(car?.price_type).toBe("ASKING_PRICE");
+    expect(car?.category_ids).toEqual(["kyzkk", "l4dq6", "p6dnh"]);
   });
 
   it("au search responses carry facet ids and seller names", async () => {
@@ -183,13 +188,13 @@ describe("GumtreeClient", () => {
   it("searchFilters forwards already-applied filters and market", async () => {
     mockFetch(FILTERS);
     await makeClient().gumtree.searchFilters({
-      category: "9077",
-      filters: "ma:toyota",
+      category: "p6dnh",
+      filters: "make:toyota",
       market: "za",
     });
     expect(Object.fromEntries(requestedUrl().searchParams)).toEqual({
-      category: "9077",
-      filters: "ma:toyota",
+      category: "p6dnh",
+      filters: "make:toyota",
       market: "za",
     });
   });
@@ -212,14 +217,14 @@ describe("GumtreeClient", () => {
     expect(url.pathname).toBe(`/v1/gumtree/listings/${ZA_LISTING_ID}`);
     expect(url.searchParams.get("market")).toBe("za");
     expect(za).toEqual(ZA_LISTING);
-    expect([za.market, za.price_type, za.status, za.view_count]).toEqual([
+    expect([za.market, za.price_type, za.status, za.category_id]).toEqual([
       "za",
-      "FIXED",
-      "ACTIVE",
-      65,
+      "ASKING_PRICE",
+      "PUBLISHED",
+      "p6dnh",
     ]);
-    expect(za.seller?.lifetime_listings).toBe(3100);
-    expect(za.seller?.total_views).toBe(263430);
+    expect(za.seller?.member_since_year).toBe(2016);
+    expect(za.seller?.phone_masked).toBeNull();
 
     vi.unstubAllGlobals();
     mockFetch(AU_LISTING);
@@ -305,6 +310,22 @@ describe("GumtreeClient", () => {
     url = requestedUrl();
     expect(url.pathname).toBe("/v1/gumtree/categories");
     expect(Object.fromEntries(url.searchParams)).toEqual({ parent_id: "9299", market: "au" });
+  });
+
+  it("listCategories and listLocations take a bare za ref", async () => {
+    mockFetch(ZA_CATEGORIES);
+    const tree = await makeClient().gumtree.listCategories("l4dq6");
+    let url = requestedUrl();
+    expect(Object.fromEntries(url.searchParams)).toEqual({ parent_id: "l4dq6" });
+    expect([tree.id, tree.name]).toEqual(["l4dq6", "Vehicles"]);
+    const cars = tree.children.find((c) => c.name === "Cars & Bakkies");
+    expect([cars?.id, cars?.slug]).toEqual(["p6dnh", "cars-bakkies"]);
+
+    vi.unstubAllGlobals();
+    mockFetch(LOCATIONS);
+    await makeClient().gumtree.listLocations({ parent_id: "dkp8y", market: "za" });
+    url = requestedUrl();
+    expect(Object.fromEntries(url.searchParams)).toEqual({ parent_id: "dkp8y", market: "za" });
   });
 
   it("listMarkets returns every market", async () => {

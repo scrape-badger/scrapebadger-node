@@ -11,8 +11,8 @@
  * Three markets, chosen per call with `market`: `"uk"` (gumtree.com, GBP — the
  * server default), `"au"` (gumtree.com.au, AUD) and `"za"` (gumtree.co.za,
  * ZAR). They are separate sites: uk takes slugs for category and location,
- * au/za take numeric ids from `listCategories` / `listLocations` of the same
- * market.
+ * au takes numeric ids and za takes refs (`"p6dnh"`) from `listCategories` /
+ * `listLocations` of the same market.
  */
 
 import type { BaseClient } from "../internal/client.js";
@@ -58,9 +58,14 @@ import type {
  *   distance: 10,
  * });
  *
- * // South Africa: cars (9077) in Gauteng (3100003); listing ids are 26 digits
- * const za = await client.gumtree.search({ market: "za", category: "9077", location: "3100003" });
- * const detail = await client.gumtree.getListing("10013681289561010209976109", { market: "za" });
+ * // South Africa: refs — Cars & Bakkies (p6dnh) in Gauteng (dkp8y)
+ * const za = await client.gumtree.search({
+ *   market: "za",
+ *   category: "p6dnh",
+ *   location: "dkp8y",
+ *   filters: "make:toyota",
+ * });
+ * const detail = await client.gumtree.getListing("ls26bvmcpnsqmz7l9jz", { market: "za" });
  * console.log(detail.seller?.name);
  *
  * // Browse a market's category tree
@@ -129,9 +134,8 @@ export class GumtreeClient {
    * Full listing: description, every attribute, images, location, seller and
    * similar ads. Motors listings carry the full vehicle spec.
    *
-   * @param listingId - Gumtree listing id — the number at the end of the
-   *   listing URL (uk/au: ~10 digits; za: the full 26-digit ad id, not the
-   *   short one).
+   * @param listingId - Gumtree listing id from the end of the listing URL
+   *   (uk/au: ~10 digits; za: the listing ref, e.g. `"ls26bvmcpnsqmz7l9jz"`).
    * @param options - Optional parameters (market).
    * @throws NotFoundError - If the listing does not exist or has expired.
    */
@@ -148,8 +152,8 @@ export class GumtreeClient {
    * Every live listing by the seller of `listingId`. Gumtree keys a seller's
    * ad list by one of their ads, so any listing id of theirs works.
    *
-   * @param listingId - Any Gumtree listing id belonging to the seller (za: the
-   *   26-digit id).
+   * @param listingId - Any Gumtree listing id belonging to the seller (za: a
+   *   listing ref, e.g. `"ls26bvmcpnsqmz7l9jz"`).
    * @param options - Page number (1-50), or `{ page, market }`.
    */
   async getSellerListings(
@@ -181,7 +185,8 @@ export class GumtreeClient {
 
   /**
    * Resolve a place name or postcode prefix to Gumtree locations. The `id`
-   * (au/za) or `name` (uk) is what {@link search} takes as `location`.
+   * (au: a number; za: a ref such as `"pfw8k"`) or `name` (uk) is what
+   * {@link search} takes as `location`.
    *
    * @param query - Town, area or postcode prefix (min 2 chars), e.g. `"manch"` or `"SW1A"`.
    * @param options - Optional parameters (market).
@@ -198,25 +203,31 @@ export class GumtreeClient {
 
   /**
    * Browse Gumtree's location tree. uk: UK -> nations -> counties -> towns;
-   * au: states -> regions -> areas; za: provinces -> towns.
+   * au: states -> regions -> areas; za: provinces -> towns and suburbs.
    *
-   * @param options - Location id to list the children of, or
+   * @param options - Location id (uk/au: a number; za: a ref such as
+   *   `"dkp8y"` for Gauteng) to list the children of, or
    *   `{ parent_id, market }`. Unset = the market's root (the whole country).
    */
-  async listLocations(options: number | GumtreeTreeParams = {}): Promise<GumtreeTreeResponse> {
+  async listLocations(
+    options: number | string | GumtreeTreeParams = {}
+  ): Promise<GumtreeTreeResponse> {
     return this.client.request<GumtreeTreeResponse>("/v1/gumtree/locations", {
       params: treeParams(options),
     });
   }
 
   /**
-   * Browse Gumtree's category tree. A node's `slug` (uk) or `id` (au/za) is
-   * the {@link search} category.
+   * Browse Gumtree's category tree. A node's `slug` (uk) or `id` (au: a
+   * number; za: a ref such as `"p6dnh"`) is the {@link search} category.
    *
-   * @param options - Category id to list the children of, or
+   * @param options - Category id (uk/au: a number; za: a ref such as
+   *   `"l4dq6"` for Vehicles) to list the children of, or
    *   `{ parent_id, market }`. Unset = the market's root (all categories).
    */
-  async listCategories(options: number | GumtreeTreeParams = {}): Promise<GumtreeTreeResponse> {
+  async listCategories(
+    options: number | string | GumtreeTreeParams = {}
+  ): Promise<GumtreeTreeResponse> {
     return this.client.request<GumtreeTreeResponse>("/v1/gumtree/categories", {
       params: treeParams(options),
     });
@@ -231,9 +242,12 @@ export class GumtreeClient {
   }
 }
 
-/** `listLocations` / `listCategories` take a bare parent id or `{ parent_id, market }`. */
-function treeParams(options: number | GumtreeTreeParams) {
+/**
+ * `listLocations` / `listCategories` take a bare parent id (a number on uk/au,
+ * a ref string on za) or `{ parent_id, market }`.
+ */
+function treeParams(options: number | string | GumtreeTreeParams) {
   const { parent_id, market }: GumtreeTreeParams =
-    typeof options === "number" ? { parent_id: options } : options;
+    typeof options === "object" ? options : { parent_id: options };
   return { parent_id, market };
 }
