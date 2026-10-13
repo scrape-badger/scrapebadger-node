@@ -8,6 +8,8 @@
  * Three markets share these types: `uk` (gumtree.com, GBP), `au`
  * (gumtree.com.au, AUD) and `za` (gumtree.co.za, ZAR). They are separate
  * platforms, so a field one market does not publish is simply `null` there.
+ * Category, location and tree ids are numbers on uk/au and gumtree.co.za refs
+ * (strings such as `"p6dnh"`) on za, so those fields are `number | string`.
  * Every top-level response carries the `market` it came from. Every datetime
  * ships in BOTH forms: `*_utc` (Unix seconds) and `*_at` (ISO 8601 UTC string).
  * Phone numbers are only ever the MASKED form Gumtree shows a logged-out
@@ -28,7 +30,8 @@ export interface GumtreeAttribute {
 
 /** A category reference attached to an autocomplete suggestion. */
 export interface GumtreeCategoryRef {
-  id: number | null;
+  /** za: a ref such as `"p6dnh"`. */
+  id: number | string | null;
   name: string | null;
   slug: string | null;
 }
@@ -42,7 +45,7 @@ export interface GumtreeBreadcrumb {
 /** A listing as it appears on a search / seller / similar-listings grid. */
 export interface GumtreeListingSummary {
   id: string;
-  /** za: the 10-digit id Gumtree shows (the `id` is the full ad id). */
+  /** Not published by any market at present (za's old short id). */
   short_id: string | null;
   title: string | null;
   url: string | null;
@@ -54,7 +57,7 @@ export interface GumtreeListingSummary {
   price_text: string | null;
   /** `pm` / `pw` for rentals. */
   price_frequency: string | null;
-  /** au/za: `FIXED`, `NEGOTIABLE` / `MAKE_OFFER`, `FREE`, `SWAP_TRADE`… */
+  /** au: `FIXED`, `NEGOTIABLE`, `FREE`, `SWAP_TRADE`…; za: `ASKING_PRICE`, `POA`… */
   price_type: string | null;
   currency: string;
   location: string | null;
@@ -65,10 +68,11 @@ export interface GumtreeListingSummary {
   /** e.g. `"13 miles"` (uk) or `"4 km"` (au) from the search location. */
   distance_text: string | null;
   distance_miles: number | null;
-  category_id: number | null;
+  /** za: a ref such as `"p6dnh"`. */
+  category_id: number | string | null;
   category_name: string | null;
-  /** Root-to-leaf category ids. */
-  category_ids: number[];
+  /** Root-to-leaf category ids (refs on za). */
+  category_ids: (number | string)[];
   image_url: string | null;
   image_urls: string[];
   image_count: number | null;
@@ -103,8 +107,8 @@ export interface GumtreeListingSummary {
 
 /** A sub-category of a result set, with its listing count. */
 export interface GumtreeCategoryFacet {
-  /** au/za: the category id `search` takes. */
-  id: number | null;
+  /** au: the numeric category id `search` takes; za: its ref. */
+  id: number | string | null;
   name: string | null;
   slug: string | null;
   count: number | null;
@@ -118,7 +122,8 @@ export interface GumtreeSearchResponse {
   /** Category slug the search ran in. */
   category: string | null;
   category_name: string | null;
-  category_id: number | null;
+  /** za: a ref such as `"p6dnh"`. */
+  category_id: number | string | null;
   /** Location slug / postcode searched. */
   location: string | null;
   location_name: string | null;
@@ -206,7 +211,7 @@ export interface GumtreeSeller {
   is_pro: boolean | null;
   /** e.g. `"6+ years"`. */
   posting_since: string | null;
-  /** au: year the account opened. */
+  /** au/za: year the account opened. */
   member_since_year: number | null;
   /** au: e.g. `"yesterday"`. */
   last_active_text: string | null;
@@ -214,9 +219,9 @@ export interface GumtreeSeller {
   last_active_at: string | null;
   /** Live listings right now. */
   total_listings: number | null;
-  /** za: ads ever posted. */
+  /** Ads ever posted (no market publishes it at present). */
   lifetime_listings: number | null;
-  /** za: views across all their ads. */
+  /** Views across all their ads (no market publishes it at present). */
   total_views: number | null;
   listings_last_year: number | null;
   listings_by_category: Record<string, number>;
@@ -243,7 +248,7 @@ export interface GumtreeListingDetail {
   price: number | null;
   price_text: string | null;
   price_frequency: string | null;
-  /** au/za: `FIXED`, `NEGOTIABLE` / `MAKE_OFFER`, `FREE`, `SWAP_TRADE`… */
+  /** au: `FIXED`, `NEGOTIABLE`, `FREE`, `SWAP_TRADE`…; za: `ASKING_PRICE`, `POA`… */
   price_type: string | null;
   currency: string;
   /** Motors trade listings: `"Inc VAT"` / `"No VAT"`. */
@@ -255,9 +260,11 @@ export interface GumtreeListingDetail {
   postcode: string | null;
   latitude: number | null;
   longitude: number | null;
-  category_id: number | null;
+  /** za: a ref such as `"p6dnh"`. */
+  category_id: number | string | null;
   category_name: string | null;
-  category_ids: number[];
+  /** Root-to-leaf category ids (refs on za). */
+  category_ids: (number | string)[];
   breadcrumbs: GumtreeBreadcrumb[];
   image_urls: string[];
   video_urls: string[];
@@ -305,7 +312,7 @@ export interface GumtreeSellerListingsResponse {
   total_results: number | null;
   page: number;
   total_pages: number | null;
-  /** `za`: another page follows (the site gives no total upfront). `null` elsewhere. */
+  /** `za`: another page follows. `null` elsewhere. */
   has_next?: boolean | null;
   result_count: number;
   listings: GumtreeListingSummary[];
@@ -334,7 +341,8 @@ export interface GumtreeAutocompleteResponse {
 
 /** A Gumtree location matched by name or postcode prefix. */
 export interface GumtreeLocationSuggestion {
-  id: number | null;
+  /** za: a ref such as `"pfw8k"`. */
+  id: number | string | null;
   name: string | null;
   /** uk: location / outcode / postcode; au/za: region / area. */
   type: string | null;
@@ -353,7 +361,8 @@ export interface GumtreeLocationAutocompleteResponse {
 
 /** A category or location node. `slug` (uk) or `id` (au/za) is what `search` takes. */
 export interface GumtreeTreeNode {
-  id: number;
+  /** A number on uk/au, a ref such as `"p6dnh"` on za. */
+  id: number | string;
   name: string | null;
   slug: string | null;
   has_children: boolean | null;
@@ -363,7 +372,8 @@ export interface GumtreeTreeNode {
 export interface GumtreeTreeResponse {
   /** `uk` = gumtree.com, `au` = gumtree.com.au, `za` = gumtree.co.za. */
   market: string;
-  id: number;
+  /** A number on uk/au, a ref such as `"l4dq6"` on za. */
+  id: number | string;
   name: string | null;
   slug: string | null;
   result_count: number;
@@ -419,14 +429,16 @@ export interface GumtreeSearchParams {
   query?: string;
   /**
    * uk: category slug, e.g. `"cars"`, `"for-sale"`, `"property-to-rent"`.
-   * au/za: numeric category id as a string, e.g. `"18320"` (au cars) or
-   * `"9077"` (za cars). Browse the tree with `listCategories`. Default `"all"`.
+   * au: numeric category id as a string, e.g. `"18320"` (cars). za: category
+   * ref, e.g. `"p6dnh"` (Cars & Bakkies). Browse the tree with
+   * `listCategories`. Default `"all"`.
    */
   category?: string;
   /**
    * uk: location slug (`"london"`), town name or UK postcode (`"SW1A 1AA"`).
-   * au/za: numeric location id as a string, e.g. `"3003435"` (au Sydney) or
-   * `"3100003"` (za Gauteng). Resolve one with `locationAutocomplete`.
+   * au: numeric location id as a string, e.g. `"3003435"` (Sydney). za:
+   * location ref, e.g. `"dkp8y"` (Gauteng). Resolve one with
+   * `locationAutocomplete`.
    * Default: the whole country.
    */
   location?: string;
@@ -447,11 +459,11 @@ export interface GumtreeSearchParams {
   /**
    * Category-specific filters as comma-separated `key:value` pairs, e.g.
    * `"vehicle_make:bmw,vehicle_fuel_type:petrol,min_vehicle_mileage:10000"` (uk)
-   * or `"ma:toyota,fu:petrol,max_km:100000"` (za). Range filters take
+   * or `"make:toyota,fuelType:petrol,max_mileageKm:100000"` (za). Range filters take
    * `min_<key>`/`max_<key>`. Discover keys with `searchFilters` for the same market.
    */
   filters?: string;
-  /** Page number, 1-50. */
+  /** Page number, 1-50 (za: only the first 375 matches are reachable). */
   page?: number;
   /** Which Gumtree. Unset = the server default, `"uk"`. */
   market?: GumtreeMarket;
@@ -459,13 +471,16 @@ export interface GumtreeSearchParams {
 
 /** Parameters for `GET /v1/gumtree/search/filters`. All optional. */
 export interface GumtreeSearchFiltersParams {
-  /** uk: category slug; au/za: numeric category id. Default `"all"`. */
+  /** uk: category slug; au: numeric category id; za: category ref (`"p6dnh"`). Default `"all"`. */
   category?: string;
-  /** uk: location slug, town or UK postcode; au/za: numeric location id. Default: the whole country. */
+  /**
+   * uk: location slug, town or UK postcode; au: numeric location id; za:
+   * location ref (`"dkp8y"`). Default: the whole country.
+   */
   location?: string;
   /** Optional keywords to scope the counts. */
   query?: string;
-  /** za only: filters already applied, e.g. `"ma:toyota"` to list the Toyota models. */
+  /** za only: filters already applied, e.g. `"make:toyota"` to narrow the model counts. */
   filters?: string;
   /** Which Gumtree. Unset = the server default, `"uk"`. */
   market?: GumtreeMarket;
@@ -485,6 +500,6 @@ export interface GumtreeSellerListingsParams extends GumtreeMarketParams {
 
 /** Options for `listLocations` and `listCategories`. */
 export interface GumtreeTreeParams extends GumtreeMarketParams {
-  /** Node id to list the children of. Unset = the market's root. */
-  parent_id?: number;
+  /** Node id (uk/au: a number; za: a ref such as `"dkp8y"`). Unset = the market's root. */
+  parent_id?: number | string;
 }
