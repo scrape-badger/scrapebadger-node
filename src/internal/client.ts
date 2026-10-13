@@ -9,6 +9,7 @@ import {
   RateLimitError,
   NotFoundError,
   ValidationError,
+  BlockedError,
   ServerError,
   TimeoutError,
   InsufficientCreditsError,
@@ -18,6 +19,7 @@ import {
   ConflictError,
   ScrapeBadgerError,
 } from "./exceptions.js";
+import type { BlockKind, BlockingCaptcha } from "./exceptions.js";
 
 /**
  * Server-side status codes worth retrying.
@@ -58,6 +60,10 @@ interface ErrorResponse {
   required_scope?: string;
   allowed_scopes?: string[];
   client_ip?: string | null;
+  block_kind?: BlockKind | null;
+  vendor?: string | null;
+  captcha?: BlockingCaptcha | null;
+  data?: Record<string, unknown> | null;
 }
 
 /**
@@ -369,6 +375,14 @@ export class BaseClient {
         throw new ConflictError(message);
 
       case 422:
+        if (errorData.error === "blocking_page_detected") {
+          throw new BlockedError(message, {
+            blockKind: errorData.block_kind,
+            vendor: errorData.vendor,
+            captcha: errorData.captcha,
+            data: errorData.data,
+          });
+        }
         throw new ValidationError(message, errorData.errors);
 
       case 429:

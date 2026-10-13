@@ -171,9 +171,8 @@ describe("Exceptions", () => {
     it("is thrown on 403 insufficient_scope with the scopes attached", async () => {
       const { BaseClient } = await import("../src/internal/client.js");
       const { resolveConfig } = await import("../src/internal/config.js");
-      const { PermissionDeniedError, AuthenticationError } = await import(
-        "../src/internal/exceptions.js"
-      );
+      const { PermissionDeniedError, AuthenticationError } =
+        await import("../src/internal/exceptions.js");
 
       const client = new BaseClient(resolveConfig({ apiKey: "test-key", maxRetries: 0 }));
       vi.stubGlobal(
@@ -211,7 +210,8 @@ describe("Exceptions", () => {
     it("is thrown on 403 ip_not_allowed with the client IP", async () => {
       const { BaseClient } = await import("../src/internal/client.js");
       const { resolveConfig } = await import("../src/internal/config.js");
-      const { IPNotAllowedError, PermissionDeniedError } = await import("../src/internal/exceptions.js");
+      const { IPNotAllowedError, PermissionDeniedError } =
+        await import("../src/internal/exceptions.js");
       const client = new BaseClient(resolveConfig({ apiKey: "test-key", maxRetries: 0 }));
       vi.stubGlobal(
         "fetch",
@@ -237,5 +237,76 @@ describe("Exceptions", () => {
         vi.unstubAllGlobals();
       }
     });
+  });
+});
+
+describe("BlockedError", () => {
+  async function raise(body: Record<string, unknown>): Promise<unknown> {
+    const { BaseClient } = await import("../src/internal/client.js");
+    const { resolveConfig } = await import("../src/internal/config.js");
+    const client = new BaseClient(resolveConfig({ apiKey: "test-key", maxRetries: 0 }));
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(
+        new Response(JSON.stringify(body), {
+          status: 422,
+          headers: { "Content-Type": "application/json" },
+        })
+      )
+    );
+    try {
+      await client.request("/v1/web/scrape", {
+        method: "POST",
+        body: { url: "https://example.com" },
+      });
+      return undefined;
+    } catch (err) {
+      return err;
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  }
+
+  it("is thrown on a blocking_page_detected 422 with kind, vendor and captcha", async () => {
+    const { BlockedError, ValidationError } = await import("../src/internal/exceptions.js");
+    const captcha = {
+      system: "recaptcha_v2",
+      confidence: 0.9,
+      version: "v2_checkbox",
+      gate: true,
+      params: { sitekey: "6Lc" },
+    };
+    const err = await raise({
+      error: "blocking_page_detected",
+      detail: "blocked",
+      block_kind: "captcha",
+      vendor: "google",
+      captcha,
+      data: { status_code: 403 },
+    });
+    expect(err).toBeInstanceOf(BlockedError);
+    expect(err).toBeInstanceOf(ValidationError); // pre-0.61 handlers still match
+    const e = err as InstanceType<typeof BlockedError>;
+    expect(e.blockKind).toBe("captcha");
+    expect(e.vendor).toBe("google");
+    expect(e.captcha).toEqual(captcha);
+    expect(e.data).toEqual({ status_code: 403 });
+  });
+
+  it("leaves fields undefined on an older blocking body", async () => {
+    const { BlockedError } = await import("../src/internal/exceptions.js");
+    const err = await raise({ error: "blocking_page_detected", detail: "blocked" });
+    expect(err).toBeInstanceOf(BlockedError);
+    const e = err as InstanceType<typeof BlockedError>;
+    expect(e.blockKind).toBeUndefined();
+    expect(e.vendor).toBeUndefined();
+    expect(e.captcha).toBeUndefined();
+  });
+
+  it("keeps other 422s as ValidationError", async () => {
+    const { BlockedError, ValidationError } = await import("../src/internal/exceptions.js");
+    const err = await raise({ detail: "bad url" });
+    expect(err).toBeInstanceOf(ValidationError);
+    expect(err).not.toBeInstanceOf(BlockedError);
   });
 });

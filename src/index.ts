@@ -45,6 +45,7 @@ export {
   RateLimitError,
   NotFoundError,
   ValidationError,
+  BlockedError,
   ServerError,
   TimeoutError,
   InsufficientCreditsError,
@@ -54,6 +55,7 @@ export {
   ConflictError,
   WebSocketStreamError,
 } from "./internal/exceptions.js";
+export type { BlockKind, BlockingCaptcha } from "./internal/exceptions.js";
 
 // Pagination utilities
 export type {
