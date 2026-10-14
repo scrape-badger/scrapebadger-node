@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.61.0 — 2026-10-14
+
+- **`BlockedError` — why a web scrape was blocked.** A `web.scrape` whose every attempt hit an anti-bot wall (`422`, `error: "blocking_page_detected"`) now throws `BlockedError`, which extends `ValidationError`, so existing `instanceof ValidationError` checks still match. It carries `blockKind` (`"antibot"`, `"captcha"`, `"rate_limit"`, `"ip_ban"`, `"geo_block"`, `"auth_wall"`, `"empty"` or `"other"`), `vendor` (the protection that served the wall, e.g. `"cloudflare"`, `"datadome"`, `"akamai"`, `"aws_waf"`), `captcha` (the CAPTCHA gating the page when `blockKind === "captcha"`: `system`, `version`, `gate`, `solvable`, `params` such as `sitekey`) and `data` (the scrape result returned with the block). `BlockKind` and `BlockingCaptcha` are exported types. Blocked requests are not charged.
+- `captcha_systems` entries on web results may now carry `version`, `gate`, `solvable` and `params`, and `blocking_details` may carry `vendor`, `kind` and `signals` (server-side; already passed through as records).
+
 ## 0.60.1 — 2026-10-13
 
 - **Gumtree South Africa ids are refs.** gumtree.co.za re-platformed on 2026-10-12 and the API now serves `market: "za"` from the new site: category, location and listing ids are refs such as `"p6dnh"` (Cars & Bakkies), `"dkp8y"` (Gauteng) and `"ls26bvmcpnsqmz7l9jz"` (a listing), e.g. `search({ market: "za", category: "p6dnh", location: "dkp8y", filters: "make:toyota" })`. The id types follow: `GumtreeTreeNode.id`, `GumtreeTreeResponse.id`, `GumtreeCategoryRef.id`, `GumtreeCategoryFacet.id`, `GumtreeLocationSuggestion.id`, `category_id` and `category_ids` are `number | string` (uk/au still return numbers), and `listCategories` / `listLocations` take a bare `number | string` parent id or `{ parent_id: number | string }` — a bare string ref was previously dropped. za filter keys are the site's own (`make`, `model`, `fuelType`, `year`, `mileageKm` …), and za search pages through the first 375 matches.

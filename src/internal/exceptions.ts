@@ -58,7 +58,10 @@ export class IPNotAllowedError extends PermissionDeniedError {
   /** The address ScrapeBadger saw (null when relayed, e.g. via the hosted MCP server) */
   readonly clientIp: string | null;
 
-  constructor(message = "This API key may not be used from this IP address.", clientIp: string | null = null) {
+  constructor(
+    message = "This API key may not be used from this IP address.",
+    clientIp: string | null = null
+  ) {
     super(message);
     this.name = "IPNotAllowedError";
     this.clientIp = clientIp;
@@ -120,6 +123,74 @@ export class ValidationError extends ScrapeBadgerError {
     this.name = "ValidationError";
     this.errors = errors;
     Object.setPrototypeOf(this, ValidationError.prototype);
+  }
+}
+
+/** Why the Web Scraping API reported a target as blocked (SCR-306). */
+export type BlockKind =
+  | "antibot"
+  | "captcha"
+  | "rate_limit"
+  | "ip_ban"
+  | "geo_block"
+  | "auth_wall"
+  | "empty"
+  | "other";
+
+/** The CAPTCHA gating a blocked page. */
+export interface BlockingCaptcha {
+  system: string;
+  confidence: number;
+  details?: string | null;
+  version?: string | null;
+  gate?: boolean;
+  solvable?: boolean;
+  params?: Record<string, unknown>;
+}
+
+/**
+ * Raised when a web scrape hit an anti-bot wall on every attempt (HTTP 422,
+ * `error: "blocking_page_detected"`). Extends `ValidationError`, which is
+ * what this threw before 0.61.0, so existing handlers still match. Blocked
+ * requests are not charged.
+ *
+ * @example
+ * ```ts
+ * try {
+ *   await client.web.scrape({ url: "https://example.com" });
+ * } catch (err) {
+ *   if (err instanceof BlockedError) {
+ *     console.log(err.blockKind, err.vendor, err.captcha?.params);
+ *   }
+ * }
+ * ```
+ */
+export class BlockedError extends ValidationError {
+  /** The wall's class; undefined on older responses */
+  readonly blockKind: BlockKind | undefined;
+  /** The protection vendor that served it, e.g. "cloudflare", "datadome", "aws_waf" */
+  readonly vendor: string | undefined;
+  /** The CAPTCHA gating the page when blockKind is "captcha" */
+  readonly captcha: BlockingCaptcha | undefined;
+  /** The scrape result the API returned with the block */
+  readonly data: Record<string, unknown> | undefined;
+
+  constructor(
+    message = "Blocking page detected.",
+    details: {
+      blockKind?: BlockKind | null;
+      vendor?: string | null;
+      captcha?: BlockingCaptcha | null;
+      data?: Record<string, unknown> | null;
+    } = {}
+  ) {
+    super(message);
+    this.name = "BlockedError";
+    this.blockKind = details.blockKind ?? undefined;
+    this.vendor = details.vendor ?? undefined;
+    this.captcha = details.captcha ?? undefined;
+    this.data = details.data ?? undefined;
+    Object.setPrototypeOf(this, BlockedError.prototype);
   }
 }
 
