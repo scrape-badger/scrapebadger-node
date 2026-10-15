@@ -30,8 +30,6 @@ export class ReferenceClient {
   /**
    * Get the models chatgpt.com currently offers.
    *
-   * Costs 1 credit.
-   *
    * @param params - Optional parameters.
    * @param params.country - ISO-3166 alpha-2 egress country (default: "US").
    * @returns The available models.

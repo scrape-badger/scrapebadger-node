@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.61.1 — 2026-10-15
+
+- **Removed per-endpoint credit prices from JSDoc and docs again.** Baidu, ChatGPT, Depop, LoopNet and Wallapop comments and `docs/ebay.md` had picked up hard-coded "Costs N credits" lines, which the 2026-10-14 repricing made wrong. Prices are configured per endpoint by ScrapeBadger and served live from `GET /public/pricing`; see the per-endpoint docs at docs.scrapebadger.com. Free reference endpoints still say they are free.
+- `ScrapeOptions.video`: no longer claims "+3 credits". Video recording is not billed on top; it forces the browser engine.
+
 ## 0.61.0 — 2026-10-14
 
 - **`BlockedError` — why a web scrape was blocked.** A `web.scrape` whose every attempt hit an anti-bot wall (`422`, `error: "blocking_page_detected"`) now throws `BlockedError`, which extends `ValidationError`, so existing `instanceof ValidationError` checks still match. It carries `blockKind` (`"antibot"`, `"captcha"`, `"rate_limit"`, `"ip_ban"`, `"geo_block"`, `"auth_wall"`, `"empty"` or `"other"`), `vendor` (the protection that served the wall, e.g. `"cloudflare"`, `"datadome"`, `"akamai"`, `"aws_waf"`), `captcha` (the CAPTCHA gating the page when `blockKind === "captcha"`: `system`, `version`, `gate`, `solvable`, `params` such as `sitekey`) and `data` (the scrape result returned with the block). `BlockKind` and `BlockingCaptcha` are exported types. Blocked requests are not charged.

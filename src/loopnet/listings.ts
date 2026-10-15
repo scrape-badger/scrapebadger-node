@@ -34,8 +34,6 @@ export class ListingsClient {
   /**
    * Get a single LoopNet listing's full detail by listing id.
    *
-   * Costs 12 credits.
-   *
    * @param listingId - The LoopNet listing id.
    * @param params - Optional market selector.
    * @returns Listing detail response.

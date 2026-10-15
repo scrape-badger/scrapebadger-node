@@ -78,8 +78,8 @@ download) or as `image_base64` (JPEG or PNG, at most 10 MB decoded; a
 `data:image/jpeg;base64,...` URL is also accepted). Exactly one of the two is
 required — passing neither or both throws before the request is sent.
 
-It costs 10 credits, returns the same shape as `search` with `query: null`, and
-takes no `sort_by`: eBay ignores sorting on a visual results page.
+It returns the same shape as `search` with `query: null`, and takes no
+`sort_by`: eBay ignores sorting on a visual results page.
 
 ```typescript
 import { readFileSync } from "node:fs";

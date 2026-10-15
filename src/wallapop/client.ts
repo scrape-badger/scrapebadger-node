@@ -74,8 +74,6 @@ export class WallapopClient {
    * Needs a query, a `categoryId`, or both — unless `nextPage` is given, in
    * which case every other parameter is ignored.
    *
-   * Costs 5 credits.
-   *
    * @param query - Search text, e.g. "iphone 14" (optional with `categoryId` or `nextPage`).
    * @param options - Optional parameters (market, location/radius, category,
    *   price, condition, brand/model/colour, cars filters, sort, cursor).
@@ -121,8 +119,6 @@ export class WallapopClient {
   /**
    * Get a single listing's full detail.
    *
-   * Costs 5 credits.
-   *
    * @param itemId - Listing id (e.g. "nzxeknm5x562") or listing slug.
    * @param options - Optional parameters (market).
    * @returns Full listing detail with attributes, counters and location.
@@ -139,8 +135,6 @@ export class WallapopClient {
    * Get a seller's profile with ratings, sales counters, response rate and
    * verifications.
    *
-   * Costs 5 credits.
-   *
    * @param userId - User id (e.g. "dqjwdd53wwzo") or profile slug (e.g. "alexc-25115753").
    * @param options - Optional parameters (market).
    * @returns User profile.
@@ -155,8 +149,6 @@ export class WallapopClient {
 
   /**
    * Get a seller's live listings (40 per page).
-   *
-   * Costs 5 credits.
    *
    * @param userId - User id or profile slug.
    * @param options - Optional parameters (market, nextPage).
@@ -176,8 +168,6 @@ export class WallapopClient {
   /**
    * Get the reviews a seller received, newest first (40 per page).
    *
-   * Costs 5 credits.
-   *
    * @param userId - User id or profile slug.
    * @param options - Optional parameters (market, nextPage).
    * @returns Reviews and the next-page cursor.
@@ -196,8 +186,6 @@ export class WallapopClient {
   /**
    * Get Wallapop's search-box suggestions for a partial query.
    *
-   * Costs 1 credit.
-   *
    * @param query - Partial search text, e.g. "bici".
    * @param options - Optional parameters (market).
    * @returns Autocomplete suggestions.
@@ -214,8 +202,6 @@ export class WallapopClient {
   /**
    * Get the full category tree; ids are usable as the search `categoryId`.
    *
-   * Costs 1 credit.
-   *
    * @param options - Optional parameters (market — localises names).
    * @returns Category tree.
    */
@@ -228,8 +214,6 @@ export class WallapopClient {
   /**
    * Get the search filters Wallapop offers for a category and/or query,
    * with their option ids.
-   *
-   * Costs 2 credits.
    *
    * @param options - Optional parameters (categoryId, query, market).
    * @returns Available filters.
@@ -247,8 +231,6 @@ export class WallapopClient {
   /**
    * Get a filter's long option list (brands, models) that Wallapop serves
    * separately — filters flagged `options_endpoint` in `listFilters`.
-   *
-   * Costs 2 credits.
    *
    * @param filterId - Filter id, e.g. "brand".
    * @param options - Optional parameters (categoryId, query, market).
