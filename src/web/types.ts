@@ -40,7 +40,7 @@ export interface ScrapeOptions {
   windowWidth?: number;
   /** Browser viewport height in pixels (240-4320) */
   windowHeight?: number;
-  /** Record browser session as video (+3 credits) */
+  /** Record browser session as video (not billed on top; forces the browser engine) */
   video?: boolean;
   /** Attempt anti-bot bypass */
   antiBot?: boolean;

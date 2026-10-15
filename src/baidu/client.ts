@@ -58,8 +58,6 @@ export class BaiduClient {
   /**
    * Search baidu.com — the web SERP.
    *
-   * Costs 5 credits.
-   *
    * @param query - Search keywords, e.g. `"咖啡机"` or `"coffee machine"` (required).
    * @param options - Optional parameters (page, num, language, timeFrom, timeTo).
    * @returns Search response with organic results and Baidu's related searches.
@@ -82,8 +80,6 @@ export class BaiduClient {
   /**
    * Search the Baidu news vertical.
    *
-   * Costs 5 credits.
-   *
    * @param query - Search keywords, e.g. `"人工智能"` (required).
    * @param options - Optional parameters (page, sort).
    * @returns News response with articles carrying publisher, date and real URLs.
@@ -98,8 +94,6 @@ export class BaiduClient {
 
   /**
    * Search Baidu images.
-   *
-   * Costs 5 credits.
    *
    * @param query - Search keywords, e.g. `"猫"` (required).
    * @param options - Optional parameters (page). Baidu serves 30 images per page.
@@ -116,8 +110,6 @@ export class BaiduClient {
 
   /**
    * Baidu search-box suggestions — the cheapest call in this API.
-   *
-   * Costs 1 credit.
    *
    * @param query - Partial search term, e.g. `"咖啡"` or `"coff"` (required).
    * @returns Autocomplete response with Baidu's suggestions for the term.

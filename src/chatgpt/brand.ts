@@ -34,8 +34,6 @@ export class BrandClient {
   /**
    * Analyse how a brand shows up in ChatGPT's answer to a prompt.
    *
-   * Costs 25 credits.
-   *
    * @param params - Brand-visibility parameters.
    * @param params.prompt - The prompt to send (max 4096 characters).
    * @param params.brand - The brand name to look for in the answer.

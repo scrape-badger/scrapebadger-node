@@ -63,8 +63,6 @@ export class DepopClient {
   /**
    * Search Depop for products.
    *
-   * Costs 10 credits.
-   *
    * @param query - Search keywords (required).
    * @param options - Optional parameters (market, perPage, page, price/brand/
    *   size/colour/condition/gender filters, sort).
@@ -94,8 +92,6 @@ export class DepopClient {
   /**
    * Get a single Depop product's full detail by slug.
    *
-   * Costs 10 credits.
-   *
    * @param slug - The Depop product slug.
    * @param options - Optional parameters (market).
    * @returns Full product detail.
@@ -110,8 +106,6 @@ export class DepopClient {
   /**
    * Get a Depop shop / seller profile by username.
    *
-   * Costs 10 credits.
-   *
    * @param username - The Depop seller username.
    * @param options - Optional parameters (market).
    * @returns Shop profile.
@@ -125,8 +119,6 @@ export class DepopClient {
 
   /**
    * Get a Depop seller's products.
-   *
-   * Costs 10 credits.
    *
    * @param username - The Depop seller username.
    * @param options - Optional parameters (market, perPage, page).

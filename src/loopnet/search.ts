@@ -31,8 +31,6 @@ export class SearchClient {
   /**
    * Search LoopNet for for-lease / for-sale / auction commercial listings.
    *
-   * Costs 10 credits.
-   *
    * @param params - Search parameters including location, filters, and pagination.
    * @returns Search results with listing cards and pagination metadata.
    * @throws AuthenticationError - If the API key is invalid.

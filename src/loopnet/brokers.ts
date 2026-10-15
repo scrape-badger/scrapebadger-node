@@ -34,8 +34,6 @@ export class BrokersClient {
   /**
    * Get a LoopNet broker's profile and their active listings.
    *
-   * Costs 8 credits.
-   *
    * @param slug - The broker's profile URL slug.
    * @param brokerId - The LoopNet broker id.
    * @param params - Optional market selector.
