@@ -15,14 +15,18 @@ import { IdealistaClient } from "./idealista/client.js";
 import { RedditClient } from "./reddit/client.js";
 import { ApartmentsClient } from "./apartments/client.js";
 import { AppStoreClient } from "./app_store/client.js";
+import { AsosClient } from "./asos/client.js";
 import { InstagramClient } from "./instagram/client.js";
 import { RedfinClient } from "./redfin/client.js";
 import { AccountClient } from "./account/client.js";
 import { AirbnbClient } from "./airbnb/client.js";
+import { AliexpressClient } from "./aliexpress/client.js";
 import { AmazonClient } from "./amazon/client.js";
 import { ShopeeClient } from "./shopee/client.js";
+import { TargetClient } from "./target/client.js";
 import { TikTokClient } from "./tiktok/client.js";
 import { EbayClient } from "./ebay/client.js";
+import { EtsyClient } from "./etsy/client.js";
 import { FacebookClient } from "./facebook/client.js";
 import { WalmartClient } from "./walmart/client.js";
 import { GumtreeClient } from "./gumtree/client.js";
@@ -30,6 +34,7 @@ import { DuckDuckGoClient } from "./duckduckgo/client.js";
 import { BingClient } from "./bing/client.js";
 import { BookingClient } from "./booking/client.js";
 import { BaiduClient } from "./baidu/client.js";
+import { BestbuyClient } from "./bestbuy/client.js";
 import { NaverClient } from "./naver/client.js";
 import { YahooClient } from "./yahoo/client.js";
 import { YandexClient } from "./yandex/client.js";
@@ -104,6 +109,8 @@ export class ScrapeBadger {
   readonly apartments: ApartmentsClient;
   /** App_Store API client. (Generated from the OpenAPI spec.) */
   readonly app_store: AppStoreClient;
+  /** Asos API client. (Generated from the OpenAPI spec.) */
+  readonly asos: AsosClient;
 
   /** Instagram scraper API client — users, media, search, hashtags, locations, audio */
   readonly instagram: InstagramClient;
@@ -116,16 +123,22 @@ export class ScrapeBadger {
   readonly account: AccountClient;
   /** Airbnb API client. (Generated from the OpenAPI spec.) */
   readonly airbnb: AirbnbClient;
+  /** Aliexpress API client. (Generated from the OpenAPI spec.) */
+  readonly aliexpress: AliexpressClient;
   readonly amazon: AmazonClient;
 
   /** Shopee scraper API client — 6 endpoints across 11 markets */
   readonly shopee: ShopeeClient;
+  /** Target API client. (Generated from the OpenAPI spec.) */
+  readonly target: TargetClient;
 
   /** TikTok scraper API client — 26 endpoints */
   readonly tiktok: TikTokClient;
 
   /** eBay scraper API client — 12 endpoints across 18 markets */
   readonly ebay: EbayClient;
+  /** Etsy API client. (Generated from the OpenAPI spec.) */
+  readonly etsy: EtsyClient;
   /** Facebook API client. (Generated from the OpenAPI spec.) */
   readonly facebook: FacebookClient;
 
@@ -145,6 +158,8 @@ export class ScrapeBadger {
 
   /** Baidu scraper API client — search, news, images, autocomplete (baidu.com, China's #1 search engine) */
   readonly baidu: BaiduClient;
+  /** Bestbuy API client. (Generated from the OpenAPI spec.) */
+  readonly bestbuy: BestbuyClient;
 
   /** Naver scraper API client — 55 endpoints (search, places, shopping, stores, content, reviews, products, shopping live; naver.com, South Korea) */
   readonly naver: NaverClient;
@@ -238,14 +253,18 @@ export class ScrapeBadger {
     this.reddit = new RedditClient(this.baseClient);
     this.apartments = new ApartmentsClient(this.baseClient);
     this.app_store = new AppStoreClient(this.baseClient);
+    this.asos = new AsosClient(this.baseClient);
     this.instagram = new InstagramClient(this.baseClient);
     this.redfin = new RedfinClient(this.baseClient);
     this.account = new AccountClient(this.baseClient);
     this.airbnb = new AirbnbClient(this.baseClient);
+    this.aliexpress = new AliexpressClient(this.baseClient);
     this.amazon = new AmazonClient(this.baseClient);
     this.shopee = new ShopeeClient(this.baseClient);
+    this.target = new TargetClient(this.baseClient);
     this.tiktok = new TikTokClient(this.baseClient);
     this.ebay = new EbayClient(this.baseClient);
+    this.etsy = new EtsyClient(this.baseClient);
     this.facebook = new FacebookClient(this.baseClient);
     this.walmart = new WalmartClient(this.baseClient);
     this.gumtree = new GumtreeClient(this.baseClient);
@@ -253,6 +272,7 @@ export class ScrapeBadger {
     this.bing = new BingClient(this.baseClient);
     this.booking = new BookingClient(this.baseClient);
     this.baidu = new BaiduClient(this.baseClient);
+    this.bestbuy = new BestbuyClient(this.baseClient);
     this.naver = new NaverClient(this.baseClient);
     this.yahoo = new YahooClient(this.baseClient);
     this.yandex = new YandexClient(this.baseClient);

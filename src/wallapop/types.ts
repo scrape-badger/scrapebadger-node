@@ -542,11 +542,7 @@ export interface WallapopMarketsResponse {
 
 /** Sort order for /search. */
 export type WallapopOrderBy =
-  | "most_relevance"
-  | "newest"
-  | "closest"
-  | "price_low_to_high"
-  | "price_high_to_low";
+  "most_relevance" | "newest" | "closest" | "price_low_to_high" | "price_high_to_low";
 
 /** Listing-age window for /search. */
 export type WallapopTimeFilter = "today" | "lastWeek" | "lastMonth";

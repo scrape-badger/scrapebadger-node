@@ -120,13 +120,7 @@ export interface NewsSearchParams {
  * back to a plain `string` when you know the topic code out-of-band.
  */
 export type NewsTopic =
-  | "WORLD"
-  | "BUSINESS"
-  | "TECHNOLOGY"
-  | "ENTERTAINMENT"
-  | "SPORTS"
-  | "SCIENCE"
-  | "HEALTH";
+  "WORLD" | "BUSINESS" | "TECHNOLOGY" | "ENTERTAINMENT" | "SPORTS" | "SCIENCE" | "HEALTH";
 
 export interface NewsTopicsParams {
   // Accept the canonical codes as a `NewsTopic` union, but also allow any
@@ -233,11 +227,7 @@ export interface TrendsTrendingNowParams {
 }
 
 export type TrendsDataType =
-  | "TIMESERIES"
-  | "GEO_MAP"
-  | "GEO_MAP_0"
-  | "RELATED_TOPICS"
-  | "RELATED_QUERIES";
+  "TIMESERIES" | "GEO_MAP" | "GEO_MAP_0" | "RELATED_TOPICS" | "RELATED_QUERIES";
 
 export interface TrendsSearchParams {
   /** Search term(s). Comma-separated (max 5) for TIMESERIES / GEO_MAP. */

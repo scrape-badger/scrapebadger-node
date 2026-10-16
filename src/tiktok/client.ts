@@ -111,6 +111,13 @@ export class TikTokClient {
     return this._gen.request(`/v1/tiktok/ads/${adId}`, { params });
   }
 
+  /** Best-selling TikTok Shop products. Generated from the OpenAPI spec; returns the raw response object. */
+  async bestSellingTiktokShopProducts(
+    params: Record<string, string | number | boolean | undefined> = {}
+  ): Promise<Record<string, unknown>> {
+    return this._gen.request("/v1/tiktok/shop/bestsellers", { params });
+  }
+
   /** TikTok Shop root categories. Generated from the OpenAPI spec; returns the raw response object. */
   async tiktokShopRootCategories(
     params: Record<string, string | number | boolean | undefined> = {}
@@ -124,6 +131,21 @@ export class TikTokClient {
     params: Record<string, string | number | boolean | undefined> = {}
   ): Promise<Record<string, unknown>> {
     return this._gen.request(`/v1/tiktok/shop/categories/${categoryId}`, { params });
+  }
+
+  /** TikTok Shop category products. Generated from the OpenAPI spec; returns the raw response object. */
+  async tiktokShopCategoryProducts(
+    categoryId: string,
+    params: Record<string, string | number | boolean | undefined> = {}
+  ): Promise<Record<string, unknown>> {
+    return this._gen.request(`/v1/tiktok/shop/categories/${categoryId}/products`, { params });
+  }
+
+  /** TikTok Shop regional mall feed. Generated from the OpenAPI spec; returns the raw response object. */
+  async tiktokShopRegionalMallFeed(
+    params: Record<string, string | number | boolean | undefined> = {}
+  ): Promise<Record<string, unknown>> {
+    return this._gen.request("/v1/tiktok/shop/mall", { params });
   }
 
   /** TikTok Shop product detail. Generated from the OpenAPI spec; returns the raw response object. */
@@ -140,6 +162,14 @@ export class TikTokClient {
     params: Record<string, string | number | boolean | undefined> = {}
   ): Promise<Record<string, unknown>> {
     return this._gen.request(`/v1/tiktok/shop/products/${productId}/reviews`, { params });
+  }
+
+  /** TikTok Shop theme ranking. Generated from the OpenAPI spec; returns the raw response object. */
+  async tiktokShopThemeRanking(
+    rankId: string,
+    params: Record<string, string | number | boolean | undefined> = {}
+  ): Promise<Record<string, unknown>> {
+    return this._gen.request(`/v1/tiktok/shop/rankings/${rankId}`, { params });
   }
 
   /** Search TikTok Shop products. Generated from the OpenAPI spec; returns the raw response object. */
