@@ -56,9 +56,11 @@ export class ReferenceClient {
    * }
    * ```
    */
-  async brands(
-    options: { keyword: string; market?: string; per_page?: number }
-  ): Promise<BrandsResponse> {
+  async brands(options: {
+    keyword: string;
+    market?: string;
+    per_page?: number;
+  }): Promise<BrandsResponse> {
     return this.client.request<BrandsResponse>("/v1/vinted/brands", {
       params: {
         keyword: options.keyword,

@@ -50,13 +50,7 @@ export class FacebookClient {
     return this.client.request(`/v1/facebook/groups/${groupId}`, { params });
   }
 
-  /**
-   * Get a public group's post feed, 3 posts per page. Generated from the OpenAPI spec; returns the raw response object.
-   *
-   * `params.sort` is `"newest"` (newest first by post time, the default) or `"relevance"`
-   * (Facebook's top-posts ranking). Pass `end_cursor` back as `params.after` while
-   * `has_next_page` for older posts, keeping the same sort.
-   */
+  /** Get group posts. Generated from the OpenAPI spec; returns the raw response object. */
   async getGroupPosts(
     groupId: string,
     params: Record<string, string | number | boolean | undefined> = {}

@@ -128,14 +128,7 @@ export class ValidationError extends ScrapeBadgerError {
 
 /** Why the Web Scraping API reported a target as blocked (SCR-306). */
 export type BlockKind =
-  | "antibot"
-  | "captcha"
-  | "rate_limit"
-  | "ip_ban"
-  | "geo_block"
-  | "auth_wall"
-  | "empty"
-  | "other";
+  "antibot" | "captcha" | "rate_limit" | "ip_ban" | "geo_block" | "auth_wall" | "empty" | "other";
 
 /** The CAPTCHA gating a blocked page. */
 export interface BlockingCaptcha {
