@@ -513,8 +513,10 @@ export interface EbaySearchByImageParams {
 
 /** Parameters for searching completed / sold eBay listings. */
 export interface EbayCompletedParams {
-  /** Search keywords (required) */
-  query: string;
+  /** Search keywords. Optional when `seller` is set; pass at least one. */
+  query?: string;
+  /** Only this seller's sold listings (eBay username). Works without `query`. */
+  seller?: string;
   /** Marketplace domain (default: "com") */
   domain?: string;
   /** Restrict to a category id */

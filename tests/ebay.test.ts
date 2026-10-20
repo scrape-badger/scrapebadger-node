@@ -465,6 +465,22 @@ describe("EbayClient.search", () => {
     expect(result.results[0].sold_date_at).toBe("2026-07-02");
   });
 
+  it("completed by seller alone sends seller and no query", async () => {
+    mockFetch(COMPLETED_FIXTURE);
+    await makeClient().ebay.search.completed({ seller: "musicmagpie", domain: "co.uk" });
+    const { url } = capturedRequest();
+    expect(url).toContain("seller=musicmagpie");
+    expect(url).not.toContain("query=");
+  });
+
+  it("completed needs a query or a seller", async () => {
+    mockFetch(COMPLETED_FIXTURE);
+    await expect(makeClient().ebay.search.completed({})).rejects.toThrow(
+      "Pass query, seller, or both."
+    );
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
   it("autocomplete sends GET to /v1/ebay/autocomplete", async () => {
     mockFetch(AUTOCOMPLETE_FIXTURE);
     const result = await makeClient().ebay.search.autocomplete("ipho", {
