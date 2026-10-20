@@ -112,13 +112,20 @@ export class SearchClient {
   /**
    * Search completed / sold listings — eBay's sold-price history.
    *
-   * @param params - Search parameters including query, filters, and pagination.
+   * Pass `query`, `seller` or both. `seller` alone pages through everything
+   * that seller sold, e.g. `completed({ seller: "musicmagpie", domain: "co.uk" })`.
+   *
+   * @param params - Search parameters including query, seller, filters, and pagination.
    * @returns Search results (with `sold: true`), facets, and pagination.
    */
   async completed(params: EbayCompletedParams): Promise<SearchResponse> {
+    if (!params.query && !params.seller) {
+      throw new Error("Pass query, seller, or both.");
+    }
     return this.client.request<SearchResponse>("/v1/ebay/completed", {
       params: {
         query: params.query,
+        seller: params.seller,
         domain: params.domain,
         category_id: params.category_id,
         page: params.page,
