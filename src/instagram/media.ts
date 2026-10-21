@@ -40,10 +40,7 @@ export class MediaClient {
     return this.client.request<Media>(`/v1/instagram/media/${code}`);
   }
 
-  /**
-   * Get oEmbed metadata for a media permalink.
-   * @deprecated Temporarily unavailable — authenticated data is temporarily offline.
-   */
+  /** Get oEmbed metadata for a media permalink. */
   async oembed(code: string): Promise<Oembed> {
     return this.client.request<Oembed>(`/v1/instagram/media/${code}/oembed`);
   }
@@ -58,18 +55,12 @@ export class MediaClient {
     });
   }
 
-  /**
-   * Get the users who liked a media.
-   * @deprecated Temporarily unavailable — authenticated data is temporarily offline.
-   */
+  /** Get the users who liked a media. */
   async likers(code: string): Promise<Paginated<UserShort>> {
     return this.client.request<Paginated<UserShort>>(`/v1/instagram/media/${code}/likers`);
   }
 
-  /**
-   * Get replies to a comment.
-   * @deprecated Temporarily unavailable — authenticated data is temporarily offline.
-   */
+  /** Get replies to a comment. */
   async replies(
     code: string,
     commentId: string,
@@ -81,10 +72,7 @@ export class MediaClient {
     );
   }
 
-  /**
-   * Get the users who liked a comment.
-   * @deprecated Temporarily unavailable — authenticated data is temporarily offline.
-   */
+  /** Get the users who liked a comment. */
   async commentLikers(code: string, commentId: string): Promise<Paginated<UserShort>> {
     return this.client.request<Paginated<UserShort>>(
       `/v1/instagram/media/${code}/comments/${commentId}/likers`

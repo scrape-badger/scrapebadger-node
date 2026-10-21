@@ -26,18 +26,12 @@ export class HashtagsClient {
     this.client = client;
   }
 
-  /**
-   * Get a hashtag's info (media count, cover).
-   * @deprecated Temporarily unavailable — authenticated data is temporarily offline.
-   */
+  /** Get a hashtag's info (media count, cover). */
   async get(tag: string): Promise<Hashtag> {
     return this.client.request<Hashtag>(`/v1/instagram/hashtags/${tag}`);
   }
 
-  /**
-   * Get the top/popular media for a hashtag.
-   * @deprecated Temporarily unavailable — authenticated data is temporarily offline.
-   */
+  /** Get the top/popular media for a hashtag. */
   async top(
     tag: string,
     options: { amount?: number; cursor?: string } = {}
@@ -45,10 +39,7 @@ export class HashtagsClient {
     return mediaFeed(this.client, `/v1/instagram/hashtags/${tag}/top`, options);
   }
 
-  /**
-   * Get the most recent media for a hashtag.
-   * @deprecated Temporarily unavailable — authenticated data is temporarily offline.
-   */
+  /** Get the most recent media for a hashtag. */
   async recent(
     tag: string,
     options: { amount?: number; cursor?: string } = {}
@@ -56,10 +47,7 @@ export class HashtagsClient {
     return mediaFeed(this.client, `/v1/instagram/hashtags/${tag}/recent`, options);
   }
 
-  /**
-   * Get reels for a hashtag.
-   * @deprecated Temporarily unavailable — authenticated data is temporarily offline.
-   */
+  /** Get reels for a hashtag. */
   async reels(
     tag: string,
     options: { amount?: number; cursor?: string } = {}
@@ -76,18 +64,12 @@ export class LocationsClient {
     this.client = client;
   }
 
-  /**
-   * Get a location's info.
-   * @deprecated Temporarily unavailable — authenticated data is temporarily offline.
-   */
+  /** Get a location's info. */
   async get(pk: string): Promise<Location> {
     return this.client.request<Location>(`/v1/instagram/locations/${pk}`);
   }
 
-  /**
-   * Get the top/popular media for a location.
-   * @deprecated Temporarily unavailable — authenticated data is temporarily offline.
-   */
+  /** Get the top/popular media for a location. */
   async top(
     pk: string,
     options: { amount?: number; cursor?: string } = {}
@@ -95,10 +77,7 @@ export class LocationsClient {
     return mediaFeed(this.client, `/v1/instagram/locations/${pk}/top`, options);
   }
 
-  /**
-   * Get the most recent media for a location.
-   * @deprecated Temporarily unavailable — authenticated data is temporarily offline.
-   */
+  /** Get the most recent media for a location. */
   async recent(
     pk: string,
     options: { amount?: number; cursor?: string } = {}
@@ -106,10 +85,7 @@ export class LocationsClient {
     return mediaFeed(this.client, `/v1/instagram/locations/${pk}/recent`, options);
   }
 
-  /**
-   * Search locations by name.
-   * @deprecated Temporarily unavailable — authenticated data is temporarily offline.
-   */
+  /** Search locations by name. */
   async search(query: string): Promise<Paginated<Location>> {
     return this.client.request<Paginated<Location>>("/v1/instagram/locations/search", {
       params: { query },
@@ -125,18 +101,12 @@ export class AudioClient {
     this.client = client;
   }
 
-  /**
-   * Get an audio track's info.
-   * @deprecated Temporarily unavailable — authenticated data is temporarily offline.
-   */
+  /** Get an audio track's info. */
   async get(audioId: string): Promise<Audio> {
     return this.client.request<Audio>(`/v1/instagram/audio/${audioId}`);
   }
 
-  /**
-   * Get media that use an audio track.
-   * @deprecated Temporarily unavailable — authenticated data is temporarily offline.
-   */
+  /** Get media that use an audio track. */
   async media(
     audioId: string,
     options: { amount?: number; cursor?: string } = {}
@@ -144,10 +114,7 @@ export class AudioClient {
     return mediaFeed(this.client, `/v1/instagram/audio/${audioId}/media`, options);
   }
 
-  /**
-   * Get currently-trending audio tracks.
-   * @deprecated Temporarily unavailable — authenticated data is temporarily offline.
-   */
+  /** Get currently-trending audio tracks. */
   async trending(): Promise<Paginated<Audio>> {
     return this.client.request<Paginated<Audio>>("/v1/instagram/audio/trending");
   }
