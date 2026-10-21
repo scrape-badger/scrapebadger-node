@@ -38,70 +38,49 @@ export class SearchClient {
     this.client = client;
   }
 
-  /**
-   * Search accounts by name/username.
-   * @deprecated Temporarily unavailable — authenticated data is temporarily offline.
-   */
+  /** Search accounts by name/username. */
   async users(query: string): Promise<Paginated<UserShort>> {
     return this.client.request<Paginated<UserShort>>("/v1/instagram/search/users", {
       params: { query },
     });
   }
 
-  /**
-   * Search hashtags.
-   * @deprecated Temporarily unavailable — authenticated data is temporarily offline.
-   */
+  /** Search hashtags. */
   async hashtags(query: string): Promise<Paginated<Hashtag>> {
     return this.client.request<Paginated<Hashtag>>("/v1/instagram/search/hashtags", {
       params: { query },
     });
   }
 
-  /**
-   * Search places/locations.
-   * @deprecated Temporarily unavailable — authenticated data is temporarily offline.
-   */
+  /** Search places/locations (global ranking). */
   async places(query: string): Promise<Paginated<Location>> {
     return this.client.request<Paginated<Location>>("/v1/instagram/search/places", {
       params: { query },
     });
   }
 
-  /**
-   * Search reels.
-   * @deprecated Temporarily unavailable — authenticated data is temporarily offline.
-   */
+  /** Search reels. */
   async reels(query: string): Promise<Paginated<Media>> {
     return this.client.request<Paginated<Media>>("/v1/instagram/search/reels", {
       params: { query },
     });
   }
 
-  /**
-   * Search music/audio tracks.
-   * @deprecated Temporarily unavailable — authenticated data is temporarily offline.
-   */
+  /** Search music/audio tracks. */
   async music(query: string): Promise<Paginated<Audio>> {
     return this.client.request<Paginated<Audio>>("/v1/instagram/search/music", {
       params: { query },
     });
   }
 
-  /**
-   * Get blended "top" results (users, hashtags, and places).
-   * @deprecated Temporarily unavailable — authenticated data is temporarily offline.
-   */
+  /** Get blended "top" results (users, hashtags, and places). */
   async top(query: string): Promise<SearchTopResponse> {
     return this.client.request<SearchTopResponse>("/v1/instagram/search/top", {
       params: { query },
     });
   }
 
-  /**
-   * Get typeahead/autocomplete suggestions (mixed entity types).
-   * @deprecated Temporarily unavailable — authenticated data is temporarily offline.
-   */
+  /** Get typeahead/autocomplete suggestions (mixed entity types). */
   async autocomplete(query: string): Promise<SearchTopResponse> {
     return this.client.request<SearchTopResponse>("/v1/instagram/search/autocomplete", {
       params: { query },
