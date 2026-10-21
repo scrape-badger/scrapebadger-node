@@ -71,6 +71,43 @@ export class ReferenceClient {
   }
 
   /**
+   * Get Vinted's A-Z directory of popular brands.
+   *
+   * Returns about 240 of the most popular brands whose name starts with
+   * `letter`, with ID, slug and item count. Loop `letter` over A-Z and "0"
+   * (digits) for a reference list of roughly 6,000 brand IDs. `brands()`
+   * stops at 10 matches per keyword. 1 credit per call.
+   *
+   * @param options - Optional parameters.
+   * @param options.letter - First letter of the brand name, "A"-"Z", or "0"
+   * for digits. Omit for the most popular brands overall.
+   * @param options.market - Market code (default: "fr").
+   * @returns Brands for that letter (no pagination; one page per letter).
+   *
+   * @example
+   * ```typescript
+   * const ids = new Map<string, number>();
+   * for (const letter of [..."ABCDEFGHIJKLMNOPQRSTUVWXYZ", "0"]) {
+   *   const { brands } = await client.vinted.reference.popularBrands({ letter, market: "uk" });
+   *   for (const brand of brands) ids.set(brand.title, brand.id);
+   * }
+   * ```
+   */
+  async popularBrands(options: { letter?: string; market?: string } = {}): Promise<BrandsResponse> {
+    const response = await this.client.request<{ data: BrandsResponse }>(
+      "/v1/vinted/mobile/popular-brands",
+      {
+        method: "POST",
+        body: {
+          market: options.market ?? "fr",
+          parameters: options.letter ? { letter: options.letter } : {},
+        },
+      }
+    );
+    return { brands: response.data?.brands ?? [], pagination: null };
+  }
+
+  /**
    * Get available colors for a market.
    *
    * @param options - Optional parameters.
