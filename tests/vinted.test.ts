@@ -537,6 +537,38 @@ describe("VintedClient.reference.brands", () => {
   });
 });
 
+describe("VintedClient.reference.popularBrands", () => {
+  beforeEach(() => vi.unstubAllGlobals());
+
+  it("posts the popular-brands mobile operation and unwraps data", async () => {
+    mockFetch({
+      operation: "popular-brands",
+      market: "gb",
+      data: { brands: BRANDS_FIXTURE.brands, code: 0 },
+    });
+    const client = makeClient();
+
+    const result = await client.vinted.reference.popularBrands({ letter: "A", market: "uk" });
+
+    const { url, init } = capturedRequest();
+    expect(init.method).toBe("POST");
+    expect(url).toContain("/v1/vinted/mobile/popular-brands");
+    expect(JSON.parse(init.body as string)).toEqual({ market: "uk", parameters: { letter: "A" } });
+    expect(result.brands[0].title).toBe("Nike");
+    expect(result.pagination).toBeNull();
+  });
+
+  it("sends no letter when omitted", async () => {
+    mockFetch({ data: { brands: [] } });
+    const client = makeClient();
+
+    await client.vinted.reference.popularBrands();
+
+    const { init } = capturedRequest();
+    expect(JSON.parse(init.body as string)).toEqual({ market: "fr", parameters: {} });
+  });
+});
+
 describe("VintedClient.reference.colors", () => {
   beforeEach(() => vi.unstubAllGlobals());
 
