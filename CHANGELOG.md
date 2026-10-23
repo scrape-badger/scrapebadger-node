@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.65.0 — 2026-10-23
 
 - **Agent platform endpoints (all free, never billed).** `agent.quote(method, path, { params, body })` returns a typed `Quote` — credits (`min`/`max`/`base`/`per_item`), USD at list and best plan rates, parameter validation (`valid`, `errors`) and p50/p95/p99 latency. `agent.feedback(summary, { type, details, requestId, endpoint, contact })` and `agent.reportBug(summary, ...)` file feedback or a bug report. `results.get(resultId, { jq, fields, maxItems, summary })` re-reads a billed result (`X-Result-ID`) for ~15 minutes, optionally reshaped. `requests.get(requestId)` polls a call made with `Prefer: respond-async` and returns an `AsyncRequest` with `running`, `status`, `resultId`, `creditsUsed` and `data`. New `AgentTrial` type for the `agent_trial` block of `account.getAccountInfo()` on trial keys. No existing signature changes. (SCR-443)
 
