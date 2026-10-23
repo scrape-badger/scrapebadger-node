@@ -38,6 +38,10 @@ export interface RateLimit {
 export interface ResponseWithHeaders<T> {
   data: T;
   rateLimit?: RateLimit;
+  /** HTTP status of the response (a 2xx — errors throw). */
+  status?: number;
+  /** Raw response headers. */
+  headers?: Headers;
 }
 
 export interface RequestOptions {
@@ -126,7 +130,7 @@ export class BaseClient {
   }
 
   /**
-   * Make an HTTP request and return both data and rate limit headers.
+   * Make an HTTP request and return the data with its rate limit, status and headers.
    */
   async requestWithHeaders<T>(
     path: string,
@@ -217,7 +221,7 @@ export class BaseClient {
         }
         const data = await this.handleResponse<T>(httpResponse);
         const rateLimit = this.parseRateLimitHeaders(httpResponse.headers);
-        return { data, rateLimit };
+        return { data, rateLimit, status: httpResponse.status, headers: httpResponse.headers };
       } catch (error) {
         lastError = error as Error;
 
