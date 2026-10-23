@@ -19,6 +19,7 @@ import { AsosClient } from "./asos/client.js";
 import { InstagramClient } from "./instagram/client.js";
 import { RedfinClient } from "./redfin/client.js";
 import { AccountClient } from "./account/client.js";
+import { AgentClient, RequestsClient, ResultsClient } from "./agent/client.js";
 import { AirbnbClient } from "./airbnb/client.js";
 import { AliexpressClient } from "./aliexpress/client.js";
 import { AmazonClient } from "./amazon/client.js";
@@ -121,6 +122,12 @@ export class ScrapeBadger {
   /** Amazon scraper API client — 14 endpoints */
   /** Account API client. (Generated from the OpenAPI spec.) */
   readonly account: AccountClient;
+  /** Quote a call before making it, and report bugs or send feedback. Free. */
+  readonly agent: AgentClient;
+  /** Re-read a recent result (`X-Result-ID`) for free, optionally trimmed. */
+  readonly results: ResultsClient;
+  /** Poll a call made with `Prefer: respond-async`. Free. */
+  readonly requests: RequestsClient;
   /** Airbnb API client. (Generated from the OpenAPI spec.) */
   readonly airbnb: AirbnbClient;
   /** Aliexpress API client. (Generated from the OpenAPI spec.) */
@@ -257,6 +264,9 @@ export class ScrapeBadger {
     this.instagram = new InstagramClient(this.baseClient);
     this.redfin = new RedfinClient(this.baseClient);
     this.account = new AccountClient(this.baseClient);
+    this.agent = new AgentClient(this.baseClient);
+    this.results = new ResultsClient(this.baseClient);
+    this.requests = new RequestsClient(this.baseClient);
     this.airbnb = new AirbnbClient(this.baseClient);
     this.aliexpress = new AliexpressClient(this.baseClient);
     this.amazon = new AmazonClient(this.baseClient);

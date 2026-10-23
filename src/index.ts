@@ -74,6 +74,9 @@ export * from "./web/index.js";
 // Re-export Vinted module
 export * from "./vinted/index.js";
 
+// Re-export agent platform module — quotes, feedback, result re-reads, async request polling
+export * from "./agent/index.js";
+
 // Re-export Reddit module
 export * from "./reddit/index.js";
 
