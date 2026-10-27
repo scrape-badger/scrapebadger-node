@@ -1,3 +1,5 @@
+/** Search cursors are opaque, expire after 30 minutes, and require the same query and filters.
+ * Native pages can contain fewer results than limit; continue while pagination.after is present. */
 /**
  * Reddit Search API client.
  *
@@ -75,10 +77,10 @@ export class SearchClient {
   }): Promise<SearchPostsResponse> {
     return this.client.request<SearchPostsResponse>("/v1/reddit/search/posts", {
       params: {
-        query: options.query,
+        q: options.query,
         subreddit: options.subreddit,
         sort: options.sort,
-        time: options.time,
+        t: options.time,
         after: options.after,
         limit: options.limit,
       },
@@ -114,7 +116,7 @@ export class SearchClient {
   }): Promise<SearchSubredditsResponse> {
     return this.client.request<SearchSubredditsResponse>("/v1/reddit/search/subreddits", {
       params: {
-        query: options.query,
+        q: options.query,
         after: options.after,
         limit: options.limit,
       },
@@ -150,7 +152,7 @@ export class SearchClient {
   }): Promise<SearchUsersResponse> {
     return this.client.request<SearchUsersResponse>("/v1/reddit/search/users", {
       params: {
-        query: options.query,
+        q: options.query,
         after: options.after,
         limit: options.limit,
       },
@@ -194,7 +196,7 @@ export class SearchClient {
       params: {
         domain: options.domain,
         sort: options.sort,
-        time: options.time,
+        t: options.time,
         after: options.after,
         limit: options.limit,
       },

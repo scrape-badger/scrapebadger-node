@@ -73,6 +73,8 @@ export interface RedditPost {
   selftext: string;
   /** Self post text as HTML */
   selftext_html: string | null;
+  /** Preview excerpt returned by Reddit's web search; distinct from the full selftext. */
+  search_snippet?: string | null;
   // Link
   /** External or self URL */
   url: string;
@@ -357,6 +359,9 @@ export interface RedditSubreddit {
   url: string;
   /** Subscriber count */
   subscribers: number;
+  /** Weekly activity from Reddit's web search, separate from subscriber count. */
+  weekly_visitors?: number | null;
+  weekly_contributions?: number | null;
   /** Creation timestamp (Unix) */
   created_utc: number;
   /** Creation time as ISO 8601 UTC string */
