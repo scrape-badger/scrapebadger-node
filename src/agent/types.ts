@@ -141,6 +141,52 @@ export interface AsyncRequest<T = unknown> {
   data: T;
 }
 
+/** One item of `requests.batch`: a GET read, as if sent alone. */
+export interface BatchItem {
+  /** Only GET reads can be batched. */
+  method?: "GET";
+  /** API path, e.g. "/v1/chatgpt/ask" (no query string). */
+  path: string;
+  /** Query parameters. */
+  query?: Record<string, string | number | boolean | Array<string | number | boolean>>;
+}
+
+/** Options for `requests.batch`. */
+export interface BatchOptions {
+  /**
+   * https URL that gets one signed webhook per item when it completes. Verify
+   * it with `verifyWebhookSignature` and the secret from
+   * `GET /v1/account/webhook-secret`.
+   */
+  callbackUrl?: string;
+}
+
+/** Outcome of one submitted item. */
+export interface BatchItemResult {
+  /** Position of the item in the submitted list. */
+  index: number;
+  /**
+   * true when the item started (poll `request_id` or wait for its webhook);
+   * false when refused before running (rate limit, credits...): not billed.
+   */
+  accepted: boolean;
+  /** HTTP status of the submission (202 when accepted). */
+  status: number;
+  request_id: string | null;
+  /** Where to poll it (accepted items). */
+  poll_url?: string;
+  /** The refusal's error body (refused items). */
+  error?: unknown;
+}
+
+/** Result of `requests.batch`: one entry per submitted item, in order. */
+export interface BatchSubmission {
+  batch_id: string;
+  count: number;
+  accepted: number;
+  requests: BatchItemResult[];
+}
+
 /**
  * The `agent_trial` block of `account.getAccountInfo()` — only present for an
  * agent trial key (minted without an account).
