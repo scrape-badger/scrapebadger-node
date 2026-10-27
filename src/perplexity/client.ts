@@ -4,6 +4,25 @@
 
 import type { BaseClient } from "../internal/client.js";
 
+/**
+ * Query parameters for the Perplexity GET methods.
+ *
+ * `country` is best-effort: when that market has no exit left, another one
+ * answers and the response `country` says which. Set `strictCountry: true`
+ * to answer only from an exit in `country` (required with it); when none
+ * answers in time the call fails with HTTP 503 `country_unavailable` and is
+ * not billed. On the POST forms, put `strict_country: true` in the body.
+ */
+export type PerplexityParams = Record<string, string | number | boolean | undefined> & {
+  /** Answer only from an exit in `country`, never another one. Sent only when true. */
+  strictCountry?: boolean;
+};
+
+function toQuery(params: PerplexityParams): Record<string, string | number | boolean | undefined> {
+  const { strictCountry, ...rest } = params;
+  return strictCountry ? { ...rest, strict_country: true } : rest;
+}
+
 /** Client for all Perplexity API operations. (Generated from the OpenAPI spec.) */
 export class PerplexityClient {
   private readonly client: BaseClient;
@@ -13,10 +32,8 @@ export class PerplexityClient {
   }
 
   /** Ask Perplexity a question. Generated from the OpenAPI spec; returns the raw response object. */
-  async askPerplexityAQuestion(
-    params: Record<string, string | number | boolean | undefined> = {}
-  ): Promise<Record<string, unknown>> {
-    return this.client.request("/v1/perplexity/ask", { params });
+  async askPerplexityAQuestion(params: PerplexityParams = {}): Promise<Record<string, unknown>> {
+    return this.client.request("/v1/perplexity/ask", { params: toQuery(params) });
   }
 
   /** Ask Perplexity a question (POST). Generated from the OpenAPI spec; returns the raw response object. */
@@ -29,9 +46,9 @@ export class PerplexityClient {
 
   /** Measure a brand's visibility in a Perplexity answer. Generated from the OpenAPI spec; returns the raw response object. */
   async measureABrandSVisibilityInAPerplexityAnswer(
-    params: Record<string, string | number | boolean | undefined> = {}
+    params: PerplexityParams = {}
   ): Promise<Record<string, unknown>> {
-    return this.client.request("/v1/perplexity/brand-visibility", { params });
+    return this.client.request("/v1/perplexity/brand-visibility", { params: toQuery(params) });
   }
 
   /** Measure a brand's visibility in a Perplexity answer (POST). Generated from the OpenAPI spec; returns the raw response object. */

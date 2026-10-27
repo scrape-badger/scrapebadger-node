@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.67.0 — 2026-10-27
+
+- **Perplexity: `strictCountry`.** `perplexity.askPerplexityAQuestion({ prompt, country: "DE", strictCountry: true })` and `perplexity.measureABrandSVisibilityInAPerplexityAnswer({ ..., strictCountry: true })` answer only from an exit in `country`, never another one. When no exit there answers in time the call fails with HTTP 503 `country_unavailable` and is not billed. Requires `country` (400 otherwise). Without it `country` stays best-effort: when that market has no exit left, another one answers and the response `country` says which. On the POST forms put `strict_country: true` in the body. Sent as `strict_country=true` only when true. (SCR-464)
+
 ## 0.65.0 — 2026-10-23
 
 - **Agent platform endpoints (all free, never billed).** `agent.quote(method, path, { params, body })` returns a typed `Quote` — credits (`min`/`max`/`base`/`per_item`), USD at list and best plan rates, parameter validation (`valid`, `errors`) and p50/p95/p99 latency. `agent.feedback(summary, { type, details, requestId, endpoint, contact })` and `agent.reportBug(summary, ...)` file feedback or a bug report. `results.get(resultId, { jq, fields, maxItems, summary })` re-reads a billed result (`X-Result-ID`) for ~15 minutes, optionally reshaped. `requests.get(requestId)` polls a call made with `Prefer: respond-async` and returns an `AsyncRequest` with `running`, `status`, `resultId`, `creditsUsed` and `data`. New `AgentTrial` type for the `agent_trial` block of `account.getAccountInfo()` on trial keys. No existing signature changes. (SCR-443)
