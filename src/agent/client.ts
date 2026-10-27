@@ -9,6 +9,9 @@
 import type { BaseClient } from "../internal/client.js";
 import type {
   AsyncRequest,
+  BatchItem,
+  BatchOptions,
+  BatchSubmission,
   FeedbackOptions,
   FeedbackReceipt,
   Quote,
@@ -154,5 +157,31 @@ export class RequestsClient {
       creditsUsed: credits && /^\d+$/.test(credits) ? Number(credits) : null,
       data,
     };
+  }
+
+  /**
+   * Submit up to 100 GET reads as async requests in one call. Submitting is free.
+   *
+   * Each item runs under this key with the same auth, credit check, rate limit
+   * and price as if sent alone; at most 10 of a batch run at a time.
+   *
+   * @example
+   * ```typescript
+   * const sub = await client.requests.batch(
+   *   prompts.map((prompt) => ({ path: "/v1/chatgpt/ask", query: { prompt } })),
+   *   { callbackUrl: "https://example.com/hook" }
+   * );
+   * const ids = sub.requests.filter((r) => r.accepted).map((r) => r.request_id);
+   * ```
+   *
+   * @param items - `{ path: "/v1/...", query: {...} }` (method defaults to GET).
+   * @param options - `callbackUrl` for one signed webhook per item.
+   * @returns A request_id (or the refusal) for every item.
+   */
+  async batch(items: BatchItem[], options: BatchOptions = {}): Promise<BatchSubmission> {
+    return this.client.request<BatchSubmission>("/v1/batch", {
+      method: "POST",
+      body: { requests: items, callback_url: options.callbackUrl },
+    });
   }
 }

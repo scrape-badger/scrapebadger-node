@@ -1,5 +1,5 @@
 /**
- * Agent platform API module: quotes, feedback, result re-reads and async request polling.
+ * Agent platform API module: quotes, feedback, result re-reads, async request polling and batches.
  *
  * @module agent
  */
@@ -17,5 +17,9 @@ export type {
   Quote,
   FeedbackReceipt,
   AsyncRequest,
+  BatchItem,
+  BatchOptions,
+  BatchItemResult,
+  BatchSubmission,
   AgentTrial,
 } from "./types.js";

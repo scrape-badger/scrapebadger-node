@@ -207,4 +207,53 @@ describe("agent platform clients", () => {
       await expect(makeClient().requests.get("nope")).rejects.toBeInstanceOf(NotFoundError);
     });
   });
+
+  describe("requests.batch()", () => {
+    it("posts the items and callback_url and returns each outcome", async () => {
+      mockFetch(
+        {
+          batch_id: "b-1",
+          count: 2,
+          accepted: 1,
+          requests: [
+            {
+              index: 0,
+              accepted: true,
+              status: 202,
+              request_id: "r-0",
+              poll_url: "/v1/requests/r-0",
+            },
+            {
+              index: 1,
+              accepted: false,
+              status: 429,
+              request_id: "r-1",
+              error: { detail: "Rate limit exceeded" },
+            },
+          ],
+        },
+        202
+      );
+      const items = ["a", "b"].map((prompt) => ({ path: "/v1/chatgpt/ask", query: { prompt } }));
+      const sub = await makeClient().requests.batch(items, {
+        callbackUrl: "https://example.com/hook",
+      });
+      const { url, init } = captured();
+      expect(url.pathname).toBe("/v1/batch");
+      expect(init.method).toBe("POST");
+      expect(JSON.parse(init.body as string)).toEqual({
+        requests: items,
+        callback_url: "https://example.com/hook",
+      });
+      expect(sub.accepted).toBe(1);
+      expect(sub.requests[0]?.poll_url).toBe("/v1/requests/r-0");
+      expect(sub.requests[1]?.accepted).toBe(false);
+    });
+
+    it("omits callback_url when not given", async () => {
+      mockFetch({ batch_id: "b-2", count: 1, accepted: 1, requests: [] }, 202);
+      await makeClient().requests.batch([{ path: "/v1/google/search", query: { q: "x" } }]);
+      expect(JSON.parse(captured().init.body as string)).not.toHaveProperty("callback_url");
+    });
+  });
 });

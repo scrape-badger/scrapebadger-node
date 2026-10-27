@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.68.0 — 2026-10-28
+
+- **Batch submit and webhooks.** `requests.batch(items, { callbackUrl })` submits up to 100 GET reads (`{ path: "/v1/...", query: {...} }`) as async requests in one free call and returns a `BatchSubmission` with one `BatchItemResult` per item: `accepted`, `status`, `request_id`, `poll_url`, or `error` when the item was refused (not billed). With `callbackUrl`, every item POSTs a signed webhook when it completes. Verify it with the existing `verifyWebhookSignature(secret, rawBody, header)` and the secret from `GET /v1/account/webhook-secret`. It is the same `X-ScrapeBadger-Signature: sha256=` scheme stream monitors use. No existing signature changes. (SCR-470)
+
 ## 0.67.0 — 2026-10-27
 
 - **Perplexity: `strictCountry`.** `perplexity.askPerplexityAQuestion({ prompt, country: "DE", strictCountry: true })` and `perplexity.measureABrandSVisibilityInAPerplexityAnswer({ ..., strictCountry: true })` answer only from an exit in `country`, never another one. When no exit there answers in time the call fails with HTTP 503 `country_unavailable` and is not billed. Requires `country` (400 otherwise). Without it `country` stays best-effort: when that market has no exit left, another one answers and the response `country` says which. On the POST forms put `strict_country: true` in the body. Sent as `strict_country=true` only when true. (SCR-464)
