@@ -18,4 +18,23 @@ export class AccountClient {
   ): Promise<Record<string, unknown>> {
     return this.client.request("/v1/account/me", { params });
   }
+
+  /** Get the webhook signing secret. Generated from the OpenAPI spec; returns the raw response object. */
+  async getTheWebhookSigningSecret(
+    params: Record<string, string | number | boolean | undefined> = {}
+  ): Promise<Record<string, unknown>> {
+    return this.client.request("/v1/account/webhook-secret", { params });
+  }
+
+  /** Rotate the webhook signing secret. Generated from the OpenAPI spec; returns the raw response object. */
+  async rotateTheWebhookSigningSecret(
+    body?: unknown,
+    params: Record<string, string | number | boolean | undefined> = {}
+  ): Promise<Record<string, unknown>> {
+    return this.client.request("/v1/account/webhook-secret/rotate", {
+      method: "POST",
+      params,
+      body,
+    });
+  }
 }
