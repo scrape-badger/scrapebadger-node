@@ -50,6 +50,7 @@ import { DepopClient } from "./depop/client.js";
 import { WallapopClient } from "./wallapop/client.js";
 import { LinkedInClient } from "./linkedin/client.js";
 import { ChatGPTClient } from "./chatgpt/client.js";
+import { CopilotClient } from "./copilot/client.js";
 import { GeminiClient } from "./gemini/client.js";
 
 /**
@@ -209,6 +210,9 @@ export class ScrapeBadger {
   /** ChatGPT scraper API client — ask, brand visibility, models (the real chatgpt.com, anonymous) */
   readonly chatgpt: ChatGPTClient;
 
+  /** Copilot scraper API client — ask, brand visibility, markets (Copilot Search in Bing, anonymous) */
+  readonly copilot: CopilotClient;
+
   /** Gemini scraper API client — ask, brand visibility (the real gemini.google.com, anonymous) */
   readonly gemini: GeminiClient;
 
@@ -297,6 +301,7 @@ export class ScrapeBadger {
     this.wallapop = new WallapopClient(this.baseClient);
     this.linkedin = new LinkedInClient(this.baseClient);
     this.chatgpt = new ChatGPTClient(this.baseClient);
+    this.copilot = new CopilotClient(this.baseClient);
     this.gemini = new GeminiClient(this.baseClient);
   }
 }
