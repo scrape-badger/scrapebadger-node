@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.69.0 — 2026-10-30
+
+- **Copilot API.** New `copilot` namespace: `copilot.askCopilotAQuestion({ prompt, country, market, strictCountry })` asks Microsoft Copilot (Copilot Search in Bing) and returns the answer with the sources it cites, `copilot.measureABrandSVisibilityInACopilotAnswer({ prompt, brand, ... })` scores a brand in that answer, and `copilot.listCopilotMarkets()` lists the markets. POST forms take a body. `strictCountry: true` answers only from an exit in `country` and fails with HTTP 503 `country_unavailable` (not billed) when none answers; it is sent as `strict_country=true` only when true. Also fixes the `User-Agent` version, which still said 0.67.0. No existing signature changes. (SCR-479)
+
 ## 0.68.0 — 2026-10-28
 
 - **Batch submit and webhooks.** `requests.batch(items, { callbackUrl })` submits up to 100 GET reads (`{ path: "/v1/...", query: {...} }`) as async requests in one free call and returns a `BatchSubmission` with one `BatchItemResult` per item: `accepted`, `status`, `request_id`, `poll_url`, or `error` when the item was refused (not billed). With `callbackUrl`, every item POSTs a signed webhook when it completes. Verify it with the existing `verifyWebhookSignature(secret, rawBody, header)` and the secret from `GET /v1/account/webhook-secret`. It is the same `X-ScrapeBadger-Signature: sha256=` scheme stream monitors use. No existing signature changes. (SCR-470)
