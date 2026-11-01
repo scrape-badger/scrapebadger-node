@@ -115,6 +115,13 @@ export class SearchClient {
    * Pass `query`, `seller` or both. `seller` alone pages through everything
    * that seller sold, e.g. `completed({ seller: "musicmagpie", domain: "co.uk" })`.
    *
+   * Results are ordered by `ended_at` (when eBay last closed the listing out,
+   * UTC), newest first. eBay applies no other time order to sold listings:
+   * `best_match`, `ending_soonest` and `newly_listed` all return this one; the
+   * two price sorts do reorder. One listing is one result, however many units
+   * it sold. eBay's replicas disagree slightly, so a page walk can repeat or
+   * miss a listing; de-duplicate on `item_id`.
+   *
    * @param params - Search parameters including query, seller, filters, and pagination.
    * @returns Search results (with `sold: true`), facets, and pagination.
    */
