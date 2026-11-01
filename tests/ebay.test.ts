@@ -116,7 +116,14 @@ const SEARCH_FIXTURE: EbaySearchResponse = {
 const COMPLETED_FIXTURE: EbaySearchResponse = {
   ...SEARCH_FIXTURE,
   sold: true,
-  results: [{ ...SEARCH_RESULT, sold_date: "2 Jul 2026", sold_date_at: "2026-07-02" }],
+  results: [
+    {
+      ...SEARCH_RESULT,
+      sold_date: "2 Jul 2026",
+      sold_date_at: "2026-07-02",
+      ended_at: "2026-07-02T14:31:00Z",
+    },
+  ],
 };
 
 const BY_IMAGE_FIXTURE: EbaySearchResponse = { ...SEARCH_FIXTURE, query: null };
@@ -463,6 +470,7 @@ describe("EbayClient.search", () => {
     expect(result.sold).toBe(true);
     expect(result.results[0].sold_date).toBe("2 Jul 2026");
     expect(result.results[0].sold_date_at).toBe("2026-07-02");
+    expect(result.results[0].ended_at).toBe("2026-07-02T14:31:00Z");
   });
 
   it("completed by seller alone sends seller and no query", async () => {

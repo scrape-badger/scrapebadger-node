@@ -133,8 +133,17 @@ export interface SearchResult {
   sold_count: number | null;
   /** Sale date text as rendered by eBay, e.g. "2 Jul 2026" (completed/sold cards; localized on non-English markets) */
   sold_date: string | null;
-  /** Best-effort ISO date, e.g. "2026-07-02"; null when the market's format isn't English */
+  /**
+   * ISO date, e.g. "2026-07-02": a day the item sold, per eBay's "Sold" label.
+   * On a multi-quantity listing eBay labels an earlier sale; bucket by `ended_at`.
+   */
   sold_date_at: string | null;
+  /**
+   * UTC instant, e.g. "2026-11-01T16:05:00Z": when eBay last closed the listing
+   * out (its end, or the latest sale on a live multi-quantity listing).
+   * Completed results are ordered by it, newest first.
+   */
+  ended_at?: string | null;
   watchers: number | null;
   coupon: string | null;
   rating: number | null;
@@ -523,9 +532,9 @@ export interface EbayCompletedParams {
   category_id?: string;
   /** Page number (1-indexed) */
   page?: number;
-  /** Results per page (60, 120 or 240; clamped) */
+  /** Results per page (60, 120 or 200; 240 returns 200) */
   per_page?: number;
-  /** Sort order */
+  /** Sort order. Only the price sorts change the order of sold results. */
   sort_by?: EbaySortBy;
   /** Item condition filter */
   condition?: EbayCondition;

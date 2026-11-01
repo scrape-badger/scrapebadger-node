@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.69.1 — 2026-11-01
+
+- **eBay completed: `ended_at`.** `SearchResult.ended_at` is when eBay last closed a sold listing out, in UTC to the minute ("2026-11-01T16:05:00Z"): the listing's end, or the latest sale on a multi-quantity listing that is still live. `search.completed()` results are ordered by it, newest first. eBay ignores the time sorts on sold listings, so `best_match`, `ending_soonest` and `newly_listed` all return that order; only the price sorts reorder. `sold_date_at` is eBay's "Sold" label day, which on a multi-quantity listing can be months older than `ended_at`, so bucket sales by day on `ended_at`. `per_page` above 200 returns 200, the most eBay puts on one page. No signature changes. (SB-001196)
+
 ## 0.69.0 — 2026-10-30
 
 - **Copilot API.** New `copilot` namespace: `copilot.askCopilotAQuestion({ prompt, country, market, strictCountry })` asks Microsoft Copilot (Copilot Search in Bing) and returns the answer with the sources it cites, `copilot.measureABrandSVisibilityInACopilotAnswer({ prompt, brand, ... })` scores a brand in that answer, and `copilot.listCopilotMarkets()` lists the markets. POST forms take a body. `strictCountry: true` answers only from an exit in `country` and fails with HTTP 503 `country_unavailable` (not billed) when none answers; it is sent as `strict_country=true` only when true. Also fixes the `User-Agent` version, which still said 0.67.0. No existing signature changes. (SCR-479)
