@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.71.0 — 2026-11-03
+
+- **Perplexity: `location`.** `perplexity.askPerplexityAQuestion({ prompt, location: "tokyo" })` and `perplexity.measureABrandSVisibilityInAPerplexityAnswer({ ..., location: "tokyo" })` say where the asker is, so Perplexity answers a local-sounding question ("best dentist", "popular cafes") for that place instead of the residential exit's city. It takes a city slug (`tokyo`, `osaka`, `seoul`, `new-york`, `london`, ...; case-insensitive, spaces and underscores fold to hyphens, so `"New York"` works) or `"lat,lng"` in decimal degrees (`"35.6812,139.7671"`). It does not change the exit: `country` still picks the exit and language. Any other value fails with HTTP 400; the SDK sends it as given and leaves validation to the API. The response gains `location`, the canonical form that was sent (`"tokyo"`, `"35.6812,139.7671"`), or `null` when unset. On the POST forms put `location: "tokyo"` in the body. Sent only when set. `PerplexityParams` gains a typed `location?: string`. No existing signature changes. (SB-001181)
+
 ## 0.70.0 — 2026-11-03
 
 - **Google Search: People Also Ask answers.** `google.search.search({ q, expand_related_questions: true })` opens every People Also Ask question the page shows (usually four); a number `N` opens the first N (0-99, validated by the API). Each answered question in `related_questions` then carries `text_blocks` and `references`, in the same shape as `ai_overview`; a question whose answer did not come back keeps them `null`. The answers are fetched on the session that served the SERP, so a question can't be expanded later. Each answered question bills as one more Search request (credits = 20 x (1 + answered) at today's price). It upgrades `mode: "fast"` to full; `/v1/google/light/search` does not accept it. `GoogleSearchParams` also gains the `mode` field the API already took; `light()` takes the params without `mode` and `expand_related_questions`.
