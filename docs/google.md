@@ -32,13 +32,41 @@ const advanced = await client.google.search.search({
   safe: "off",
 });
 // Structured sections:
-//   organic_results, knowledge_graph, ai_overview, related_questions,
-//   related_searches, local_results, inline_videos, pagination
+//   organic_results (with date, sitelinks, rich_snippet, read_more_link),
+//   knowledge_graph, ai_overview (text_blocks with reference_indexes, references),
+//   related_questions (question, rank, type), shopping_results, perspectives,
+//   discussions_and_forums, short_videos, things_to_know, related_searches,
+//   local_results, inline_videos, pagination
 console.log(
   `About ${advanced.search_information.total_results.toLocaleString()} results ` +
   `in ${advanced.search_information.time_taken}s`
 );
 ```
+
+#### People Also Ask answers
+
+Google loads a People Also Ask answer only when the question is clicked, so a
+plain search returns the questions without answers. `expand_related_questions`
+opens them during the same search (`true` = every question the page shows,
+usually four; a number `N` = the first N):
+
+```typescript
+const paa = await client.google.search.search({
+  q: "are noise cancelling headphones worth it",
+  expand_related_questions: 2,
+});
+for (const q of paa.related_questions as any[]) {
+  if (q.text_blocks === null) continue; // not opened, or the answer did not come back
+  console.log(q.question);
+  for (const block of q.text_blocks) console.log("  ", block.snippet);
+  for (const ref of q.references) console.log("   source:", ref.title, ref.link);
+}
+```
+
+Each answered question bills as one more Search request (credits = 20 x (1 +
+answered) at today's price); a question that does not come back is not billed.
+It adds about a second per question and upgrades `mode: "fast"` to full. Light
+Search does not accept it.
 
 ### Maps (Search, Place, Reviews, Photos, Posts)
 

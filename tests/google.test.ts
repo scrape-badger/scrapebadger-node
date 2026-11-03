@@ -105,6 +105,27 @@ describe("SearchClient", () => {
     expect(url.searchParams.get("q")).toBe("python");
     expect(url.searchParams.get("num")).toBe("20");
     expect(url.searchParams.get("domain")).toBe("google.co.uk");
+    expect(url.searchParams.has("expand_related_questions")).toBe(false);
+  });
+
+  it("sends expand_related_questions=true", async () => {
+    mockFetch({ related_questions: [] });
+    await makeClient().google.search.search({ q: "headphones", expand_related_questions: true });
+    expect(capturedUrl().searchParams.get("expand_related_questions")).toBe("true");
+  });
+
+  it("sends expand_related_questions as a count", async () => {
+    mockFetch({ related_questions: [] });
+    await makeClient().google.search.search({ q: "headphones", expand_related_questions: 2 });
+    expect(capturedUrl().searchParams.get("expand_related_questions")).toBe("2");
+  });
+
+  it("light() hits mode=fast", async () => {
+    mockFetch({ organic_results: [] });
+    await makeClient().google.search.light({ q: "python" });
+    const url = capturedUrl();
+    expect(url.pathname).toBe("/v1/google/search");
+    expect(url.searchParams.get("mode")).toBe("fast");
   });
 });
 
