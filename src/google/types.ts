@@ -43,6 +43,29 @@ export interface GoogleSearchParams {
    * live rate.
    */
   ai_overview?: boolean;
+  /**
+   * Open the People Also Ask questions and return their answers. `true`
+   * opens every question the page shows (usually four), a number `N` opens
+   * the first N (0-99; `0` or `false` opens none). Each answered question in
+   * `related_questions` then carries `text_blocks` and `references`, in the
+   * same shape as `ai_overview`. The answers are fetched on the same session
+   * that served the SERP, so a question can't be expanded later; a question
+   * whose answer did not come back keeps them `null`.
+   *
+   * Each answered question bills as one more Search request (credits =
+   * 20 x (1 + answered) at today's price); a question that does not come
+   * back is not billed. Adds about a second per question. Upgrades
+   * `mode: "fast"` to full. Not accepted by `/v1/google/light/search`.
+   */
+  expand_related_questions?: boolean | number;
+  /**
+   * `"full"` (default): the complete SERP with every block. `"fast"`:
+   * Google's lite `gbv=1` page, organic results and related searches only,
+   * with a 12-second processing budget (past it the API returns `503` with
+   * `Retry-After: 60`). Upgraded to full when `ai_overview` or
+   * `expand_related_questions` is set.
+   */
+  mode?: "full" | "fast";
 }
 
 // ===== Maps =====
