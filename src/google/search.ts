@@ -5,6 +5,9 @@
 import type { BaseClient } from "../internal/client.js";
 import type { GoogleResponse, GoogleSearchParams } from "./types.js";
 
+/** Params that only full Search takes; the Light endpoint can't be upgraded. */
+const FULL_SEARCH_ONLY = ["mode", "ai_overview", "expand_related_questions"] as const;
+
 /**
  * Client for Google Web Search.
  *
@@ -64,14 +67,19 @@ export class SearchClient {
   }
 
   /**
-   * Lightweight Google Search — organic results + related searches only.
+   * Google Light Search — organic results + related searches only.
    *
-   * ~40% faster than {@link search}. Skips ads, Knowledge Graph, AI
-   * Overview, local pack, news, inline videos, and shopping blocks.
-   * Credit cost is configured per-endpoint by admins — query
-   * `/public/pricing` for the live rate. Has a 12-second processing budget;
-   * past it the API returns `503` with `Retry-After: 60`. People Also Ask
-   * answers (`expand_related_questions`) need {@link search}.
+   * Calls the dedicated `/v1/google/light/search` endpoint, billed at the
+   * Light rate (half of full {@link search}; query `/public/pricing` for the
+   * live rate). Skips ads, Knowledge Graph, AI Overview, People Also Ask,
+   * local pack, news, inline videos, and shopping blocks. Has a 12-second
+   * processing budget; past it the API returns `503` with
+   * `Retry-After: 60`. Light cannot be upgraded to full Search, so
+   * `ai_overview` is not sent; AI Overview and People Also Ask answers
+   * (`expand_related_questions`) need {@link search}.
+   *
+   * Returns `{ search_information, organic_results, related_searches,
+   * pagination }`.
    *
    * @example
    * ```typescript
@@ -81,8 +89,9 @@ export class SearchClient {
   async light(
     params: Omit<GoogleSearchParams, "mode" | "expand_related_questions">
   ): Promise<GoogleResponse> {
-    return this.client.request<GoogleResponse>("/v1/google/search", {
-      params: { ...params, mode: "fast" },
-    });
+    // Strip the full-Search controls even when an untyped caller passes them.
+    const light: Record<string, string | number | boolean | undefined> = { ...params };
+    for (const key of FULL_SEARCH_ONLY) delete light[key];
+    return this.client.request<GoogleResponse>("/v1/google/light/search", { params: light });
   }
 }

@@ -120,12 +120,29 @@ describe("SearchClient", () => {
     expect(capturedUrl().searchParams.get("expand_related_questions")).toBe("2");
   });
 
-  it("light() hits mode=fast", async () => {
+  it("light() calls the dedicated /v1/google/light/search endpoint", async () => {
     mockFetch({ organic_results: [] });
-    await makeClient().google.search.light({ q: "python" });
+    await makeClient().google.search.light({
+      q: "python",
+      gl: "gb",
+      num: 20,
+      start: 10,
+      domain: "google.co.uk",
+      tbs: "qdr:w",
+      ai_overview: true,
+    });
     const url = capturedUrl();
-    expect(url.pathname).toBe("/v1/google/search");
-    expect(url.searchParams.get("mode")).toBe("fast");
+    expect(url.pathname).toBe("/v1/google/light/search");
+    expect(url.searchParams.get("q")).toBe("python");
+    expect(url.searchParams.get("gl")).toBe("gb");
+    expect(url.searchParams.get("num")).toBe("20");
+    expect(url.searchParams.get("start")).toBe("10");
+    expect(url.searchParams.get("domain")).toBe("google.co.uk");
+    expect(url.searchParams.get("tbs")).toBe("qdr:w");
+    // Light cannot be upgraded to full Search, so none of its controls are sent.
+    expect(url.searchParams.has("mode")).toBe(false);
+    expect(url.searchParams.has("ai_overview")).toBe(false);
+    expect(url.searchParams.has("expand_related_questions")).toBe(false);
   });
 });
 
