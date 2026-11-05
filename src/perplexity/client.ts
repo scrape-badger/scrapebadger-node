@@ -12,10 +12,24 @@ import type { BaseClient } from "../internal/client.js";
  * to answer only from an exit in `country` (required with it); when none
  * answers in time the call fails with HTTP 503 `country_unavailable` and is
  * not billed. On the POST forms, put `strict_country: true` in the body.
+ *
+ * `location` is where the asker is, so Perplexity answers a local-sounding
+ * question ("best dentist") for that place instead of the exit IP's city. It
+ * does not change the exit: `country` still picks the exit and language. The
+ * response `location` is the canonical form that was sent (`null` when unset).
+ * On the POST forms, put `location: "tokyo"` in the body.
  */
 export type PerplexityParams = Record<string, string | number | boolean | undefined> & {
   /** Answer only from an exit in `country`, never another one. Sent only when true. */
   strictCountry?: boolean;
+  /**
+   * Where the asker is: a city slug (`"tokyo"`, `"osaka"`, `"seoul"`,
+   * `"new-york"`, `"london"`, ...; case-insensitive, spaces and underscores
+   * fold to hyphens) or `"lat,lng"` in decimal degrees (`"35.6812,139.7671"`).
+   * Any other value fails with HTTP 400; the API holds the city list, so the
+   * SDK sends it as given. Sent only when set.
+   */
+  location?: string;
 };
 
 function toQuery(params: PerplexityParams): Record<string, string | number | boolean | undefined> {
