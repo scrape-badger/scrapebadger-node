@@ -16,6 +16,7 @@ import { RedditClient } from "./reddit/client.js";
 import { ApartmentsClient } from "./apartments/client.js";
 import { AppStoreClient } from "./app_store/client.js";
 import { AsosClient } from "./asos/client.js";
+import { Autoscout24Client } from "./autoscout24/client.js";
 import { InstagramClient } from "./instagram/client.js";
 import { RedfinClient } from "./redfin/client.js";
 import { AccountClient } from "./account/client.js";
@@ -34,7 +35,9 @@ import { GumtreeClient } from "./gumtree/client.js";
 import { DuckDuckGoClient } from "./duckduckgo/client.js";
 import { BingClient } from "./bing/client.js";
 import { BookingClient } from "./booking/client.js";
+import { BraveClient } from "./brave/client.js";
 import { BaiduClient } from "./baidu/client.js";
+import { BatchClient } from "./batch/client.js";
 import { BestbuyClient } from "./bestbuy/client.js";
 import { NaverClient } from "./naver/client.js";
 import { YahooClient } from "./yahoo/client.js";
@@ -52,6 +55,7 @@ import { LinkedInClient } from "./linkedin/client.js";
 import { ChatGPTClient } from "./chatgpt/client.js";
 import { CopilotClient } from "./copilot/client.js";
 import { GeminiClient } from "./gemini/client.js";
+import { GithubClient } from "./github/client.js";
 
 /**
  * ScrapeBadger API client.
@@ -113,6 +117,8 @@ export class ScrapeBadger {
   readonly app_store: AppStoreClient;
   /** Asos API client. (Generated from the OpenAPI spec.) */
   readonly asos: AsosClient;
+  /** Autoscout24 API client. (Generated from the OpenAPI spec.) */
+  readonly autoscout24: Autoscout24Client;
 
   /** Instagram scraper API client — users, media, search, hashtags, locations, audio */
   readonly instagram: InstagramClient;
@@ -163,9 +169,13 @@ export class ScrapeBadger {
   readonly bing: BingClient;
   /** Booking API client. (Generated from the OpenAPI spec.) */
   readonly booking: BookingClient;
+  /** Brave API client. (Generated from the OpenAPI spec.) */
+  readonly brave: BraveClient;
 
   /** Baidu scraper API client — search, news, images, autocomplete (baidu.com, China's #1 search engine) */
   readonly baidu: BaiduClient;
+  /** Batch API client. (Generated from the OpenAPI spec.) */
+  readonly batch: BatchClient;
   /** Bestbuy API client. (Generated from the OpenAPI spec.) */
   readonly bestbuy: BestbuyClient;
 
@@ -215,6 +225,8 @@ export class ScrapeBadger {
 
   /** Gemini scraper API client — ask, brand visibility (the real gemini.google.com, anonymous) */
   readonly gemini: GeminiClient;
+  /** Github API client. (Generated from the OpenAPI spec.) */
+  readonly github: GithubClient;
 
   /**
    * Create a new ScrapeBadger client.
@@ -265,6 +277,7 @@ export class ScrapeBadger {
     this.apartments = new ApartmentsClient(this.baseClient);
     this.app_store = new AppStoreClient(this.baseClient);
     this.asos = new AsosClient(this.baseClient);
+    this.autoscout24 = new Autoscout24Client(this.baseClient);
     this.instagram = new InstagramClient(this.baseClient);
     this.redfin = new RedfinClient(this.baseClient);
     this.account = new AccountClient(this.baseClient);
@@ -285,7 +298,9 @@ export class ScrapeBadger {
     this.duckduckgo = new DuckDuckGoClient(this.baseClient);
     this.bing = new BingClient(this.baseClient);
     this.booking = new BookingClient(this.baseClient);
+    this.brave = new BraveClient(this.baseClient);
     this.baidu = new BaiduClient(this.baseClient);
+    this.batch = new BatchClient(this.baseClient);
     this.bestbuy = new BestbuyClient(this.baseClient);
     this.naver = new NaverClient(this.baseClient);
     this.yahoo = new YahooClient(this.baseClient);
@@ -303,5 +318,6 @@ export class ScrapeBadger {
     this.chatgpt = new ChatGPTClient(this.baseClient);
     this.copilot = new CopilotClient(this.baseClient);
     this.gemini = new GeminiClient(this.baseClient);
+    this.github = new GithubClient(this.baseClient);
   }
 }

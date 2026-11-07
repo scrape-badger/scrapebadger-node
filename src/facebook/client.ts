@@ -88,6 +88,13 @@ export class FacebookClient {
     return this.client.request("/v1/facebook/marketplace/locations", { params });
   }
 
+  /** Resolve a town/postcode to a Marketplace location. Generated from the OpenAPI spec; returns the raw response object. */
+  async resolveATownPostcodeToAMarketplaceLocation(
+    params: Record<string, string | number | boolean | undefined> = {}
+  ): Promise<Record<string, unknown>> {
+    return this.client.request("/v1/facebook/marketplace/locations/resolve", { params });
+  }
+
   /** Search Marketplace. Generated from the OpenAPI spec; returns the raw response object. */
   async searchMarketplace(
     params: Record<string, string | number | boolean | undefined> = {}

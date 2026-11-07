@@ -4,27 +4,6 @@
 
 import type { BaseClient } from "../internal/client.js";
 
-/**
- * Query parameters for the Copilot GET methods.
- *
- * `country` is best-effort: when no exit there answers, the last retry may
- * answer from the US and the response `country` says so. Set
- * `strictCountry: true` to answer only from an exit in `country` (required
- * with it); when none answers in time the call fails with HTTP 503
- * `country_unavailable` and is not billed. `market` (e.g. `ja-JP`) defaults
- * to the market of `country`. On the POST forms, put `strict_country: true`
- * in the body.
- */
-export type CopilotParams = Record<string, string | number | boolean | undefined> & {
-  /** Answer only from an exit in `country`, never another one. Sent only when true. */
-  strictCountry?: boolean;
-};
-
-function toQuery(params: CopilotParams): Record<string, string | number | boolean | undefined> {
-  const { strictCountry, ...rest } = params;
-  return strictCountry ? { ...rest, strict_country: true } : rest;
-}
-
 /** Client for all Copilot API operations. (Generated from the OpenAPI spec.) */
 export class CopilotClient {
   private readonly client: BaseClient;
@@ -34,8 +13,10 @@ export class CopilotClient {
   }
 
   /** Ask Copilot a question. Generated from the OpenAPI spec; returns the raw response object. */
-  async askCopilotAQuestion(params: CopilotParams = {}): Promise<Record<string, unknown>> {
-    return this.client.request("/v1/copilot/ask", { params: toQuery(params) });
+  async askCopilotAQuestion(
+    params: Record<string, string | number | boolean | undefined> = {}
+  ): Promise<Record<string, unknown>> {
+    return this.client.request("/v1/copilot/ask", { params });
   }
 
   /** Ask Copilot a question (POST). Generated from the OpenAPI spec; returns the raw response object. */
@@ -48,9 +29,9 @@ export class CopilotClient {
 
   /** Measure a brand's visibility in a Copilot answer. Generated from the OpenAPI spec; returns the raw response object. */
   async measureABrandSVisibilityInACopilotAnswer(
-    params: CopilotParams = {}
+    params: Record<string, string | number | boolean | undefined> = {}
   ): Promise<Record<string, unknown>> {
-    return this.client.request("/v1/copilot/brand-visibility", { params: toQuery(params) });
+    return this.client.request("/v1/copilot/brand-visibility", { params });
   }
 
   /** Measure a brand's visibility in a Copilot answer (POST). Generated from the OpenAPI spec; returns the raw response object. */
