@@ -14,6 +14,12 @@ export type GoogleResponse = Record<string, unknown>;
 // ===== Search =====
 
 export interface GoogleSearchParams {
+  /** Original query sent to Google. Defaults to q; an empty string omits it. */
+  oq?: string;
+  /** Google source identifier. Defaults to chrome; an empty string omits it. */
+  sourceid?: string;
+  /** Google input encoding hint. Defaults to UTF-8; an empty string omits it. */
+  ie?: string;
   /** Alias for domain; Google requests use google.com with country targeting. */
   google_domain?: string;
   /** Latitude; supply together with lon instead of location or uule. */

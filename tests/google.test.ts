@@ -110,6 +110,9 @@ describe("SearchClient", () => {
         google_domain: "google.com",
         as_epq: "vinted api",
         color_scheme: "dark",
+        oq: "vinted café + api&gl=fr",
+        sourceid: "",
+        ie: "UTF-8",
         output: "html",
       });
       expect(result).toBe(html);
@@ -121,6 +124,9 @@ describe("SearchClient", () => {
       expect(url.searchParams.get("no_cache")).toBe("true");
       expect(url.searchParams.get("as_epq")).toBe("vinted api");
       expect(url.searchParams.get("output")).toBe("html");
+      expect(url.searchParams.get("oq")).toBe("vinted café + api&gl=fr");
+      expect(url.searchParams.get("sourceid")).toBe("");
+      expect(url.searchParams.get("ie")).toBe("UTF-8");
     }
   );
 
