@@ -92,6 +92,13 @@ import { GithubClient } from "./github/client.js";
 export class ScrapeBadger {
   private readonly baseClient: BaseClient;
 
+  /** Live endpoint discovery. Hidden endpoints are omitted; statuses update without an SDK release. */
+  async endpoints(): Promise<Array<{ method: string; path: string; api: string; status: "active" | "temporarily_unavailable" | "deprecated" }>> {
+    const result = await this.baseClient.request<{ endpoints: Array<{ method: string; path: string; api: string; status: "active" | "temporarily_unavailable" | "deprecated" }> }>("/api/public/endpoint-catalog");
+    return result.endpoints;
+  }
+
+
   /** Twitter API client */
   readonly twitter: TwitterClient;
 
