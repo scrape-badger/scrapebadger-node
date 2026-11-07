@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.72.0 — 2026-11-07
+
+- **AutoScout24 Search API.** New `autoscout24` namespace: `searchVehicles`, `listSearchFilters` and `listMarkets`. Search vehicle listings across Germany, Austria, Belgium, Spain, France, Italy, Luxembourg and the Netherlands with make/model, price, mileage, registration year, power, fuel, body, transmission, seller, condition and postcode/radius filters. Responses preserve vehicle, seller and location data plus page totals and next-page metadata.
+- **Brave Search API.** New `brave` namespace: `webSearch`, `imageSearch`, `newsSearch`, `videoSearch`, `autocomplete` and `listSupportedLocales`. Responses preserve the API's result fields and pagination.
+- **GitHub Public Profile API.** New `github.getProfile(username, params)` for public profile sections, repositories, contributions and pagination cursors.
+- Preserve the existing Copilot and Perplexity `strictCountry` adapters and typed parameters during future facade generation, including Perplexity `location`. Existing Vinted public types and methods are unchanged.
+- Fix package exports for ESM, CommonJS and TypeScript NodeNext consumers, including the `scrapebadger/twitter` subpath. CommonJS bundles now use `.cjs`; declaration exports point to the files produced by the build.
+
 ## 0.71.0 — 2026-11-03
 
 - **Perplexity: `location`.** `perplexity.askPerplexityAQuestion({ prompt, location: "tokyo" })` and `perplexity.measureABrandSVisibilityInAPerplexityAnswer({ ..., location: "tokyo" })` say where the asker is, so Perplexity answers a local-sounding question ("best dentist", "popular cafes") for that place instead of the residential exit's city. It takes a city slug (`tokyo`, `osaka`, `seoul`, `new-york`, `london`, ...; case-insensitive, spaces and underscores fold to hyphens, so `"New York"` works) or `"lat,lng"` in decimal degrees (`"35.6812,139.7671"`). It does not change the exit: `country` still picks the exit and language. Any other value fails with HTTP 400; the SDK sends it as given and leaves validation to the API. The response gains `location`, the canonical form that was sent (`"tokyo"`, `"35.6812,139.7671"`), or `null` when unset. On the POST forms put `location: "tokyo"` in the body. Sent only when set. `PerplexityParams` gains a typed `location?: string`. No existing signature changes. (SB-001181)
