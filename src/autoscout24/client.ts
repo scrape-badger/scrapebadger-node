@@ -19,6 +19,13 @@ export class Autoscout24Client {
     return this.client.request("/v1/autoscout24/filters", { params });
   }
 
+  /** Get listing. Generated from the OpenAPI spec; returns the raw response object. */
+  async getListing(
+    params: Record<string, string | number | boolean | undefined> = {}
+  ): Promise<Record<string, unknown>> {
+    return this.client.request("/v1/autoscout24/listing", { params });
+  }
+
   /** List markets. Generated from the OpenAPI spec; returns the raw response object. */
   async listMarkets(
     params: Record<string, string | number | boolean | undefined> = {}
