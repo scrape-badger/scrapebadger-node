@@ -68,7 +68,12 @@ jobs:
       - name: Check package exports
         run: |
           # Verify the built files exist
-          test -f dist/index.js
+          test -f dist/index.cjs
           test -f dist/index.mjs
           test -f dist/index.d.ts
+          test -f dist/index.d.cts
+          test -f dist/twitter/index.cjs
+          test -f dist/twitter/index.mjs
+          test -f dist/twitter/index.d.ts
+          test -f dist/twitter/index.d.cts
           echo "Build outputs verified"

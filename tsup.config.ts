@@ -12,8 +12,7 @@ export default defineConfig({
   outExtension(ctx) {
     const format = ctx.format;
     return {
-      js: format === "cjs" ? ".js" : ".mjs",
-      dts: format === "cjs" ? ".d.ts" : ".d.mts",
+      js: format === "cjs" ? ".cjs" : ".mjs",
     };
   },
 });
