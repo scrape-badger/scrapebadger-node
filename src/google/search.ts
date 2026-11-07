@@ -62,8 +62,13 @@ export class SearchClient {
    * });
    * ```
    */
-  async search(params: GoogleSearchParams): Promise<GoogleResponse> {
-    return this.client.request<GoogleResponse>("/v1/google/search", { params: { ...params } });
+  async search(params: GoogleSearchParams & { output: "html" }): Promise<string>;
+  async search(params: GoogleSearchParams & { output?: "json" }): Promise<GoogleResponse>;
+  async search(params: GoogleSearchParams): Promise<GoogleResponse | string>;
+  async search(params: GoogleSearchParams): Promise<GoogleResponse | string> {
+    return this.client.request<GoogleResponse | string>("/v1/google/search", {
+      params: { ...params },
+    });
   }
 
   /**
@@ -87,11 +92,22 @@ export class SearchClient {
    * ```
    */
   async light(
+    params: Omit<GoogleSearchParams, "mode" | "expand_related_questions"> & { output: "html" }
+  ): Promise<string>;
+  async light(
+    params: Omit<GoogleSearchParams, "mode" | "expand_related_questions"> & { output?: "json" }
+  ): Promise<GoogleResponse>;
+  async light(
     params: Omit<GoogleSearchParams, "mode" | "expand_related_questions">
-  ): Promise<GoogleResponse> {
+  ): Promise<GoogleResponse | string>;
+  async light(
+    params: Omit<GoogleSearchParams, "mode" | "expand_related_questions">
+  ): Promise<GoogleResponse | string> {
     // Strip the full-Search controls even when an untyped caller passes them.
     const light: Record<string, string | number | boolean | undefined> = { ...params };
     for (const key of FULL_SEARCH_ONLY) delete light[key];
-    return this.client.request<GoogleResponse>("/v1/google/light/search", { params: light });
+    return this.client.request<GoogleResponse | string>("/v1/google/light/search", {
+      params: light,
+    });
   }
 }
