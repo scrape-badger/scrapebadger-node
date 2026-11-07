@@ -42,6 +42,7 @@ import { BestbuyClient } from "./bestbuy/client.js";
 import { NaverClient } from "./naver/client.js";
 import { YahooClient } from "./yahoo/client.js";
 import { YandexClient } from "./yandex/client.js";
+import { YelpClient } from "./yelp/client.js";
 import { YoutubeClient } from "./youtube/client.js";
 import { RealtorClient } from "./realtor/client.js";
 import { LeboncoinClient } from "./leboncoin/client.js";
@@ -207,6 +208,8 @@ export class ScrapeBadger {
 
   /** Yandex scraper API client — web search, image search, reverse-image (CBIR), markets (tr/com/ru/by/kz/uz) */
   readonly yandex: YandexClient;
+  /** Yelp API client. (Generated from the OpenAPI spec.) */
+  readonly yelp: YelpClient;
 
   /** YouTube scraper API client — 39 endpoints */
   readonly youtube: YoutubeClient;
@@ -325,6 +328,7 @@ export class ScrapeBadger {
     this.naver = new NaverClient(this.baseClient);
     this.yahoo = new YahooClient(this.baseClient);
     this.yandex = new YandexClient(this.baseClient);
+    this.yelp = new YelpClient(this.baseClient);
     this.youtube = new YoutubeClient(this.baseClient);
     this.realtor = new RealtorClient(this.baseClient);
     this.leboncoin = new LeboncoinClient(this.baseClient);
