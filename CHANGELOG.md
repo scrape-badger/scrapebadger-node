@@ -1,8 +1,15 @@
-## 0.73.0
+# Changelog
+
+## 0.74.0
+
+- **Yelp Search API.** New `yelp` namespace: `yelp.searchBusinesses({ location, query, market, category, sort_by, price, features, page })` returns ranked Yelp businesses for a location, and `yelp.listMarkets()` lists the Yelp sites it searches (`us`, `ca`). Only `location` is required: what you would type into Yelp (city, neighbourhood, address or postcode). `query` is optional when `category` (a Yelp category alias such as `pizza`) is set. The API defaults `market` to `"us"`, `sort_by` to `"recommended"` (or `"rating"`, `"review_count"`) and `page` to 1 (1-11, ten businesses each); `price` takes comma-separated levels 1-4 and `features` comma-separated refinements (`delivery`, `takeout`, `reservations`, `outdoor_seating`, `good_for_kids`, `dogs_allowed`, `free_wifi`, `wheelchair_accessible`). Params are sent as given and `undefined` values are omitted. Ads come back in `ads`, separate from ranked `results`. The response is the raw object and keeps `false`, `0`, empty and `null` values unchanged. A page costs 15 credits; an empty result and `listMarkets()` are free. Business detail and reviews are not part of this API. (SCR-569)
+- **AutoScout24: listing detail.** `autoscout24.getListing({ url })` or `autoscout24.getListing({ listing_id, market })` returns one vehicle listing from search results with its full specifications, equipment, photos, price and seller. Pass exactly one of `url` (the full HTTPS listing URL) or `listing_id` (the listing UUID, no SEO slug). `market` (`de`, `at`, `be`, `es`, `fr`, `it`, `lu`, `nl`) is inferred from the URL, otherwise `de`; an explicit `market` must match the URL host. The response is the raw object (`market`, `source_url`, `listing`, `latency_ms`), and native vehicle and equipment groups pass through unchanged, including `false`, `0` and empty values. A successful detail costs 10 credits; a removed or missing listing returns an unbilled 404, invalid input 422 and source failures 503. (SCR-564)
+- **GitHub: repository detail.** `github.getRepository(owner, repo)` returns public default-branch repository detail: identity and owner, fork parent/source and fork comparison, archived/template/mirror flags, license, topics and counts, the latest commit and its checks, the native README, root files, languages, latest release, contributors, dependents, funding, community files and `metadata_available`. Root file and contributor previews are not exhaustive. Each path segment is encoded with `encodeURIComponent`, `.` and `..` throw a `TypeError` without a request, and no query options are accepted. The method shipped unannounced in 0.73.0, ahead of the API; this release documents it. (SCR-567)
+- No existing signature changes.
+
+## 0.73.0 — 2026-11-07
 
 - Add live `endpoints()` discovery, reflecting admin availability and omitting hidden endpoints. Lifecycle errors retain HTTP 404/410/423 and are not retried.
-
-# Changelog
 
 ## 0.72.0 — 2026-11-07
 
