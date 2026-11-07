@@ -332,6 +332,9 @@ export class BaseClient {
     // Parse response body
     let data: T | ErrorResponse;
     const contentType = response.headers.get("content-type");
+    if (response.ok && contentType?.includes("text/html")) {
+      return (await response.text()) as T;
+    }
 
     if (contentType?.includes("application/json")) {
       data = (await response.json()) as T | ErrorResponse;

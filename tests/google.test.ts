@@ -91,6 +91,39 @@ describe("GoogleClient wiring", () => {
 // ---------------------------------------------------------------------------
 
 describe("SearchClient", () => {
+  it.each(["search", "light"] as const)(
+    "%s forwards targeting and preserves raw HTML",
+    async (method) => {
+      const html = "<!doctype html><html><body>Vilnius — kavinė</body></html>";
+      vi.stubGlobal(
+        "fetch",
+        vi.fn().mockResolvedValue(
+          new Response(html, {
+            headers: { "Content-Type": "text/html; charset=utf-8" },
+          })
+        )
+      );
+      const result: string = await makeClient().google.search[method]({
+        q: "vinted api",
+        location: "New York,New York,United States",
+        no_cache: true,
+        google_domain: "google.com",
+        as_epq: "vinted api",
+        color_scheme: "dark",
+        output: "html",
+      });
+      expect(result).toBe(html);
+      const url = capturedUrl();
+      expect(url.pathname).toBe(
+        method === "light" ? "/v1/google/light/search" : "/v1/google/search"
+      );
+      expect(url.searchParams.get("location")).toBe("New York,New York,United States");
+      expect(url.searchParams.get("no_cache")).toBe("true");
+      expect(url.searchParams.get("as_epq")).toBe("vinted api");
+      expect(url.searchParams.get("output")).toBe("html");
+    }
+  );
+
   it("calls /v1/google/search with forwarded params", async () => {
     mockFetch({ organic_results: [] });
     const client = makeClient();

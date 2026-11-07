@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.75.0 — 2026-11-07
+
+- Add Google Search and Light location, coordinates, radius, color scheme, advanced query filters, and cache bypass controls.
+- Support raw Google HTML without JSON decoding; preserve existing JSON calls.
+
+
 ## 0.74.0
 
 - **Yelp Search API.** New `yelp` namespace: `yelp.searchBusinesses({ location, query, market, category, sort_by, price, features, page })` returns ranked Yelp businesses for a location, and `yelp.listMarkets()` lists the Yelp sites it searches (`us`, `ca`). The API requires `location`: what you would type into Yelp (city, neighbourhood, address or postcode). `query` (what to search for) and `category` (a Yelp category alias such as `pizza`) are both optional; with neither, the search browses the location. The API defaults `market` to `"us"`, `sort_by` to `"recommended"` (or `"rating"`, `"review_count"`) and `page` to 1 (1-11, ten businesses each); `price` takes comma-separated levels 1-4 and `features` comma-separated refinements (`delivery`, `takeout`, `reservations`, `outdoor_seating`, `good_for_kids`, `dogs_allowed`, `free_wifi`, `wheelchair_accessible`). Params are a plain record of snake_case query keys, sent as given with `undefined` values omitted, so a missing `location`, an unknown key such as `sortBy`, an unknown feature or a repeated price level is an unbilled 422 (`ValidationError`) from the API, not a compile error. Ads come back in `ads`, separate from ranked `results`. The response is the raw object and keeps `false`, `0`, empty and `null` values unchanged. A page costs 15 credits; an empty result and `listMarkets()` are free. Business detail and reviews are not part of this API. (SCR-569)

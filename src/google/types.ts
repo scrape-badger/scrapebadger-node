@@ -14,17 +14,59 @@ export type GoogleResponse = Record<string, unknown>;
 // ===== Search =====
 
 export interface GoogleSearchParams {
+  /** Alias for domain; Google requests use google.com with country targeting. */
+  google_domain?: string;
+  /** Latitude; supply together with lon instead of location or uule. */
+  lat?: number;
+  /** Longitude; supply together with lat. */
+  lon?: number;
+  /** Location accuracy in meters; requires lat/lon or a named city with a known center. */
+  radius?: number;
+  /** Google color scheme. */
+  color_scheme?: "light" | "dark";
+  /** Google search type. Use output=html for verticals; dedicated APIs provide parsed vertical results. */
+  tbm?: string;
+  /** Google result filter: 14 web, 18 forums. Other verticals require output=html. */
+  udm?: string;
+  /** Bypass result caches and request a fresh Google fetch. */
+  no_cache?: boolean;
+  /** Site restriction mode: i includes, e excludes as_sitesearch. */
+  as_dt?: string;
+  /** Exact phrase. */
+  as_epq?: string;
+  /** Words to exclude. */
+  as_eq?: string;
+  /** Find pages linking to this URL; availability depends on Google. */
+  as_lq?: string;
+  /** Numeric range minimum. */
+  as_nlo?: string;
+  /** Numeric range maximum. */
+  as_nhi?: string;
+  /** Match any of these words. */
+  as_oq?: string;
+  /** Additional query words. */
+  as_q?: string;
+  /** Time range, such as d, w, m or y1. */
+  as_qdr?: string;
+  /** Related URL; availability depends on Google. */
+  as_rq?: string;
+  /** Restrict results to a site. */
+  as_sitesearch?: string;
+  /** Custom User-Agent override. */
+  user_agent?: string;
+  /** json returns structured results; html returns the raw page. */
+  output?: "json" | "html";
   q: string;
   gl?: string;
   hl?: string;
   num?: number;
   start?: number;
   domain?: string;
-  device?: "desktop" | "mobile";
+  device?: "desktop" | "mobile" | "iphone" | "android" | "tablet";
   location?: string;
   lr?: string;
   tbs?: string;
-  safe?: "off" | "medium" | "high";
+  safe?: "off" | "active" | "medium" | "high";
   uule?: string;
   filter?: number;
   nfpr?: number;
@@ -143,7 +185,13 @@ export interface NewsSearchParams {
  * back to a plain `string` when you know the topic code out-of-band.
  */
 export type NewsTopic =
-  "WORLD" | "BUSINESS" | "TECHNOLOGY" | "ENTERTAINMENT" | "SPORTS" | "SCIENCE" | "HEALTH";
+  | "WORLD"
+  | "BUSINESS"
+  | "TECHNOLOGY"
+  | "ENTERTAINMENT"
+  | "SPORTS"
+  | "SCIENCE"
+  | "HEALTH";
 
 export interface NewsTopicsParams {
   // Accept the canonical codes as a `NewsTopic` union, but also allow any
@@ -250,7 +298,11 @@ export interface TrendsTrendingNowParams {
 }
 
 export type TrendsDataType =
-  "TIMESERIES" | "GEO_MAP" | "GEO_MAP_0" | "RELATED_TOPICS" | "RELATED_QUERIES";
+  | "TIMESERIES"
+  | "GEO_MAP"
+  | "GEO_MAP_0"
+  | "RELATED_TOPICS"
+  | "RELATED_QUERIES";
 
 export interface TrendsSearchParams {
   /** Search term(s). Comma-separated (max 5) for TIMESERIES / GEO_MAP. */
