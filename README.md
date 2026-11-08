@@ -263,3 +263,18 @@ MIT License - see [LICENSE](LICENSE) for details.
 - [Discord](https://discord.com/invite/3WvwTyWVCx)
 - [GitHub](https://github.com/scrape-badger/scrapebadger-node)
 - [npm](https://www.npmjs.com/package/scrapebadger)
+
+### Verified public Facebook Marketplace
+
+```typescript
+const page = await client.facebook.searchMarketplace({
+  query: "bicycle", location: "london", radius: 20, days_since_listed: 2,
+  sort_by: "creation_time_descend", strict_filters: true, include_details: true,
+});
+```
+
+No Facebook account is needed. Verified radius is in kilometres using approximate
+listing coordinates. Follow `end_cursor` with the same filters, even after an empty
+filtered page. Continuations explore price ranges (eight pages maximum, one-hour
+expiry). Coverage and discovery freshness are partial; sort all collected pages by
+`creation_time_utc` and persist IDs for daily deduplication.
