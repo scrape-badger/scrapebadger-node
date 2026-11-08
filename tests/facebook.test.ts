@@ -54,3 +54,23 @@ describe("facebook.getGroupPosts", () => {
     expect(capturedUrl().searchParams.has("sort")).toBe(false);
   });
 });
+
+describe("facebook.searchMarketplace verified public search", () => {
+  it("preserves verified filters, detail enrichment and the opaque cursor", async () => {
+    vi.unstubAllGlobals();
+    mockFetch({ listings: [], has_next_page: true, search_info: { coverage: "partial" } });
+    const result = await makeClient().facebook.searchMarketplace({
+      query: "bicycle",
+      location: "london",
+      radius: 20,
+      strict_filters: true,
+      include_details: true,
+      after: "sbmp1_previous",
+    });
+    const url = capturedUrl();
+    expect(url.searchParams.get("strict_filters")).toBe("true");
+    expect(url.searchParams.get("include_details")).toBe("true");
+    expect(url.searchParams.get("after")).toBe("sbmp1_previous");
+    expect(result.has_next_page).toBe(true);
+  });
+});
