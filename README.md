@@ -126,7 +126,7 @@ Etsy and AliExpress category navigation is separate from search: their search me
 | **ChatGPT** | Prompt the real chatgpt.com anonymously — structured answer with citations anchored to character offsets, the full retrieved search trail, and AEO/GEO brand-visibility analysis | [ChatGPT Guide](docs/chatgpt.md) |
 | **Gemini** | Prompt the real gemini.google.com anonymously — structured answer with cited web sources, the full retrieved search trail, and AEO/GEO brand-visibility analysis | [Gemini Docs](https://docs.scrapebadger.com/gemini/overview) |
 
-## Quotes, feedback and free re-reads
+## Quotes, feedback and async polling
 
 These calls are free and never billed.
 
@@ -138,12 +138,6 @@ const client = new ScrapeBadger({ apiKey: "your-api-key" });
 // What would a call cost, are its params valid, how long does it take?
 const quote = await client.agent.quote("GET", "/v1/google/search", { params: { q: "coffee" } });
 console.log(quote.valid, quote.errors, quote.credits.max, quote.usd, quote.latency);
-
-// Re-read a billed result for ~15 minutes, reshaped. The ID is the call's
-// X-Result-ID header (raw HTTP, the CLI) or AsyncRequest.resultId.
-const titles = await client.results.get<string[]>(resultId, { jq: "[.organic_results[].title]" });
-const outline = await client.results.get(resultId, { summary: true });
-const first5 = await client.results.get(resultId, { fields: ["title", "link"], maxItems: 5 });
 
 // Poll a call made with `Prefer: respond-async` (202 + request_id).
 const state = await client.requests.get(requestId);
@@ -158,7 +152,7 @@ const info = await client.account.getAccountInfo();
 const trial = info.agent_trial as AgentTrial | undefined;
 ```
 
-`results.get` returns the stored body as-is (any JSON value) and throws `NotFoundError` once it has expired. `requests.get` returns `running: true` while the call is in progress — wait `retryAfterSeconds` and poll again; never re-submit the call. Once finished it returns the original body, or throws the original call's error. The SDK's own methods never send `Prefer: respond-async`; `requests.get` polls a request ID obtained elsewhere (raw HTTP, the CLI or MCP server).
+ScrapeBadger does not cache or store responses: every call is fetched fresh and billed, and `results.get` (the old free re-read) is deprecated because `GET /v1/results/{id}` was removed on 2026-11-09. To reshape a result, re-run the call with the `jq`, `fields` or `max_items` view parameters. `requests.get` returns `running: true` while the call is in progress — wait `retryAfterSeconds` and poll again; never re-submit the call. Once finished it returns the original body, or throws the original call's error. The SDK's own methods never send `Prefer: respond-async`; `requests.get` polls a request ID obtained elsewhere (raw HTTP, the CLI or MCP server).
 
 ## Error Handling
 

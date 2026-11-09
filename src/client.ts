@@ -152,7 +152,10 @@ export class ScrapeBadger {
   readonly account: AccountClient;
   /** Quote a call before making it, and report bugs or send feedback. Free. */
   readonly agent: AgentClient;
-  /** Re-read a recent result (`X-Result-ID`) for free, optionally trimmed. */
+  /**
+   * @deprecated The API no longer stores results (`GET /v1/results/{id}` answers
+   * 410 Gone since 2026-11-09); see `ResultsClient.get`.
+   */
   readonly results: ResultsClient;
   /** Poll a call made with `Prefer: respond-async`. Free. */
   readonly requests: RequestsClient;

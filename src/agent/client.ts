@@ -2,8 +2,9 @@
  * Agent platform API clients.
  *
  * Free helpers around the scraper APIs: quote a call before making it, report
- * a bug, re-read a recent result, and poll a call made with
- * `Prefer: respond-async`. None of these calls is ever billed.
+ * a bug, and poll a call made with `Prefer: respond-async`. None of these calls
+ * is ever billed. (`results.get` is deprecated: the API stopped storing results
+ * on 2026-11-09.)
  */
 
 import type { BaseClient } from "../internal/client.js";
@@ -90,25 +91,44 @@ export class AgentClient {
   }
 }
 
+let resultsGetWarned = false;
+
 /**
- * Client for re-reading recent results for free.
+ * Deprecated client for the removed `GET /v1/results/{id}` re-read.
  *
- * Every billed 2xx read carries an `X-Result-ID` header; the body is kept for
- * about 15 minutes and can be replayed — optionally reshaped — without
- * re-running (and re-paying for) the call.
+ * ScrapeBadger no longer stores results: responses carry no `X-Result-ID` and
+ * `GET /v1/results/{id}` answers 410 Gone since 2026-11-09. To get a different
+ * shape of a result, re-run the call with the `jq`, `fields` or `max_items`
+ * view parameters (billed as a normal call).
+ *
+ * @deprecated The API no longer stores results; this client will be removed.
  */
 export class ResultsClient {
   constructor(private readonly client: BaseClient) {}
 
   /**
-   * Replay a recent result, optionally trimmed. Free.
+   * Deprecated: the API no longer stores results, so there is nothing to re-read.
    *
-   * @param resultId - `X-Result-ID` of the original call.
+   * `GET /v1/results/{id}` was removed from the API on 2026-11-09 and answers
+   * 410 Gone, which this method throws as `ScrapeBadgerError`. Re-run the
+   * original call with the `jq`, `fields` or `max_items` view parameters instead
+   * (billed as a normal call). Kept only so existing code fails with a clear
+   * error; it will be removed in a future release.
+   *
+   * @deprecated The API no longer stores results; re-run the call with view params.
+   * @param resultId - ID of a stored result (no longer issued by the API).
    * @param options - `jq`, `fields`, `maxItems`, `summary` view params.
-   * @returns The original response body, reshaped — any JSON value.
-   * @throws NotFoundError - Unknown result, or it expired (~15 minutes).
+   * @throws ScrapeBadgerError - Always (410 Gone `results_removed`) against the current API.
    */
   async get<T = unknown>(resultId: string, options: ResultViewOptions = {}): Promise<T> {
+    if (!resultsGetWarned) {
+      resultsGetWarned = true;
+      console.warn(
+        "[scrapebadger] results.get() is deprecated: ScrapeBadger stopped storing results on " +
+          "2026-11-09 and GET /v1/results/{id} answers 410 Gone. Re-run the call with " +
+          "jq/fields/max_items view parameters instead."
+      );
+    }
     const { jq, fields, maxItems, summary } = options;
     return this.client.request<T>(`/v1/results/${encodeURIComponent(resultId)}`, {
       params: {
@@ -153,7 +173,7 @@ export class RequestsClient {
       running,
       status: status ?? 200,
       retryAfterSeconds: retryAfter ?? null,
-      resultId: headers?.get("X-Result-ID") ?? null,
+      resultId: null, // deprecated: the API no longer sends X-Result-ID
       creditsUsed: credits && /^\d+$/.test(credits) ? Number(credits) : null,
       data,
     };

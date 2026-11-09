@@ -34,7 +34,10 @@ export interface GoogleSearchParams {
   tbm?: string;
   /** Google result filter: 14 web, 18 forums. Other verticals require output=html. */
   udm?: string;
-  /** Bypass result caches and request a fresh Google fetch. */
+  /**
+   * No effect: ScrapeBadger no longer caches responses, so every call is a
+   * fresh Google fetch. Kept for compatibility.
+   */
   no_cache?: boolean;
   /** Site restriction mode: i includes, e excludes as_sitesearch. */
   as_dt?: string;
