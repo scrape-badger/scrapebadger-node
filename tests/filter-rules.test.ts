@@ -6,6 +6,7 @@
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { ScrapeBadger } from "../src/client.js";
+import { ScrapeBadgerError } from "../src/internal/exceptions.js";
 import type {
   FilterRuleResponse,
   FilterRuleListResponse,
@@ -194,9 +195,7 @@ describe("StreamClient.getFilterRule", () => {
 
     const { url, init } = capturedRequest();
     expect(init.method ?? "GET").toBe("GET");
-    expect(url).toBe(
-      "https://api.scrapebadger.com/v1/twitter/stream/filter-rules/rule-uuid-1"
-    );
+    expect(url).toBe("https://api.scrapebadger.com/v1/twitter/stream/filter-rules/rule-uuid-1");
     expect(result.id).toBe("rule-uuid-1");
   });
 });
@@ -219,9 +218,7 @@ describe("StreamClient.updateFilterRule", () => {
 
     const { url, init } = capturedRequest();
     expect(init.method).toBe("PATCH");
-    expect(url).toBe(
-      "https://api.scrapebadger.com/v1/twitter/stream/filter-rules/rule-uuid-1"
-    );
+    expect(url).toBe("https://api.scrapebadger.com/v1/twitter/stream/filter-rules/rule-uuid-1");
     const sent = JSON.parse(init.body as string) as Record<string, unknown>;
     expect(sent).toEqual({ interval_seconds: 120 });
     expect(result.interval_seconds).toBe(120);
@@ -281,9 +278,7 @@ describe("StreamClient.deleteFilterRule", () => {
 
     const { url, init } = capturedRequest();
     expect(init.method).toBe("DELETE");
-    expect(url).toBe(
-      "https://api.scrapebadger.com/v1/twitter/stream/filter-rules/rule-uuid-1"
-    );
+    expect(url).toBe("https://api.scrapebadger.com/v1/twitter/stream/filter-rules/rule-uuid-1");
   });
 });
 
@@ -308,9 +303,7 @@ describe("StreamClient.validateFilterRuleQuery", () => {
 
     const { url, init } = capturedRequest();
     expect(init.method).toBe("POST");
-    expect(url).toBe(
-      "https://api.scrapebadger.com/v1/twitter/stream/filter-rules/validate"
-    );
+    expect(url).toBe("https://api.scrapebadger.com/v1/twitter/stream/filter-rules/validate");
     const sent = JSON.parse(init.body as string) as Record<string, unknown>;
     expect(sent["query"]).toBe("#python lang:en -is:retweet");
     expect(result.valid).toBe(true);
@@ -341,6 +334,34 @@ describe("StreamClient.validateFilterRuleQuery", () => {
 describe("StreamClient.listFilterRuleLogs", () => {
   beforeEach(() => vi.unstubAllGlobals());
 
+  it("warns once per process that it is deprecated", async () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    mockFetch({ logs: [], total: 0, limit: 20, offset: 0 });
+    await makeClient().twitter.stream.listFilterRuleLogs("rule-uuid-1");
+    await makeClient().twitter.stream.listFilterRuleLogs("rule-uuid-2");
+    const deprecations = warn.mock.calls.filter((c) =>
+      String(c[0]).includes("listFilterRuleLogs()")
+    );
+    expect(deprecations).toHaveLength(1);
+    expect(String(deprecations[0][0])).toContain("410 Gone");
+    warn.mockRestore();
+  });
+
+  it("throws the API's 410 Gone as ScrapeBadgerError", async () => {
+    mockFetch(
+      {
+        error: "delivery_logs_removed",
+        detail: "Tweet delivery logs were removed: ScrapeBadger no longer stores delivered tweets.",
+      },
+      410
+    );
+    const err = await makeClient()
+      .twitter.stream.listFilterRuleLogs("rule-uuid-1")
+      .catch((e: unknown) => e);
+    expect(err).toBeInstanceOf(ScrapeBadgerError);
+    expect(String((err as Error).message)).toContain("no longer stores delivered tweets");
+  });
+
   it("sends GET to /v1/twitter/stream/filter-rules/{id}/logs with defaults", async () => {
     const logsResponse: FilterRuleDeliveryLogListResponse = {
       logs: [],
@@ -355,9 +376,7 @@ describe("StreamClient.listFilterRuleLogs", () => {
 
     const { url, init } = capturedRequest();
     expect(init.method ?? "GET").toBe("GET");
-    expect(url).toContain(
-      "/v1/twitter/stream/filter-rules/rule-uuid-1/logs"
-    );
+    expect(url).toContain("/v1/twitter/stream/filter-rules/rule-uuid-1/logs");
     expect(url).toContain("limit=20");
     expect(url).toContain("offset=0");
     expect(url).toContain("sort=desc");
@@ -409,9 +428,7 @@ describe("StreamClient.getFilterRulePricingTiers", () => {
 
     const { url, init } = capturedRequest();
     expect(init.method ?? "GET").toBe("GET");
-    expect(url).toBe(
-      "https://api.scrapebadger.com/v1/twitter/stream/filter-rules-pricing"
-    );
+    expect(url).toBe("https://api.scrapebadger.com/v1/twitter/stream/filter-rules-pricing");
     expect(result.tiers).toHaveLength(1);
     expect(result.tiers[0].tier_label).toBe("Standard");
   });

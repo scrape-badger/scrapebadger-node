@@ -278,7 +278,7 @@ app.post(
 | `pauseMonitor(id)` | Pause an active monitor |
 | `resumeMonitor(id)` | Resume a paused monitor |
 | `deleteMonitor(id)` | Delete a monitor (irreversible) |
-| `listDeliveryLogs(options?)` | List tweet delivery logs |
+| `listDeliveryLogs(options?)` | Deprecated: delivered tweets are no longer stored (410 Gone) |
 | `listBillingLogs(options?)` | List billing activity logs |
 | `connect(options?)` | Connect via EventEmitter (`.on("tweet", handler)`) |
 | `connectIter(options?)` | Connect via AsyncIterator (`for await`) |

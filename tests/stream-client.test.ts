@@ -356,6 +356,35 @@ describe("StreamClient REST methods", () => {
   // ---------------------------------------------------------------------------
 
   describe("listDeliveryLogs", () => {
+    it("warns once per process that it is deprecated", async () => {
+      const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+      vi.stubGlobal("fetch", mockFetch(200, { logs: [], total: 0, page: 1, page_size: 20 }));
+      await getClient().twitter.stream.listDeliveryLogs();
+      await getClient().twitter.stream.listDeliveryLogs();
+      const deprecations = warn.mock.calls.filter((c) =>
+        String(c[0]).includes("listDeliveryLogs()")
+      );
+      expect(deprecations).toHaveLength(1);
+      expect(String(deprecations[0][0])).toContain("410 Gone");
+      warn.mockRestore();
+    });
+
+    it("throws the API's 410 Gone as ScrapeBadgerError", async () => {
+      vi.stubGlobal(
+        "fetch",
+        mockFetch(410, {
+          error: "delivery_logs_removed",
+          detail:
+            "Tweet delivery logs were removed: ScrapeBadger no longer stores delivered tweets.",
+        })
+      );
+      const err = await getClient()
+        .twitter.stream.listDeliveryLogs()
+        .catch((e: unknown) => e);
+      expect(err).toBeInstanceOf(ScrapeBadgerError);
+      expect(String((err as Error).message)).toContain("no longer stores delivered tweets");
+    });
+
     it("returns paginated delivery logs", async () => {
       const logList = {
         logs: [
