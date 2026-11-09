@@ -7,7 +7,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { ScrapeBadger } from "../src/client.js";
 import { AgentClient, RequestsClient, ResultsClient } from "../src/agent/client.js";
-import { NotFoundError, ServerError } from "../src/internal/exceptions.js";
+import { NotFoundError, ScrapeBadgerError, ServerError } from "../src/internal/exceptions.js";
 import type { Quote } from "../src/agent/index.js";
 
 function makeClient(): ScrapeBadger {
@@ -131,8 +131,19 @@ describe("agent platform clients", () => {
     });
   });
 
-  describe("results.get()", () => {
-    it("sends plain (un-prefixed) view params", async () => {
+  describe("results.get() (deprecated)", () => {
+    it("warns once per process that it is deprecated", async () => {
+      const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+      mockFetch(["a"]);
+      await makeClient().results.get("res-1");
+      await makeClient().results.get("res-2");
+      const deprecations = warn.mock.calls.filter((c) => String(c[0]).includes("results.get()"));
+      expect(deprecations).toHaveLength(1);
+      expect(String(deprecations[0][0])).toContain("410 Gone");
+      warn.mockRestore();
+    });
+
+    it("still sends plain (un-prefixed) view params", async () => {
       mockFetch(["a", "b"]);
       const data = await makeClient().results.get<string[]>("res-1", {
         jq: ".results[].title",
@@ -151,15 +162,13 @@ describe("agent platform clients", () => {
       expect(data).toEqual(["a", "b"]);
     });
 
-    it("sends no view params by default", async () => {
-      mockFetch({ results: [] });
-      await makeClient().results.get("res-1");
-      expect([...captured().url.searchParams]).toEqual([]);
-    });
-
-    it("throws NotFoundError once the result expired", async () => {
-      mockFetch({ error: "result_not_found", detail: "expired" }, 404);
-      await expect(makeClient().results.get("gone")).rejects.toBeInstanceOf(NotFoundError);
+    it("throws the API's 410 Gone as ScrapeBadgerError", async () => {
+      mockFetch({ error: "results_removed", detail: "Results are no longer stored." }, 410);
+      const err = await makeClient()
+        .results.get("res-1")
+        .catch((e: unknown) => e);
+      expect(err).toBeInstanceOf(ScrapeBadgerError);
+      expect(String((err as Error).message)).toContain("no longer stored");
     });
   });
 
@@ -188,11 +197,12 @@ describe("agent platform clients", () => {
         "X-Credits-Used": "20",
         "X-Result-ID": "req-1",
       });
+      // X-Result-ID is ignored: the API stopped issuing result IDs (SCR-396).
       const state = await makeClient().requests.get("req-1");
       expect(state.running).toBe(false);
       expect(state.status).toBe(200);
       expect(state.retryAfterSeconds).toBeNull();
-      expect(state.resultId).toBe("req-1");
+      expect(state.resultId).toBeNull();
       expect(state.creditsUsed).toBe(20);
       expect(state.data).toEqual({ status: "ok", results: [1, 2] });
     });

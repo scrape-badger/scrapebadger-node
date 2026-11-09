@@ -1,7 +1,7 @@
 /**
  * TypeScript types for the agent platform endpoints.
  *
- * Quote, feedback, result re-reads and async-request polling — the
+ * Quote, feedback and async-request polling — the
  * account-level helpers an agent uses around the scraper APIs. None of these
  * calls is ever billed.
  */
@@ -133,7 +133,10 @@ export interface AsyncRequest<T = unknown> {
   status: number;
   /** Suggested wait before the next poll (running only). */
   retryAfterSeconds: number | null;
-  /** `X-Result-ID` of the finished call, for free re-reads via `results.get`. */
+  /**
+   * @deprecated Always `null`: the API stopped sending `X-Result-ID` (and
+   * storing results for re-reads) on 2026-11-09.
+   */
   resultId: string | null;
   /** `X-Credits-Used` of the finished call. */
   creditsUsed: number | null;

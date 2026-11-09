@@ -1,5 +1,5 @@
 /**
- * Agent platform API module: quotes, feedback, result re-reads, async request polling and batches.
+ * Agent platform API module: quotes, feedback, async request polling and batches.
  *
  * @module agent
  */
