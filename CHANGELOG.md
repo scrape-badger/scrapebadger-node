@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.76.3] - 2026-11-09
+
+- Deprecate `twitter.stream.listDeliveryLogs()` and `twitter.stream.listFilterRuleLogs()`. ScrapeBadger no longer stores delivered tweets: `GET /v1/twitter/stream/logs` and `GET /v1/twitter/stream/filter-rules/{id}/logs` answer 410 Gone (`delivery_logs_removed`). Both methods keep their signatures, are marked `@deprecated`, warn once per process and throw the API's 410 as `ScrapeBadgerError`. Keep your own log at your webhook receiver. Monitors, filter rules, webhooks and billing logs are unchanged. (SCR-396)
+
 ## [0.76.2] - 2026-11-09
 
 - Deprecate `results.get()`. ScrapeBadger no longer caches or stores responses: `GET /v1/results/{id}` answers 410 Gone, responses carry no `X-Result-ID`, and identical calls are always fetched fresh and billed. The method is marked `@deprecated`, warns once per process, and throws the API's 410 as `ScrapeBadgerError`; re-run the call with `jq`/`fields`/`maxItems` instead. `AsyncRequest.resultId` is always `null`. Google `no_cache` is kept for compatibility but has no effect. Async polling (`requests.get`) and batches are unchanged. (SCR-396)

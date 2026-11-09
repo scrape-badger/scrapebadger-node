@@ -122,6 +122,10 @@ export interface StreamEmitter extends EventEmitter {
   close(): void;
 }
 
+// One deprecation warning per process for each removed delivery-log endpoint (SCR-396).
+let deliveryLogsWarned = false;
+let filterRuleLogsWarned = false;
+
 /**
  * Client for Twitter Streams -- monitor CRUD and live WebSocket streaming.
  *
@@ -330,10 +334,18 @@ export class StreamClient {
   // ===========================================================================
 
   /**
-   * List tweet delivery logs.
+   * Deprecated: ScrapeBadger no longer stores delivered tweets.
    *
+   * `GET /v1/twitter/stream/logs` was removed from the API on 2026-11-09 and
+   * answers 410 Gone (`delivery_logs_removed`), which this method throws as
+   * `ScrapeBadgerError`. Each tweet is delivered to your webhook (or WebSocket)
+   * only; keep your own log there. Kept only so existing code fails with a clear
+   * error; it will be removed in a future release.
+   *
+   * @deprecated Delivered tweets are no longer stored; keep your own log at your webhook receiver.
    * @param options - Filter and pagination options.
    * @returns DeliveryLogList with pagination metadata.
+   * @throws ScrapeBadgerError - Always (410 Gone `delivery_logs_removed`) against the current API.
    */
   async listDeliveryLogs(options?: {
     monitorId?: string;
@@ -343,6 +355,14 @@ export class StreamClient {
     pageSize?: number;
     sort?: "asc" | "desc";
   }): Promise<DeliveryLogList> {
+    if (!deliveryLogsWarned) {
+      deliveryLogsWarned = true;
+      console.warn(
+        "[scrapebadger] listDeliveryLogs() is deprecated: ScrapeBadger stopped storing delivered " +
+          "tweets on 2026-11-09 and GET /v1/twitter/stream/logs answers 410 Gone. Keep your own " +
+          "log at your webhook receiver."
+      );
+    }
     const params: Record<string, string | number | boolean | undefined> = {
       page: options?.page ?? 1,
       page_size: options?.pageSize ?? 20,
@@ -539,8 +559,16 @@ export class StreamClient {
   }
 
   /**
-   * List tweet delivery logs for a specific filter rule.
+   * Deprecated: ScrapeBadger no longer stores delivered tweets.
    *
+   * `GET /v1/twitter/stream/filter-rules/{id}/logs` was removed from the API on
+   * 2026-11-09 and answers 410 Gone (`delivery_logs_removed`), which this method
+   * throws as `ScrapeBadgerError`. Each tweet is delivered to your webhook only;
+   * keep your own log there. Kept only so existing code fails with a clear error;
+   * it will be removed in a future release.
+   *
+   * @deprecated Delivered tweets are no longer stored; keep your own log at your webhook receiver.
+   * @throws ScrapeBadgerError - Always (410 Gone `delivery_logs_removed`) against the current API.
    * @param ruleId - UUID of the filter rule.
    * @param options - Filter and pagination options.
    * @returns FilterRuleDeliveryLogListResponse with pagination metadata.
@@ -562,6 +590,14 @@ export class StreamClient {
       sort?: "asc" | "desc";
     }
   ): Promise<FilterRuleDeliveryLogListResponse> {
+    if (!filterRuleLogsWarned) {
+      filterRuleLogsWarned = true;
+      console.warn(
+        "[scrapebadger] listFilterRuleLogs() is deprecated: ScrapeBadger stopped storing " +
+          "delivered tweets on 2026-11-09 and GET /v1/twitter/stream/filter-rules/{id}/logs " +
+          "answers 410 Gone. Keep your own log at your webhook receiver."
+      );
+    }
     const params: Record<string, string | number | boolean | undefined> = {
       limit: options?.limit ?? 20,
       offset: options?.offset ?? 0,
