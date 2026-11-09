@@ -208,8 +208,37 @@ const client = new ScrapeBadger({
 
   // Optional: Initial retry delay in milliseconds (default: 1000)
   retryDelay: 1000,
+
+  // Optional: Skip the 60-second duplicate-request cache (default: false)
+  noCache: false,
+
+  // Optional: Extra headers sent on every request
+  headers: {},
 });
 ```
+
+### Bypassing the cache
+
+The API caches successful responses for 60 seconds. An identical call (same API key,
+endpoint, query parameters and body) within that window returns the stored response
+with `X-Cache: HIT` and `X-Credits-Used: 0`. That makes accidental retries free, but it
+also means repeating a prompt to see how the answers vary returns the same answer.
+
+To get a fresh, billed answer, send `Cache-Control: no-cache`. The SDK does this for you:
+
+```typescript
+// Every call from this client skips the cache
+const fresh = new ScrapeBadger({ apiKey: "your-api-key", noCache: true });
+
+// One call only: withOptions returns a copy and leaves `client` unchanged
+const answer = await client
+  .withOptions({ noCache: true })
+  .perplexity.askPerplexityAQuestionPost({ prompt: "best CRM for startups" });
+```
+
+`withOptions` also takes `timeout`, `maxRetries`, `retryDelay`, `baseUrl` and
+`headers` (merged with the client's own). A bypassed call does not replace the cached
+entry, and it is billed like any uncached call.
 
 ### Retry Behavior
 

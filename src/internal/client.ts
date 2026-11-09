@@ -81,6 +81,21 @@ export class BaseClient {
   }
 
   /**
+   * Headers sent on every request: auth, User-Agent, the configured extra
+   * headers and, with `noCache`, `Cache-Control: no-cache` (which makes the
+   * API skip its 60-second duplicate-request cache). Per-request headers
+   * passed in `RequestOptions` still override these.
+   */
+  private defaultHeaders(): Record<string, string> {
+    return {
+      "X-API-Key": this.config.apiKey,
+      "User-Agent": `scrapebadger-node/${SDK_VERSION}`,
+      ...this.config.headers,
+      ...(this.config.noCache ? { "Cache-Control": "no-cache" } : {}),
+    };
+  }
+
+  /**
    * Make an HTTP request to the API.
    */
   async request<T>(path: string, options: RequestOptions = {}): Promise<T> {
@@ -110,8 +125,7 @@ export class BaseClient {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "X-API-Key": this.config.apiKey,
-        "User-Agent": `scrapebadger-node/${SDK_VERSION}`,
+        ...this.defaultHeaders(),
         ...headers,
       },
       body: body ? JSON.stringify(body) : undefined,
@@ -162,8 +176,7 @@ export class BaseClient {
     const requestHeaders: Record<string, string> = {
       "Content-Type": "application/json",
       Accept: "application/json",
-      "X-API-Key": this.config.apiKey,
-      "User-Agent": `scrapebadger-node/${SDK_VERSION}`,
+      ...this.defaultHeaders(),
       ...headers,
     };
 

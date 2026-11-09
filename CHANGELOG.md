@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.77.0] - 2026-11-09
+
+- **Bypass the duplicate-request cache.** The API serves an identical call from the same API key within 60 seconds from its cache (`X-Cache: HIT`, `X-Credits-Used: 0`). New `noCache` option (default `false`) sends `Cache-Control: no-cache` on every request, so each call runs fresh and is billed: `new ScrapeBadger({ apiKey, noCache: true })`. (SB-001237, SCR-396)
+- **`client.withOptions(overrides)`** returns a copy of the client with some options changed and leaves the original as it was. Use it for one call: `client.withOptions({ noCache: true }).perplexity.askPerplexityAQuestionPost({ prompt })`. It takes any constructor option; `headers` are merged with the client's, and `undefined` values are ignored.
+- New `headers` option: extra headers sent on every request.
+- No existing signature changes.
+
 ## [0.76.1] - 2026-11-08
 
 - Add verified account-free Facebook Marketplace filters, public continuations and detail enrichment.

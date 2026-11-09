@@ -271,6 +271,9 @@ export class ScrapeBadger {
    *   maxRetries: 5
    * });
    *
+   * // Skip the 60-second duplicate-request cache on every call
+   * const fresh = new ScrapeBadger({ apiKey: "your-api-key", noCache: true });
+   *
    * // Using environment variable
    * // Set SCRAPEBADGER_API_KEY=your-api-key
    * const client = new ScrapeBadger();
@@ -343,5 +346,36 @@ export class ScrapeBadger {
     this.copilot = new CopilotClient(this.baseClient);
     this.gemini = new GeminiClient(this.baseClient);
     this.github = new GithubClient(this.baseClient);
+  }
+
+  /**
+   * A copy of this client with some options changed. The original client is
+   * left as it was, so this is the way to change an option for one call.
+   *
+   * `headers` are merged with this client's headers; every other option
+   * replaces this client's value. `undefined` values are ignored.
+   *
+   * @example
+   * ```typescript
+   * // Skip the 60-second duplicate-request cache for one call: the answer is
+   * // generated fresh and billed, even if the same prompt was just asked.
+   * const fresh = await client
+   *   .withOptions({ noCache: true })
+   *   .perplexity.askPerplexityAQuestionPost({ prompt: "best CRM for startups" });
+   *
+   * // Longer timeout for a slow call
+   * const slow = client.withOptions({ timeout: 120000, maxRetries: 2 });
+   * ```
+   */
+  withOptions(overrides: Partial<ScrapeBadgerConfig>): ScrapeBadger {
+    const current = this.baseClient.config;
+    const defined = Object.fromEntries(
+      Object.entries(overrides).filter(([, value]) => value !== undefined)
+    ) as Partial<ScrapeBadgerConfig>;
+    return new ScrapeBadger({
+      ...current,
+      ...defined,
+      headers: { ...current.headers, ...defined.headers },
+    });
   }
 }
