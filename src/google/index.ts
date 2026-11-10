@@ -25,6 +25,7 @@ export { AdsClient } from "./ads.js";
 
 export type {
   AiListItem,
+  AiModeLocation,
   AiModeResponse,
   AiModeSearchParams,
   AiReference,

@@ -583,8 +583,24 @@ export interface FinanceQuoteParams {
 
 // ===== AI Mode =====
 
+/**
+ * Params for `/v1/google/ai-mode/search`.
+ *
+ * `location`, `uule` and `lat` + `lon` localise the answer ("near me",
+ * local results) to that place, down to the city or district, wherever the
+ * request exits from. Use only one of them: the API answers 422 for more
+ * than one, `lat` without `lon`, an unknown or ambiguous location (the
+ * error lists candidate names), or a `uule` that is not `w+`/`j+`. A
+ * located request that cannot be answered right now fails with an
+ * unbilled 503; retry it.
+ */
 export interface AiModeSearchParams {
   q: string;
+  /**
+   * Google country (market) code, e.g. `"us"`. It shapes the answer; it
+   * does not pick the exit IP's country. Defaults to `"us"`, or to the
+   * location's country when `location` is set.
+   */
   gl?: string;
   hl?: string;
   /**
@@ -593,6 +609,35 @@ export interface AiModeSearchParams {
    * `markdown`.
    */
   include_html?: boolean;
+  /**
+   * Answer as if the user were here: a Google canonical location name
+   * (e.g. `"Wonju-si,Gangwon-do,South Korea"`), a Google criteria ID (e.g.
+   * `"1009889"`), or an unambiguous short name within `gl`.
+   */
+  location?: string;
+  /** A Google UULE value in its `w+` (canonical name) or `j+` (coordinates) form. */
+  uule?: string;
+  /** Latitude of the user's location, -90 to 90 (with `lon`). */
+  lat?: number;
+  /** Longitude of the user's location, -180 to 180 (with `lat`). */
+  lon?: number;
+}
+
+/**
+ * The `location` echo on a located AI Mode answer: what was requested,
+ * what it resolved to, and the UULE that was sent.
+ */
+export interface AiModeLocation {
+  /** The `location` as sent; null for `uule` and `lat`/`lon` requests. */
+  requested: string | null;
+  /** The Google canonical name it resolved to; null unless `location` was sent. */
+  resolved: string | null;
+  /** The `lat` as sent; null unless coordinates were sent. */
+  latitude: number | null;
+  /** The `lon` as sent; null unless coordinates were sent. */
+  longitude: number | null;
+  /** The UULE value Google received. */
+  uule: string;
 }
 
 /** A source cited by an AI Mode / AI Overview answer. */
@@ -650,7 +695,10 @@ export interface AiModeResponse {
   answer_html?: string | null;
   query: string;
   language: string;
+  /** The effective `gl` (the location's country when `location` set it). */
   country: string;
+  /** Present only on located requests (`location`, `uule` or `lat`/`lon`). */
+  location?: AiModeLocation;
 }
 
 // ===== Lens =====

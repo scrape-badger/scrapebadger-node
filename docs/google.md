@@ -290,6 +290,17 @@ for (const ref of answer.references as any[]) {
   console.log("Source:", ref.title, ref.link);
 }
 
+// Localise "near me" answers: one of location, uule, or lat + lon.
+// With location and no gl, gl becomes the location's country ("kr").
+const local = await client.google.aiMode.search({
+  q: "best coffee near me",
+  location: "Wonju-si,Gangwon-do,South Korea",
+  hl: "ko",
+});
+console.log(local.location?.resolved, local.country);
+const busan = await client.google.aiMode.search({ q: "맛집 추천", lat: 35.1763, lon: 129.0798, gl: "kr" });
+console.log(busan.markdown);
+
 // Visual image search by URL
 const lens = await client.google.lens.search({
   url: "https://example.com/photo.jpg",
@@ -380,7 +391,7 @@ responses (`GoogleAdsSearchResponse`, `GoogleAdsAdvertisersResponse`, …).
 | `images` | `search(params)` | Image search |
 | `videos` | `search(params)` | Video search |
 | `finance` | `quote(params)` | Stock / index / crypto quote |
-| `aiMode` | `search(params)` | AI-generated answer |
+| `aiMode` | `search(params)` | AI-generated answer, optionally localised (`location`, `uule`, `lat`/`lon`) |
 | `lens` | `search(params)` | Visual search by URL |
 | `products` | `detail(params)` | Immersive product |
 | `ads` | `search(params)` | Ad creatives by advertiser ID or domain |
@@ -424,6 +435,7 @@ import type {
   VideosSearchParams,
   FinanceQuoteParams,
   AiModeSearchParams,
+  AiModeLocation,
   LensSearchParams,
   ProductsDetailParams,
   GoogleResponse,

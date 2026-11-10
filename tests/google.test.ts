@@ -7,6 +7,8 @@
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { ScrapeBadger } from "../src/client.js";
+import { ValidationError } from "../src/internal/exceptions.js";
+import type { AiModeLocation } from "../src/index.js";
 import { GoogleClient } from "../src/google/client.js";
 import { SearchClient as GoogleSearchClient } from "../src/google/search.js";
 import { MapsClient } from "../src/google/maps.js";
@@ -643,5 +645,80 @@ describe("Small Google sub-clients", () => {
     const url = capturedUrl();
     expect(url.pathname).toBe("/v1/google/products/detail");
     expect(url.searchParams.get("product_id")).toBe("pid1");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// AI Mode location targeting (SCR-610)
+// ---------------------------------------------------------------------------
+
+describe("AiModeClient location targeting", () => {
+  function sent(): Record<string, string> {
+    return Object.fromEntries(capturedUrl().searchParams);
+  }
+
+  it("sends an unlocated request unchanged", async () => {
+    mockFetch({});
+    await makeClient().google.aiMode.search({ q: "best coffee near me" });
+    expect(sent()).toEqual({ q: "best coffee near me" });
+  });
+
+  it("sends location without a gl so the API uses its country", async () => {
+    mockFetch({});
+    await makeClient().google.aiMode.search({
+      q: "best coffee near me",
+      location: "Wonju-si,Gangwon-do,South Korea",
+      hl: "ko",
+    });
+    expect(sent()).toEqual({
+      q: "best coffee near me",
+      location: "Wonju-si,Gangwon-do,South Korea",
+      hl: "ko",
+    });
+  });
+
+  it("sends coordinates, uule and an explicit gl as given", async () => {
+    mockFetch({});
+    await makeClient().google.aiMode.search({
+      q: "맛집 추천",
+      lat: 35.1763,
+      lon: 129.0798,
+      gl: "kr",
+      include_html: false,
+    });
+    expect(sent()).toEqual({
+      q: "맛집 추천",
+      lat: "35.1763",
+      lon: "129.0798",
+      gl: "kr",
+      include_html: "false",
+    });
+
+    vi.restoreAllMocks();
+    mockFetch({});
+    const wonju = "w+CAIQICIfV29uanUtc2ksR2FuZ3dvbi1kbyxTb3V0aCBLb3JlYQ";
+    await makeClient().google.aiMode.search({ q: "weather", uule: wonju });
+    expect(sent()).toEqual({ q: "weather", uule: wonju });
+  });
+
+  it("returns the location echo", async () => {
+    const echo: AiModeLocation = {
+      requested: "Jeju-si",
+      resolved: "Jeju-si,Jeju-do,South Korea",
+      latitude: null,
+      longitude: null,
+      uule: "w+CAIQICIbSmVqdS1zaSxKZWp1LWRvLFNvdXRoIEtvcmVh",
+    };
+    mockFetch({ text_blocks: [], references: [], query: "weather", country: "kr", location: echo });
+    const answer = await makeClient().google.aiMode.search({ q: "weather", location: "Jeju-si" });
+    expect(answer.location).toEqual(echo);
+    expect(answer.country).toBe("kr");
+  });
+
+  it("surfaces a targeting 422 as ValidationError", async () => {
+    mockFetch({ detail: "Use only one of location, uule, or lat/lon." }, 422);
+    await expect(
+      makeClient().google.aiMode.search({ q: "cafe", location: "Seoul", lat: 1, lon: 2 })
+    ).rejects.toThrow(ValidationError);
   });
 });

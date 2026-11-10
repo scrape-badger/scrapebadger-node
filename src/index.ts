@@ -179,6 +179,7 @@ export {
 } from "./google/index.js";
 export type {
   AiListItem,
+  AiModeLocation,
   AiModeResponse,
   AiModeSearchParams,
   AiReference,
