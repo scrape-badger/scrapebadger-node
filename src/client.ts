@@ -49,6 +49,7 @@ import { LeboncoinClient } from "./leboncoin/client.js";
 import { ZillowClient } from "./zillow/client.js";
 import { ImmobiliareClient } from "./immobiliare/client.js";
 import { LoopNetClient } from "./loopnet/client.js";
+import { MetaAiClient } from "./meta_ai/client.js";
 import { PerplexityClient } from "./perplexity/client.js";
 import { DepopClient } from "./depop/client.js";
 import { WallapopClient } from "./wallapop/client.js";
@@ -231,6 +232,8 @@ export class ScrapeBadger {
 
   /** LoopNet scraper API client — commercial real estate across US/CA/UK/FR/ES (search, listing, broker, markets, property types) */
   readonly loopnet: LoopNetClient;
+  /** Meta_Ai API client. (Generated from the OpenAPI spec.) */
+  readonly meta_ai: MetaAiClient;
   /** Perplexity API client. (Generated from the OpenAPI spec.) */
   readonly perplexity: PerplexityClient;
 
@@ -338,6 +341,7 @@ export class ScrapeBadger {
     this.zillow = new ZillowClient(this.baseClient);
     this.immobiliare = new ImmobiliareClient(this.baseClient);
     this.loopnet = new LoopNetClient(this.baseClient);
+    this.meta_ai = new MetaAiClient(this.baseClient);
     this.perplexity = new PerplexityClient(this.baseClient);
     this.depop = new DepopClient(this.baseClient);
     this.wallapop = new WallapopClient(this.baseClient);

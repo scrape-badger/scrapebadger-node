@@ -95,9 +95,7 @@ export class FacebookClient {
     return this.client.request("/v1/facebook/marketplace/locations/resolve", { params });
   }
 
-  /** Search public Marketplace. Use strict_filters: true to enforce radius (km) and age,
-   * include_details: true for descriptions/photos. Continuations cover price ranges;
-   * search_info reports partial coverage. Sort all collected pages for newest first. */
+  /** Search Marketplace. Generated from the OpenAPI spec; returns the raw response object. */
   async searchMarketplace(
     params: Record<string, string | number | boolean | undefined> = {}
   ): Promise<Record<string, unknown>> {
