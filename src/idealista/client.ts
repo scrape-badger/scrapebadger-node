@@ -43,7 +43,11 @@ export class IdealistaClient {
     return this.client.request(`/v1/idealista/properties/${propertyCode}`, { params });
   }
 
-  /** Get listing engagement stats. Generated from the OpenAPI spec; returns the raw response object. */
+  /**
+   * Get listing engagement stats.
+   * @deprecated Idealista withdrew public per-ad stats on 2026-11-10; the operation is marked deprecated in the OpenAPI spec, answers an error, and will be removed in a future release.
+   * Generated from the OpenAPI spec; returns the raw response object.
+   */
   async getListingEngagementStats(
     propertyCode: string,
     params: Record<string, string | number | boolean | undefined> = {}
