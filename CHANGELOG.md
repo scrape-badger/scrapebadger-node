@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.77.1] - 2026-11-11
+
+- **`idealista.getListingEngagementStats` is deprecated.** Idealista withdrew public per-ad stats on 2026-11-10 (the `allowsAdStats` flag flipped platform-wide; 0/50 live ES ads eligible; the route answers "stats not found" — the data is advertiser-login-only now). The method carries a JSDoc `@deprecated` tag and still calls the endpoint, which answers an error; it will be removed in a future release. No other changes.
+
 ## [0.77.0] - 2026-11-10
 
 - **Google AI Mode: location targeting.** `google.aiMode.search()` params gain `location`, `uule`, `lat` and `lon` (all optional), and AI Mode answers "near me" and other local questions as if the user were in that place, down to the city or district, wherever the request exits from. `location` is a Google canonical location name (`"Wonju-si,Gangwon-do,South Korea"`), a Google criteria ID (`"1009889"`) or an unambiguous short name within `gl`; `uule` is a Google UULE in its `w+` or `j+` form; `lat` and `lon` go together. Use only one of the three. With `location` and no `gl`, the API uses the location's country as `gl` (the SDK only sends `gl` when you set it). `gl` is Google's market parameter; it does not choose the exit country. `AiModeResponse` gains an optional `location` (`AiModeLocation`: `requested`, `resolved`, `latitude`, `longitude`, `uule`) on located answers, and `country` is the effective `gl`. The API answers 422 (`ValidationError`) for more than one targeting method, `lat` without `lon`, an unknown or ambiguous location (the error lists candidate names), or a `uule` that is not `w+`/`j+`. A located request that cannot be answered right now fails with an unbilled 503; retry it. Requests without these params are unchanged. No existing signature changes. (SCR-610)
