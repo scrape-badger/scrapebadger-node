@@ -143,6 +143,13 @@ describe("LinkedInClient resource getters", () => {
     expect(capturedUrl()).toContain("/v1/linkedin/profiles/williamhgates");
   });
 
+  it("getFullProfile builds profiles/{publicId}/full", async () => {
+    mockFetch({ public_id: "williamhgates", linkedin_url: "x", access_scope: "authenticated" });
+    const result = await makeClient().linkedin.getFullProfile("williamhgates");
+    expect(capturedUrl()).toContain("/v1/linkedin/profiles/williamhgates/full");
+    expect(result.access_scope).toBe("authenticated");
+  });
+
   it("getPost builds posts/{postSlug}", async () => {
     mockFetch({ post_id: "abc", comments: [] });
     await makeClient().linkedin.getPost("some-post-slug");
