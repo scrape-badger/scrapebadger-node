@@ -1,10 +1,9 @@
 /**
  * LinkedIn API client.
  *
- * LinkedIn endpoints cover the public, logged-out surface: guest job search +
- * detail + company jobs, public company / school / profile pages, public
- * posts / articles, LinkedIn Learning courses, and a geo/company typeahead.
- * Requests are localised by a `country` residential-proxy param.
+ * LinkedIn endpoints cover public guest jobs and SSR entity pages, plus the
+ * separately labelled authenticated full-profile projection. Requests are
+ * localised by a `country` residential-proxy param.
  *
  * Company/school/profile/post/course data is SSR-rendered, so those calls take
  * a few seconds to return; the guest job APIs are faster HTML fragments.
@@ -164,6 +163,19 @@ export class LinkedInClient {
    */
   async getProfile(publicId: string, options: LinkedInCountryParams = {}): Promise<Profile> {
     return this.client.request<Profile>(`/v1/linkedin/profiles/${publicId}`, {
+      params: { country: options.country ?? "us" },
+    });
+  }
+
+  /**
+   * Get a full profile through the server-owned authenticated projection.
+   *
+   * @param publicId - The profile's public id (URL slug).
+   * @param options - Optional parameters (country).
+   * @returns Full profile with richer verticals and position pagination.
+   */
+  async getFullProfile(publicId: string, options: LinkedInCountryParams = {}): Promise<Profile> {
+    return this.client.request<Profile>(`/v1/linkedin/profiles/${publicId}/full`, {
       params: { country: options.country ?? "us" },
     });
   }

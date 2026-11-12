@@ -6,10 +6,10 @@
  * them (`job_id`, `company_url`, `posted_relative`); optional / nullable
  * backend fields are typed as `Type | null` or left `?`-optional.
  *
- * All data comes from LinkedIn's public, logged-out surface: the
- * `/jobs-guest/...` guest APIs for jobs, and the SSR public pages (JSON-LD +
- * og:* meta) for profiles, companies, schools, posts, and courses. Requests
- * are localised by a `country` residential-proxy param.
+ * Public data comes from LinkedIn's logged-out guest APIs and SSR pages. The
+ * separately labelled full-profile route uses a server-owned authenticated
+ * projection when configured. Requests are localised by a `country`
+ * residential-proxy param.
  */
 
 // =============================================================================
@@ -68,44 +68,158 @@ export interface JobDetail {
 }
 
 // =============================================================================
-// Profile (public)
+// Profile (public or separately authenticated)
 // =============================================================================
 
-/** A current/past role from the public JSON-LD `worksFor`. */
 export interface ProfileExperience {
   title?: string | null;
   company?: string | null;
   company_url?: string | null;
+  location?: string | null;
+  employment_type?: string | null;
+  description?: string | null;
+  date_range?: string | null;
+  duration?: string | null;
   start_year?: number | null;
   end_year?: number | null;
+  is_current?: boolean | null;
 }
 
-/** A school from the public JSON-LD `alumniOf`. */
 export interface ProfileEducation {
   school?: string | null;
   school_url?: string | null;
+  degree?: string | null;
+  field_of_study?: string | null;
+  description?: string | null;
+  date_range?: string | null;
   start_year?: number | null;
   end_year?: number | null;
 }
 
-/** A public LinkedIn profile (JSON-LD `Person` + og/top-card subset). */
+export interface ProfileLanguage {
+  name: string;
+  proficiency?: string | null;
+}
+
+export interface ProfileAward {
+  title: string;
+  issuer?: string | null;
+  issued_on?: string | null;
+  url?: string | null;
+  description?: string | null;
+}
+
+export interface ProfileVolunteering {
+  title: string;
+  organization?: string | null;
+  organization_url?: string | null;
+  date_range?: string | null;
+  start_year?: number | null;
+  end_year?: number | null;
+  description?: string | null;
+}
+
+export interface ProfileRecommendation {
+  author_name?: string | null;
+  author_url?: string | null;
+  text: string;
+}
+
+export interface ProfileInstructorCourse {
+  title: string;
+  url?: string | null;
+  instructor?: string | null;
+  duration?: string | null;
+  viewers?: string | null;
+}
+
+export interface ProfileActivity {
+  type: string;
+  url?: string | null;
+  title?: string | null;
+  text?: string | null;
+  published_at?: string | null;
+  like_count?: number | null;
+  comment_count?: number | null;
+  author_name?: string | null;
+  author_url?: string | null;
+}
+
+export interface ProfileEntry {
+  name?: string | null;
+  title?: string | null;
+  subtitle?: string | null;
+  role?: string | null;
+  organization?: string | null;
+  issuer?: string | null;
+  proficiency?: string | null;
+  number?: string | null;
+  score?: string | null;
+  cause?: string | null;
+  url?: string | null;
+  date_range?: string | null;
+  start_year?: number | null;
+  end_year?: number | null;
+  issued_on?: string | null;
+  published_on?: string | null;
+  description?: string | null;
+}
+
+export interface ProfileSimilar {
+  name?: string | null;
+  headline?: string | null;
+  url: string;
+  follower_count?: number | null;
+  location?: string | null;
+}
+
+export interface ProfileSectionCount {
+  shown: number;
+  total?: number | null;
+}
+
+/** A LinkedIn profile from the public page or an authenticated projection. */
 export interface Profile {
   public_id: string;
   linkedin_url: string;
+  access_scope: "public" | "authenticated";
   name?: string | null;
   headline?: string | null;
   location?: string | null;
   country?: string | null;
   about?: string | null;
   image?: string | null;
+  cover_image?: string | null;
   follower_count?: number | null;
+  connection_count?: string | null;
+  badges: string[];
+  websites: string[];
   job_titles: string[];
   current_company?: string | null;
   current_company_url?: string | null;
   experience: ProfileExperience[];
   education: ProfileEducation[];
   languages: string[];
+  language_details: ProfileLanguage[];
   awards: string[];
+  award_details: ProfileAward[];
+  volunteering: ProfileVolunteering[];
+  recommendations: ProfileRecommendation[];
+  instructor_courses: ProfileInstructorCourse[];
+  recent_posts: ProfileActivity[];
+  recent_articles: ProfileActivity[];
+  similar_profiles: ProfileSimilar[];
+  skills: string[];
+  certifications: ProfileEntry[];
+  honors: ProfileEntry[];
+  publications: ProfileEntry[];
+  projects: ProfileEntry[];
+  courses: ProfileEntry[];
+  organizations: ProfileEntry[];
+  patents: ProfileEntry[];
+  test_scores: ProfileEntry[];
+  counts: Record<string, ProfileSectionCount>;
+  partial_sections: string[];
 }
 
 // =============================================================================
