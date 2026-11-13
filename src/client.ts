@@ -11,6 +11,7 @@ import { WebClient } from "./web/client.js";
 import { VintedClient } from "./vinted/client.js";
 import { GoogleClient } from "./google/client.js";
 import { GooglePlayClient } from "./google_play/client.js";
+import { GrokClient } from "./grok/client.js";
 import { IdealistaClient } from "./idealista/client.js";
 import { RedditClient } from "./reddit/client.js";
 import { ApartmentsClient } from "./apartments/client.js";
@@ -127,6 +128,8 @@ export class ScrapeBadger {
   readonly google: GoogleClient;
   /** Google_Play API client. (Generated from the OpenAPI spec.) */
   readonly google_play: GooglePlayClient;
+  /** Grok API client. (Generated from the OpenAPI spec.) */
+  readonly grok: GrokClient;
   /** Idealista API client. (Generated from the OpenAPI spec.) */
   readonly idealista: IdealistaClient;
 
@@ -301,6 +304,7 @@ export class ScrapeBadger {
     this.vinted = new VintedClient(this.baseClient);
     this.google = new GoogleClient(this.baseClient);
     this.google_play = new GooglePlayClient(this.baseClient);
+    this.grok = new GrokClient(this.baseClient);
     this.idealista = new IdealistaClient(this.baseClient);
     this.reddit = new RedditClient(this.baseClient);
     this.apartments = new ApartmentsClient(this.baseClient);
