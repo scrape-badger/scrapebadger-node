@@ -20,6 +20,7 @@ import { AsosClient } from "./asos/client.js";
 import { Autoscout24Client } from "./autoscout24/client.js";
 import { InstagramClient } from "./instagram/client.js";
 import { RedfinClient } from "./redfin/client.js";
+import { RufusClient } from "./rufus/client.js";
 import { AccountClient } from "./account/client.js";
 import { AgentClient, RequestsClient, ResultsClient } from "./agent/client.js";
 import { AirbnbClient } from "./airbnb/client.js";
@@ -150,6 +151,8 @@ export class ScrapeBadger {
 
   /** Redfin scraper API client — search, property, agent, autocomplete, markets (redfin.com, US) */
   readonly redfin: RedfinClient;
+  /** Rufus API client. (Generated from the OpenAPI spec.) */
+  readonly rufus: RufusClient;
 
   /** Amazon scraper API client — 14 endpoints */
   /** Account API client. (Generated from the OpenAPI spec.) */
@@ -313,6 +316,7 @@ export class ScrapeBadger {
     this.autoscout24 = new Autoscout24Client(this.baseClient);
     this.instagram = new InstagramClient(this.baseClient);
     this.redfin = new RedfinClient(this.baseClient);
+    this.rufus = new RufusClient(this.baseClient);
     this.account = new AccountClient(this.baseClient);
     this.agent = new AgentClient(this.baseClient);
     this.results = new ResultsClient(this.baseClient);
