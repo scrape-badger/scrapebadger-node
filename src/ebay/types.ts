@@ -202,6 +202,13 @@ export interface Item {
   condition: string | null;
   condition_id: string | null;
   condition_description: string | null;
+  /**
+   * The price the listing's buy box shows. On a listing that sold through an
+   * accepted Best Offer (`best_offer_accepted`) eBay publishes the accepted
+   * amount on most reads: then this is that amount and `original_price` the
+   * listed price. Where eBay only strikes the listed price through, this stays
+   * the listed price and `original_price` is null.
+   */
   price: EbayPrice | null;
   original_price: EbayPrice | null;
   discount_percent: number | null;
@@ -218,6 +225,12 @@ export interface Item {
   current_bid: EbayPrice | null;
   /** Listing has closed (sold / ended), any buying format */
   is_ended: boolean;
+  /**
+   * The closed listing carries eBay's "Sold" label rather than "Ended". Always
+   * false on a live listing, however many units it has sold (`quantity_sold`).
+   * Absent on answers from before the field existed.
+   */
+  is_sold?: boolean;
   /** Listing end: auction close / sold time, Unix timestamp (float seconds); null for active fixed-price listings */
   end_time_utc: number | null;
   /** Listing end: auction close / sold time, ISO-8601 Z string; null for active fixed-price listings */
@@ -225,6 +238,13 @@ export interface Item {
   /** BIN price: fixed-price listings (== price) or auction-with-Buy-It-Now; null for pure auctions */
   buy_it_now_price: EbayPrice | null;
   best_offer_enabled: boolean | null;
+  /**
+   * The listing closed on an accepted Best Offer. With `original_price` set,
+   * `price` is the accepted amount; with it null, eBay did not publish the
+   * amount on this read and `price` is the listed price. Absent on answers
+   * from before the field existed.
+   */
+  best_offer_accepted?: boolean;
   brand: string | null;
   mpn: string | null;
   model: string | null;
