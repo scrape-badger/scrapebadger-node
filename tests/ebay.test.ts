@@ -529,6 +529,29 @@ describe("EbayClient.items", () => {
     expect(result.item.buy_it_now_price?.raw).toBe("$29.99");
   });
 
+  it("get carries an accepted Best Offer as price over the listed price", async () => {
+    // SB-001247: the accepted amount is `price`, the listed price `original_price`.
+    mockFetch({
+      ...ITEM_FIXTURE,
+      item: {
+        ...ITEM_FIXTURE.item,
+        price: { value: 210, currency: "GBP", symbol: null, raw: "£210.00" },
+        original_price: { value: 239.9, currency: "GBP", symbol: null, raw: "£239.90" },
+        discount_percent: 12.5,
+        is_ended: true,
+        is_sold: true,
+        best_offer_accepted: true,
+      },
+    });
+    const { item } = await makeClient().ebay.items.get("147676706828", {
+      domain: "co.uk",
+    });
+    expect(item.best_offer_accepted).toBe(true);
+    expect(item.is_sold).toBe(true);
+    expect(item.price?.value).toBe(210);
+    expect(item.original_price?.value).toBe(239.9);
+  });
+
   it("reviews sends GET to /v1/ebay/items/{itemId}/reviews with productId", async () => {
     mockFetch(REVIEWS_FIXTURE);
     const result = await makeClient().ebay.items.reviews("123456789012", {
