@@ -232,8 +232,9 @@ app.listen(3000);
 - Answer with any 2xx, quickly. A timeout, a connection error, 408, 429 or 5xx is retried after 10 s, 60 s and 5 min (4 attempts in total).
 - Check deliveries with `client.requests.callbackStatus(requestId)` (one call) or `client.account.webhookDeliveries({ limit })` (the last 24 hours). Rotate the secret with `client.account.rotateWebhookSecret()`.
 - `submit` throws a refusal before anything runs: `invalid_callback_url`, `async_not_supported`, `invalid_idempotency_key` (400), or `ConflictError` when an `idempotencyKey` is reused for a different call (409). A call that completed within `wait` with an error status throws that error, like a normal call.
-- Without an `idempotencyKey`, the SDK does not retry a submit that timed out or hit a network fault, because the call may already be running. With a key, it retries, and the retry answers the existing call (`replayed: true`).
-- `wait` throws `WaitTimeoutError` (a `TimeoutError` with `requestId`) when the call is still running at `timeoutMs` (default ten minutes). The call keeps running: wait or poll again, never resubmit it.
+- Without an `idempotencyKey`, the SDK retries a submit only when the connection failed before anything was sent. A timeout, a network fault, a 429 or a 5xx is thrown, because the call may already be running. With a key, the SDK retries as usual, and a retry answers the existing call (`replayed: true`).
+- `get` and `wait` throw the call's own error status as the matching SDK error; `wait` does not retry it, because a stored result does not change. `wait` throws `WaitTimeoutError` (a `TimeoutError` with `requestId`) when the call is still running at `timeoutMs` (default ten minutes). The call keeps running: wait or poll again, never resubmit it.
+- The webhook secret and delivery log need a full-access API key; a key limited to some APIs gets `PermissionDeniedError` (403 `full_access_required`).
 
 ## Error Handling
 

@@ -17,7 +17,7 @@ export class AccountClient {
    * The secret that signs this account's async-request and batch webhooks,
    * created on first use. Free. Needs a full-access API key.
    *
-   * @throws AuthenticationError - 403 `full_access_required`: a key limited to some APIs.
+   * @throws PermissionDeniedError - 403 `full_access_required`: a key limited to some APIs.
    */
   async webhookSecret(): Promise<WebhookSecret> {
     return this.client.request<WebhookSecret>("/v1/account/webhook-secret");
@@ -28,7 +28,7 @@ export class AccountClient {
    * signed with the new one; retries of a delivery already under way keep the
    * old one. Free. Needs a full-access API key.
    *
-   * @throws AuthenticationError - 403 `full_access_required`: a key limited to some APIs.
+   * @throws PermissionDeniedError - 403 `full_access_required`: a key limited to some APIs.
    */
   async rotateWebhookSecret(): Promise<WebhookSecret> {
     return this.client.request<WebhookSecret>("/v1/account/webhook-secret/rotate", {
@@ -41,7 +41,7 @@ export class AccountClient {
    * Free. Needs a full-access API key.
    *
    * @param options - `limit` (API default 50, max 200).
-   * @throws AuthenticationError - 403 `full_access_required`: a key limited to some APIs.
+   * @throws PermissionDeniedError - 403 `full_access_required`: a key limited to some APIs.
    */
   async webhookDeliveries(options: WebhookDeliveriesOptions = {}): Promise<WebhookDeliveries> {
     return this.client.request<WebhookDeliveries>("/v1/account/webhook-deliveries", {

@@ -5,10 +5,13 @@
 - **Async requests and webhooks.** Any API call can now run asynchronously. (SCR-652)
   - `requests.submit(path, { method, params, body, callbackUrl, wait, idempotencyKey })` sends the call with `Prefer: respond-async[, wait=N]`, plus `X-Callback-URL` and `Idempotency-Key` when given. It returns an `AsyncRequest`: `status: "running"` on a 202, or `"completed"` when the call finished within `wait`. A `callbackUrl` without a `wait` answers 202 at once (`wait=0`).
   - Resubmitting with the same `idempotencyKey` within 15 minutes runs and bills nothing: it answers the stored state with `replayed: true`. The same key on a different call throws `ConflictError` (409 `idempotency_key_reused`).
-  - Without an `idempotencyKey`, a submit that times out or hits a network fault is thrown, not retried, so a call is never run and billed twice. With a key, those retries are safe and happen as usual. The submit's HTTP timeout is raised to cover `wait`.
-  - `requests.wait(id, { timeoutMs })` polls until the call completes. It pauses as long as `Retry-After` says between polls. When the call is still running at the deadline (default ten minutes), it throws `WaitTimeoutError`, a `TimeoutError` that carries `requestId`.
+  - Without an `idempotencyKey`, a submit is retried only when the connection failed before anything was sent. A timeout, a network fault, a 429 or a 5xx is thrown, because the call may already be running: a second submit would run and bill it again. With a key, the usual retries are safe, since a retry answers the existing call. A replayed error is never retried. The submit's HTTP timeout is raised to cover `wait`.
+  - `requests.wait(id, { timeoutMs })` polls until the call completes. It pauses as long as `Retry-After` says between polls.
+    - A finished call's error status is thrown at once, as the mapped SDK error. It is not retried, because a stored result answers the same every time.
+    - When the call is still running at the deadline (default ten minutes), it throws `WaitTimeoutError`, a `TimeoutError` that carries `requestId`.
   - `requests.callbackStatus(id)` returns the webhook delivery state (`GET /v1/requests/{id}/callback`).
   - `account.webhookSecret()`, `account.rotateWebhookSecret()` and `account.webhookDeliveries({ limit })` are typed. The generated `getTheWebhookSigningSecret` and `rotateTheWebhookSigningSecret` are unchanged.
+  - A 403 `full_access_required` (a key limited to some APIs, on the webhook endpoints) now throws `PermissionDeniedError`. That is a subclass of `AuthenticationError`, which it threw before.
   - New root exports:
     - `verifyWebhookSignature(secret, rawBody, signature, { sentAt, toleranceS })`: constant-time HMAC-SHA256 over the raw body. With `sentAt`, it rejects a delivery more than `toleranceS` (default 300) seconds from now. It is the same function `scrapebadger/twitter` exports; the 3-argument form is unchanged.
     - `parseWebhookEvent(rawBody)`: parses a `request.completed` payload into a typed `WebhookEvent`.

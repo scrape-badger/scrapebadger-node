@@ -6,7 +6,7 @@
  * call is billed once, when it completes, like the same call made directly.
  */
 
-import type { BaseClient, RawResponse } from "../internal/client.js";
+import type { BaseClient, RawResponse, RequestOptions } from "../internal/client.js";
 import { TimeoutError } from "../internal/exceptions.js";
 import type {
   AsyncRequest,
@@ -28,7 +28,7 @@ const DEFAULT_POLL_S = 5;
 const MIN_POLL_MS = 250;
 /** Default `timeoutMs` of `wait()`: ten minutes. */
 const DEFAULT_WAIT_TIMEOUT_MS = 600_000;
-/** Retries per poll inside `wait()`, so a stored error result surfaces quickly. */
+/** Network-fault retries per poll inside `wait()`, so it keeps near its deadline. */
 const WAIT_POLL_RETRIES = 2;
 
 /**
@@ -86,9 +86,11 @@ export class RequestsClient {
    * back completed; otherwise the API answers 202 and this returns a running
    * request to {@link get} or {@link wait} for (or to expect a webhook for).
    *
-   * Without an `idempotencyKey`, a submit that times out or hits a network
-   * fault is thrown, not retried: the call may already be running, and a
-   * second submit would run and bill it again. With a key, retries are safe.
+   * Without an `idempotencyKey`, a submit is retried only when the connection
+   * failed before anything was sent. A timeout, a network fault, a 429 or a
+   * 5xx is thrown: the call may already be running, and a second submit would
+   * run and bill it again. With a key, the usual retries are safe (a retry
+   * answers the existing call), except that a replayed error is never retried.
    *
    * @param path - API path, e.g. "/v1/perplexity/ask" (the "/v1" prefix is optional).
    * @param options - `method`, `params`, `body`, `callbackUrl`, `wait`, `idempotencyKey`.
@@ -127,7 +129,7 @@ export class RequestsClient {
       body,
       headers,
       timeoutMs,
-      idempotent: idempotencyKey !== undefined,
+      retry: idempotencyKey !== undefined ? "all" : "connect",
     });
     return toAsyncRequest<T>(response);
   }
@@ -149,7 +151,8 @@ export class RequestsClient {
 
   /**
    * Poll an async request until it completes, pausing as long as the API's
-   * `Retry-After` says between polls. Free.
+   * `Retry-After` says between polls. Free. An error status is thrown at
+   * once, never retried: a stored result answers the same every time.
    *
    * @param requestId - `request_id` of the running request.
    * @param options - `timeoutMs` (default 600000, ten minutes).
@@ -163,7 +166,7 @@ export class RequestsClient {
     const deadline = Date.now() + timeoutMs;
     const maxRetries = Math.min(this.client.config.maxRetries, WAIT_POLL_RETRIES);
     for (;;) {
-      const state = await this.poll<T>(requestId, maxRetries);
+      const state = await this.poll<T>(requestId, { maxRetries, retry: "transport" });
       if (state.status === "completed") return state;
       const remainingMs = deadline - Date.now();
       if (remainingMs <= 0) throw new WaitTimeoutError(requestId, timeoutMs);
@@ -210,10 +213,13 @@ export class RequestsClient {
     });
   }
 
-  private async poll<T>(requestId: string, maxRetries?: number): Promise<AsyncRequest<T>> {
+  private async poll<T>(
+    requestId: string,
+    options: Pick<RequestOptions, "maxRetries" | "retry"> = {}
+  ): Promise<AsyncRequest<T>> {
     const response = await this.client.requestResponse(
       `/v1/requests/${encodeURIComponent(requestId)}`,
-      { maxRetries }
+      options
     );
     return toAsyncRequest<T>(response, requestId);
   }

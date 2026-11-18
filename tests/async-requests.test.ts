@@ -11,6 +11,8 @@ import { WaitTimeoutError } from "../src/requests/client.js";
 import {
   ConflictError,
   NotFoundError,
+  PermissionDeniedError,
+  RateLimitError,
   ScrapeBadgerError,
   ServerError,
   TimeoutError,
@@ -59,6 +61,13 @@ function mockFetch(...responses: Array<MockResponse | Error>): ReturnType<typeof
   }
   vi.stubGlobal("fetch", fn);
   return fn;
+}
+
+/** A fetch failure the way undici reports one: TypeError("fetch failed") with a coded cause. */
+function fetchFailed(code: string): TypeError {
+  return Object.assign(new TypeError("fetch failed"), {
+    cause: Object.assign(new Error(code), { code }),
+  });
 }
 
 function call(n = 0): { url: URL; init: RequestInit; headers: Record<string, string> } {
@@ -256,6 +265,53 @@ describe("requests.submit()", () => {
     expect(fn).toHaveBeenCalledTimes(1);
   });
 
+  it("retries a connection that failed before anything was sent, even without a key", async () => {
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+    const refused = Object.assign(new TypeError("fetch failed"), {
+      cause: Object.assign(new AggregateError([]), {
+        errors: [{ code: "ECONNREFUSED" }, { code: "ENETUNREACH" }],
+      }),
+    });
+    const fn = mockFetch(fetchFailed("ENOTFOUND"), refused, response(ACCEPTED, 202));
+    const run = await makeClient({ maxRetries: 3 }).requests.submit("/v1/chatgpt/ask");
+    expect(fn).toHaveBeenCalledTimes(3);
+    expect(run.status).toBe("running");
+  });
+
+  it("never retries a connection reset (the request may have been sent) without a key", async () => {
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+    const fn = mockFetch(fetchFailed("ECONNRESET"), response(ACCEPTED, 202));
+    await expect(
+      makeClient({ maxRetries: 3 }).requests.submit("/v1/chatgpt/ask")
+    ).rejects.toBeInstanceOf(TypeError);
+    expect(fn).toHaveBeenCalledTimes(1);
+  });
+
+  it("never retries a 5xx or 429 without a key (a lost 202 would bill twice)", async () => {
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+    let fn = mockFetch(response({ detail: "edge timeout" }, 504), response(ACCEPTED, 202));
+    await expect(
+      makeClient({ maxRetries: 3 }).requests.submit("/v1/chatgpt/ask")
+    ).rejects.toBeInstanceOf(ServerError);
+    expect(fn).toHaveBeenCalledTimes(1);
+
+    fn = mockFetch(response({ detail: "slow down" }, 429), response(ACCEPTED, 202));
+    await expect(
+      makeClient({ maxRetries: 3 }).requests.submit("/v1/chatgpt/ask")
+    ).rejects.toBeInstanceOf(RateLimitError);
+    expect(fn).toHaveBeenCalledTimes(1);
+  });
+
+  it("retries a 5xx with an idempotency key", async () => {
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+    const fn = mockFetch(response({ detail: "edge timeout" }, 504), response(ACCEPTED, 202));
+    const run = await makeClient({ maxRetries: 3 }).requests.submit("/v1/chatgpt/ask", {
+      idempotencyKey: "k-1",
+    });
+    expect(fn).toHaveBeenCalledTimes(2);
+    expect(run.status).toBe("running");
+  });
+
   it("retries a timed-out submit with an idempotency key (the replay is safe)", async () => {
     vi.spyOn(console, "warn").mockImplementation(() => {});
     const abort = Object.assign(new Error("aborted"), { name: "AbortError" });
@@ -363,6 +419,30 @@ describe("requests.wait()", () => {
     expect(fn).toHaveBeenCalledTimes(4);
   });
 
+  it("throws a stored error status at once, without retrying it", async () => {
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+    const fn = mockFetch(
+      response({ detail: "no usable answer" }, 502),
+      response({ answer: "x" }, 200)
+    );
+    const assertion = expect(
+      makeClient({ maxRetries: 3 }).requests.wait("req-1")
+    ).rejects.toBeInstanceOf(ServerError);
+    await vi.advanceTimersByTimeAsync(10_000);
+    await assertion;
+    expect(fn).toHaveBeenCalledTimes(1);
+  });
+
+  it("retries a network fault while polling", async () => {
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+    const fn = mockFetch(fetchFailed("ECONNRESET"), response({ answer: "x" }, 200));
+    const promise = makeClient({ maxRetries: 3 }).requests.wait("req-1");
+    await vi.advanceTimersByTimeAsync(10);
+    const done = await promise;
+    expect(done.body).toEqual({ answer: "x" });
+    expect(fn).toHaveBeenCalledTimes(2);
+  });
+
   it("throws the original call's error", async () => {
     mockFetch(response({ error: "request_not_found", detail: "expired" }, 404));
     const assertion = expect(makeClient().requests.wait("req-1")).rejects.toBeInstanceOf(
@@ -453,6 +533,17 @@ describe("account webhook endpoints", () => {
 
     await makeClient().account.webhookDeliveries();
     expect(call(1).url.search).toBe("");
+  });
+
+  it("throws PermissionDeniedError for a key that is not full-access", async () => {
+    mockFetch(
+      response({ error: "full_access_required", detail: "Needs a full-access API key" }, 403)
+    );
+    const err = await makeClient()
+      .account.webhookSecret()
+      .catch((e: unknown) => e);
+    expect(err).toBeInstanceOf(PermissionDeniedError);
+    expect((err as Error).message).toContain("full-access");
   });
 
   it("keeps the generated raw-object methods", () => {

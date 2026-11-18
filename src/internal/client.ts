@@ -54,14 +54,20 @@ export interface RequestOptions {
   /** Retry cap for this request (default: the client's `maxRetries`). */
   maxRetries?: number;
   /**
-   * Whether the request may be sent twice (default true). Set it to false
-   * when a second copy could run and bill a call again, such as an async
-   * submit without an `Idempotency-Key`: a timeout or a network fault, after
-   * which the server may already be running the call, is then thrown instead
-   * of retried. Refusals (429) and 5xx answers are still retried.
+   * What a failed attempt may be retried on (default "all"):
+   * - "all": 5xx, 429, timeouts and network faults;
+   * - "transport": timeouts and network faults only; an error status is
+   *   thrown at once (a stored result answers the same every time);
+   * - "connect": only a connection that failed before anything was sent.
+   *   For a request a second copy of which could run and bill a call again,
+   *   such as an async submit without an `Idempotency-Key`: after a lost
+   *   202, a timeout or an edge 5xx the call may already be running.
    */
-  idempotent?: boolean;
+  retry?: RetryMode;
 }
+
+/** See {@link RequestOptions.retry}. */
+export type RetryMode = "all" | "transport" | "connect";
 
 /**
  * A response with its status, headers and decoded body: JSON when the
@@ -78,7 +84,32 @@ interface ExecutePolicy<T> {
   decode?: (response: Response) => Promise<T>;
   timeoutMs?: number;
   maxRetries?: number;
-  idempotent?: boolean;
+  retry?: RetryMode;
+}
+
+/** Socket errors that mean the request never left this machine. */
+const NOT_SENT_CODES = new Set([
+  "ECONNREFUSED",
+  "ENOTFOUND",
+  "EAI_AGAIN",
+  "EHOSTUNREACH",
+  "ENETUNREACH",
+  "UND_ERR_CONNECT_TIMEOUT",
+]);
+
+/** Whether a `fetch` failure happened while connecting, before the request was sent. */
+function failedBeforeSend(error: unknown): boolean {
+  const cause = (error as { cause?: unknown } | null)?.cause as
+    | { code?: unknown; errors?: unknown }
+    | undefined;
+  if (!cause) return false;
+  if (typeof cause.code === "string") return NOT_SENT_CODES.has(cause.code);
+  // Happy-eyeballs connects fail with an AggregateError of one error per address.
+  return (
+    Array.isArray(cause.errors) &&
+    cause.errors.length > 0 &&
+    cause.errors.every((e: { code?: unknown }) => NOT_SENT_CODES.has(String(e?.code)))
+  );
 }
 
 /**
@@ -215,15 +246,7 @@ export class BaseClient {
     options: RequestOptions = {},
     decode?: (response: Response) => Promise<T>
   ): Promise<ResponseWithHeaders<T>> {
-    const {
-      method = "GET",
-      params,
-      body,
-      headers = {},
-      timeoutMs,
-      maxRetries,
-      idempotent,
-    } = options;
+    const { method = "GET", params, body, headers = {}, timeoutMs, maxRetries, retry } = options;
 
     // Build URL with query parameters
     const url = new URL(path, this.config.baseUrl);
@@ -259,7 +282,7 @@ export class BaseClient {
       decode,
       timeoutMs,
       maxRetries,
-      idempotent,
+      retry,
     });
   }
 
@@ -312,7 +335,7 @@ export class BaseClient {
 
         // Client errors (auth, validation, not-found) are final — retrying only
         // delays the throw. Transient server failures and timeouts fall through.
-        if (!BaseClient.isRetryable(error, policy.idempotent ?? true)) {
+        if (!BaseClient.isRetryable(error, policy.retry ?? "all")) {
           throw error;
         }
 
@@ -448,7 +471,10 @@ export class BaseClient {
         if (errorData.error === "ip_not_allowed") {
           throw new IPNotAllowedError(message, errorData.client_ip ?? null);
         }
-        if (errorData.error === "insufficient_scope") {
+        if (
+          errorData.error === "insufficient_scope" ||
+          errorData.error === "full_access_required"
+        ) {
           throw new PermissionDeniedError(
             message,
             errorData.required_scope,
@@ -498,24 +524,24 @@ export class BaseClient {
    * Retryable: transient server failures (500/502/503/504), request timeouts,
    * rate limits, and raw network faults thrown by `fetch` itself. Everything
    * else — auth, validation, not-found, conflict — is final, and so is a
-   * replayed result. A request that is not `idempotent` never retries a
-   * timeout or network fault: the server may already be running it.
+   * replayed result. `mode` narrows this further (see `RequestOptions.retry`).
    */
-  private static isRetryable(error: unknown, idempotent: boolean): boolean {
+  private static isRetryable(error: unknown, mode: RetryMode): boolean {
     if (typeof error === "object" && error !== null && finalErrors.has(error)) {
       return false;
     }
+    // Anything that isn't one of ours is a network-level fault from fetch.
+    const networkFault = !(error instanceof ScrapeBadgerError);
+    if (mode === "connect") {
+      return networkFault && failedBeforeSend(error);
+    }
     if (error instanceof ServerError) {
-      return RETRYABLE_STATUS_CODES.includes(error.statusCode);
+      return mode === "all" && RETRYABLE_STATUS_CODES.includes(error.statusCode);
     }
     if (error instanceof RateLimitError) {
-      return true;
+      return mode === "all";
     }
-    if (error instanceof TimeoutError) {
-      return idempotent;
-    }
-    // Anything that isn't one of ours is a network-level fault from fetch.
-    return idempotent && !(error instanceof ScrapeBadgerError);
+    return error instanceof TimeoutError || networkFault;
   }
 
   /**
