@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.81.0] - 2026-11-18
+
+### Added
+- `perplexity.askPerplexityAQuestion({ ..., html: true })` adds `answer_html`: the answer rendered as an HTML fragment, each `[n]` citation linked to its source.
+- `perplexity.askPerplexityAQuestion({ ..., raw: true })` adds `raw`: Perplexity's own final answer object as it sent it.
+- Both are sent only when true, so existing calls are unchanged. The POST form takes `"html": true` / `"raw": true` in the body.
+
 ## [0.80.0] - 2026-11-18
 
 - **Async requests and webhooks.** Any API call can now run asynchronously. (SCR-652)

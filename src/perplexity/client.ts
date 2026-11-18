@@ -30,11 +30,26 @@ export type PerplexityParams = Record<string, string | number | boolean | undefi
    * SDK sends it as given. Sent only when set.
    */
   location?: string;
+  /**
+   * Also return `answer_html`: the answer rendered as an HTML fragment, each
+   * `[n]` citation linked to its source. Sent as `html=true`.
+   */
+  html?: boolean;
+  /**
+   * Also return `raw`: Perplexity's own final answer object as it sent it.
+   * Sent as `raw=true`.
+   */
+  raw?: boolean;
 };
 
 function toQuery(params: PerplexityParams): Record<string, string | number | boolean | undefined> {
-  const { strictCountry, ...rest } = params;
-  return strictCountry ? { ...rest, strict_country: true } : rest;
+  const { strictCountry, html, raw, ...rest } = params;
+  return {
+    ...rest,
+    ...(strictCountry ? { strict_country: true } : {}),
+    ...(html ? { html: true } : {}),
+    ...(raw ? { raw: true } : {}),
+  };
 }
 
 /** Client for all Perplexity API operations. (Generated from the OpenAPI spec.) */
