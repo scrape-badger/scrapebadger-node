@@ -15,7 +15,7 @@
   - New root exports:
     - `verifyWebhookSignature(secret, rawBody, signature, { sentAt, toleranceS })`: constant-time HMAC-SHA256 over the raw body. With `sentAt`, it rejects a delivery more than `toleranceS` (default 300) seconds from now. It is the same function `scrapebadger/twitter` exports; the 3-argument form is unchanged.
     - `parseWebhookEvent(rawBody)`: parses a `request.completed` payload into a typed `WebhookEvent`.
-- **Changed: `AsyncRequest.status` is now `"running" | "completed"`.** The HTTP status moved to `statusCode`. `AsyncRequest` also gains `headers`, `body` and `replayed`. `running` still works, and `data` stays as a deprecated alias of `body`. `requests.get()` keeps its signature. It now returns a non-JSON completed body as text, where it used to return `{ detail }`.
+- **Breaking: `AsyncRequest.status` is now `"running" | "completed"`.** The HTTP status moved to `statusCode`. `AsyncRequest` also gains `headers`, `body` and `replayed`. `running` still works, and `data` stays as a deprecated alias of `body`. `requests.get()` keeps its signature. It now returns a non-JSON completed body as text, where it used to return `{ detail }`.
 - `RequestsClient` moved to `src/requests/` and is still exported from the package root. This lets the SDK codegen add spec operations to it.
 
 ## [0.79.0] - 2026-11-14
