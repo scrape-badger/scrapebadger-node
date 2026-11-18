@@ -187,7 +187,8 @@ describe("agent platform clients", () => {
       const state = await makeClient().requests.get("req-1");
       expect(captured().url.pathname).toBe("/v1/requests/req-1");
       expect(state.running).toBe(true);
-      expect(state.status).toBe(202);
+      expect(state.status).toBe("running");
+      expect(state.statusCode).toBe(202);
       expect(state.retryAfterSeconds).toBe(5);
       expect(state.resultId).toBeNull();
     });
@@ -200,11 +201,13 @@ describe("agent platform clients", () => {
       // X-Result-ID is ignored: the API stopped issuing result IDs (SCR-396).
       const state = await makeClient().requests.get("req-1");
       expect(state.running).toBe(false);
-      expect(state.status).toBe(200);
+      expect(state.status).toBe("completed");
+      expect(state.statusCode).toBe(200);
       expect(state.retryAfterSeconds).toBeNull();
       expect(state.resultId).toBeNull();
       expect(state.creditsUsed).toBe(20);
-      expect(state.data).toEqual({ status: "ok", results: [1, 2] });
+      expect(state.body).toEqual({ status: "ok", results: [1, 2] });
+      expect(state.data).toEqual(state.body);
     });
 
     it("throws the original call's error", async () => {

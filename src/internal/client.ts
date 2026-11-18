@@ -49,7 +49,74 @@ export interface RequestOptions {
   params?: Record<string, string | number | boolean | undefined>;
   body?: unknown;
   headers?: Record<string, string>;
+  /** Timeout for this request in milliseconds (default: the client's `timeout`). */
+  timeoutMs?: number;
+  /** Retry cap for this request (default: the client's `maxRetries`). */
+  maxRetries?: number;
+  /**
+   * What a failed attempt may be retried on (default "all"):
+   * - "all": 5xx, 429, timeouts and network faults;
+   * - "transport": timeouts and network faults only; an error status is
+   *   thrown at once (a stored result answers the same every time);
+   * - "connect": only a connection that failed before anything was sent.
+   *   For a request a second copy of which could run and bill a call again,
+   *   such as an async submit without an `Idempotency-Key`: after a lost
+   *   202, a timeout or an edge 5xx the call may already be running.
+   */
+  retry?: RetryMode;
 }
+
+/** See {@link RequestOptions.retry}. */
+export type RetryMode = "all" | "transport" | "connect";
+
+/**
+ * A response with its status, headers and decoded body: JSON when the
+ * response is JSON, otherwise text. Returned by {@link BaseClient.requestResponse}.
+ */
+export interface RawResponse {
+  status: number;
+  headers: Headers;
+  body: unknown;
+}
+
+/** How {@link BaseClient} executes one request. */
+interface ExecutePolicy<T> {
+  decode?: (response: Response) => Promise<T>;
+  timeoutMs?: number;
+  maxRetries?: number;
+  retry?: RetryMode;
+}
+
+/** Socket errors that mean the request never left this machine. */
+const NOT_SENT_CODES = new Set([
+  "ECONNREFUSED",
+  "ENOTFOUND",
+  "EAI_AGAIN",
+  "EHOSTUNREACH",
+  "ENETUNREACH",
+  "UND_ERR_CONNECT_TIMEOUT",
+]);
+
+/** Whether a `fetch` failure happened while connecting, before the request was sent. */
+function failedBeforeSend(error: unknown): boolean {
+  const cause = (error as { cause?: unknown } | null)?.cause as
+    | { code?: unknown; errors?: unknown }
+    | undefined;
+  if (!cause) return false;
+  if (typeof cause.code === "string") return NOT_SENT_CODES.has(cause.code);
+  // Happy-eyeballs connects fail with an AggregateError of one error per address.
+  return (
+    Array.isArray(cause.errors) &&
+    cause.errors.length > 0 &&
+    cause.errors.every((e: { code?: unknown }) => NOT_SENT_CODES.has(String(e?.code)))
+  );
+}
+
+/**
+ * Errors that a retry cannot fix: a replay of a stored result
+ * (`Idempotent-Replayed: true`) answers the same on every attempt.
+ */
+const finalErrors = new WeakSet<object>();
 
 interface ErrorResponse {
   detail?: string;
@@ -140,13 +207,46 @@ export class BaseClient {
   }
 
   /**
+   * Make an HTTP request and return its status, headers and body undigested:
+   * the body is JSON-decoded when the response is JSON, otherwise text (the
+   * normal path turns a non-JSON, non-HTML body into `{ detail }`). Error
+   * statuses still throw the matching typed error.
+   */
+  async requestResponse(path: string, options: RequestOptions = {}): Promise<RawResponse> {
+    const { data } = await this.requestRaw<RawResponse>(path, options, async (response) => {
+      if (!response.ok) {
+        try {
+          await this.handleResponse<unknown>(response);
+        } catch (error) {
+          if (response.headers.get("Idempotent-Replayed")?.trim().toLowerCase() === "true") {
+            finalErrors.add(error as object);
+          }
+          throw error;
+        }
+      }
+      const text = await response.text();
+      let body: unknown = text;
+      if (response.headers.get("content-type")?.toLowerCase().includes("json")) {
+        try {
+          body = JSON.parse(text);
+        } catch {
+          // Not valid JSON after all: keep the text.
+        }
+      }
+      return { status: response.status, headers: response.headers, body };
+    });
+    return data;
+  }
+
+  /**
    * Internal method that builds the request and executes it, returning data and rate limit info.
    */
   private async requestRaw<T>(
     path: string,
-    options: RequestOptions = {}
+    options: RequestOptions = {},
+    decode?: (response: Response) => Promise<T>
   ): Promise<ResponseWithHeaders<T>> {
-    const { method = "GET", params, body, headers = {} } = options;
+    const { method = "GET", params, body, headers = {}, timeoutMs, maxRetries, retry } = options;
 
     // Build URL with query parameters
     const url = new URL(path, this.config.baseUrl);
@@ -178,7 +278,12 @@ export class BaseClient {
     }
 
     // Execute with retry logic
-    return this.executeWithRetry<T>(url.toString(), fetchOptions);
+    return this.executeWithRetry<T>(url.toString(), fetchOptions, {
+      decode,
+      timeoutMs,
+      maxRetries,
+      retry,
+    });
   }
 
   /**
@@ -186,14 +291,17 @@ export class BaseClient {
    */
   private async executeWithRetry<T>(
     url: string,
-    options: RequestInit
+    options: RequestInit,
+    policy: ExecutePolicy<T> = {}
   ): Promise<ResponseWithHeaders<T>> {
     let lastError: Error | undefined;
+    const maxRetries = policy.maxRetries ?? this.config.maxRetries;
+    const decode = policy.decode ?? ((response: Response) => this.handleResponse<T>(response));
 
-    for (let attempt = 0; attempt <= this.config.maxRetries; attempt++) {
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
       let retryAfterMs = 0;
       try {
-        const httpResponse = await this.fetchWithTimeout(url, options);
+        const httpResponse = await this.fetchWithTimeout(url, options, policy.timeoutMs);
         const retryAfter = httpResponse.headers.get("Retry-After")?.trim();
         if (retryAfter) {
           let requestedDelay = 0;
@@ -219,7 +327,7 @@ export class BaseClient {
             retryAfterMs = requestedDelay;
           }
         }
-        const data = await this.handleResponse<T>(httpResponse);
+        const data = await decode(httpResponse);
         const rateLimit = this.parseRateLimitHeaders(httpResponse.headers);
         return { data, rateLimit, status: httpResponse.status, headers: httpResponse.headers };
       } catch (error) {
@@ -227,12 +335,12 @@ export class BaseClient {
 
         // Client errors (auth, validation, not-found) are final — retrying only
         // delays the throw. Transient server failures and timeouts fall through.
-        if (!BaseClient.isRetryable(error)) {
+        if (!BaseClient.isRetryable(error, policy.retry ?? "all")) {
           throw error;
         }
 
         // Don't retry after exhausting attempts
-        if (attempt === this.config.maxRetries) {
+        if (attempt === maxRetries) {
           break;
         }
 
@@ -240,7 +348,6 @@ export class BaseClient {
         const delay = Math.max(this.config.retryDelay * Math.pow(2, attempt), retryAfterMs);
         const delaySec = Math.round(delay / 1000);
         const attemptNum = attempt + 1;
-        const maxRetries = this.config.maxRetries;
 
         // Warn with ANSI yellow coloring
         if (error instanceof RateLimitError) {
@@ -302,9 +409,13 @@ export class BaseClient {
   /**
    * Fetch with timeout support.
    */
-  private async fetchWithTimeout(url: string, options: RequestInit): Promise<Response> {
+  private async fetchWithTimeout(
+    url: string,
+    options: RequestInit,
+    timeoutMs: number = this.config.timeout
+  ): Promise<Response> {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), this.config.timeout);
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
     try {
       const response = await fetch(url, {
@@ -314,10 +425,7 @@ export class BaseClient {
       return response;
     } catch (error) {
       if (error instanceof Error && error.name === "AbortError") {
-        throw new TimeoutError(
-          `Request timed out after ${this.config.timeout}ms`,
-          this.config.timeout
-        );
+        throw new TimeoutError(`Request timed out after ${timeoutMs}ms`, timeoutMs);
       }
       throw error;
     } finally {
@@ -363,7 +471,10 @@ export class BaseClient {
         if (errorData.error === "ip_not_allowed") {
           throw new IPNotAllowedError(message, errorData.client_ip ?? null);
         }
-        if (errorData.error === "insufficient_scope") {
+        if (
+          errorData.error === "insufficient_scope" ||
+          errorData.error === "full_access_required"
+        ) {
           throw new PermissionDeniedError(
             message,
             errorData.required_scope,
@@ -412,17 +523,25 @@ export class BaseClient {
    *
    * Retryable: transient server failures (500/502/503/504), request timeouts,
    * rate limits, and raw network faults thrown by `fetch` itself. Everything
-   * else — auth, validation, not-found, conflict — is final.
+   * else — auth, validation, not-found, conflict — is final, and so is a
+   * replayed result. `mode` narrows this further (see `RequestOptions.retry`).
    */
-  private static isRetryable(error: unknown): boolean {
-    if (error instanceof ServerError) {
-      return RETRYABLE_STATUS_CODES.includes(error.statusCode);
-    }
-    if (error instanceof RateLimitError || error instanceof TimeoutError) {
-      return true;
+  private static isRetryable(error: unknown, mode: RetryMode): boolean {
+    if (typeof error === "object" && error !== null && finalErrors.has(error)) {
+      return false;
     }
     // Anything that isn't one of ours is a network-level fault from fetch.
-    return !(error instanceof ScrapeBadgerError);
+    const networkFault = !(error instanceof ScrapeBadgerError);
+    if (mode === "connect") {
+      return networkFault && failedBeforeSend(error);
+    }
+    if (error instanceof ServerError) {
+      return mode === "all" && RETRYABLE_STATUS_CODES.includes(error.statusCode);
+    }
+    if (error instanceof RateLimitError) {
+      return mode === "all";
+    }
+    return error instanceof TimeoutError || networkFault;
   }
 
   /**

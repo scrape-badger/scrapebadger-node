@@ -2,7 +2,6 @@
  * StreamClient -- stream monitor management and live WebSocket streaming.
  */
 
-import { createHmac, timingSafeEqual } from "node:crypto";
 import { EventEmitter } from "node:events";
 import WebSocket from "ws";
 import type { BaseClient } from "../internal/client.js";
@@ -888,52 +887,7 @@ export class StreamClient {
   }
 }
 
-/**
- * Verify the HMAC-SHA256 signature of an incoming webhook request.
- *
- * The server sets the header:
- *   X-ScrapeBadger-Signature: sha256=<hex-digest>
- *
- * @param secret - The webhook secret configured on the monitor.
- * @param body - The raw request body string or Buffer.
- * @param signatureHeader - The full X-ScrapeBadger-Signature header value.
- * @returns true if the signature is valid.
- *
- * @example
- * ```typescript
- * // In an Express webhook receiver:
- * import { verifyWebhookSignature } from "scrapebadger/twitter";
- * import express from "express";
- *
- * app.post("/webhook", express.raw({ type: "application/json" }), (req, res) => {
- *   const sig = req.headers["x-scrapebadger-signature"] as string;
- *   if (!verifyWebhookSignature("my-secret", req.body, sig)) {
- *     return res.status(401).json({ error: "Invalid signature" });
- *   }
- *   const event = JSON.parse(req.body.toString());
- *   // process event...
- *   res.sendStatus(200);
- * });
- * ```
- */
-export function verifyWebhookSignature(
-  secret: string,
-  body: string | Buffer,
-  signatureHeader: string
-): boolean {
-  if (!signatureHeader.startsWith("sha256=")) {
-    return false;
-  }
-
-  const expectedHex = signatureHeader.slice("sha256=".length);
-  const bodyBuffer = typeof body === "string" ? Buffer.from(body, "utf-8") : body;
-  const actualHex = createHmac("sha256", secret).update(bodyBuffer).digest("hex");
-
-  // Use constant-time comparison to prevent timing attacks
-  try {
-    return timingSafeEqual(Buffer.from(expectedHex, "hex"), Buffer.from(actualHex, "hex"));
-  } catch {
-    // Buffers of different lengths throw -- treat as mismatch
-    return false;
-  }
-}
+// `verifyWebhookSignature` verifies stream monitor deliveries
+// (`X-ScrapeBadger-Signature: sha256=<hex-digest>`) and async-request webhooks
+// alike; it lives in ../webhooks and stays importable from "scrapebadger/twitter".
+export { verifyWebhookSignature } from "../webhooks/signature.js";

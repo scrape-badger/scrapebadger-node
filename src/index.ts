@@ -74,8 +74,25 @@ export * from "./web/index.js";
 // Re-export Vinted module
 export * from "./vinted/index.js";
 
-// Re-export agent platform module — quotes, feedback, async request polling
+// Re-export agent platform module — quotes, feedback, async requests, batches
 export * from "./agent/index.js";
+
+// Webhooks — verify and parse what ScrapeBadger POSTs to your callback URL.
+// (The Twitter module re-exports the same verifyWebhookSignature.)
+export { verifyWebhookSignature, parseWebhookEvent } from "./webhooks/index.js";
+export type {
+  WebhookEvent,
+  VerifyWebhookSignatureOptions,
+  RawWebhookBody,
+} from "./webhooks/index.js";
+
+// Account types — webhook secret and delivery log
+export type {
+  WebhookSecret,
+  WebhookDelivery,
+  WebhookDeliveries,
+  WebhookDeliveriesOptions,
+} from "./account/types.js";
 
 // Re-export Reddit module
 export * from "./reddit/index.js";

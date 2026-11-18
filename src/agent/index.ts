@@ -1,10 +1,10 @@
 /**
- * Agent platform API module: quotes, feedback, async request polling and batches.
+ * Agent platform API module: quotes, feedback, async requests and batches.
  *
  * @module agent
  */
 
-export { AgentClient, ResultsClient, RequestsClient } from "./client.js";
+export { AgentClient, ResultsClient, RequestsClient, WaitTimeoutError } from "./client.js";
 
 export type {
   QuoteOptions,
@@ -16,7 +16,14 @@ export type {
   QuoteLatency,
   Quote,
   FeedbackReceipt,
+  SubmitMethod,
+  SubmitOptions,
+  WaitOptions,
+  AsyncNextAction,
+  AsyncAccepted,
   AsyncRequest,
+  CallbackState,
+  CallbackStatus,
   BatchItem,
   BatchOptions,
   BatchItemResult,
