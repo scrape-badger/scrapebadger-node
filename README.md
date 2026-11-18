@@ -22,6 +22,7 @@ The official Node.js/TypeScript client library for the [ScrapeBadger](https://sc
 - **Smart Rate Limiting** - Reads API headers and throttles pagination automatically
 - **Resilient Retries** - Exponential backoff with colored console warnings
 - **Typed Exceptions** - Distinct error classes for every failure scenario
+- **Async requests and webhooks** - Run any call asynchronously, wait for it or get a signed webhook; idempotent resubmits
 - **37+ Twitter endpoints** - Tweets, users, lists, communities, trends, geo, real-time streams
 - **20 Google product APIs** - Search (with optional deferred AI Overview follow-up), Maps, News, Hotels, Trends (incl. topic autocomplete), Jobs, Shopping (+ merchant URL enrichment, barcode offers), Patents, Scholar (search + profiles + author + author citation + cite formats), Images, Videos, Finance, AI Mode, Lens, **Local Pack**, **Shorts**, **Flights**, Products, **Ads Transparency Center**
 - **Vinted scraping** - Search items, item details, user profiles, brands, colors, markets
@@ -139,9 +140,9 @@ const client = new ScrapeBadger({ apiKey: "your-api-key" });
 const quote = await client.agent.quote("GET", "/v1/google/search", { params: { q: "coffee" } });
 console.log(quote.valid, quote.errors, quote.credits.max, quote.usd, quote.latency);
 
-// Poll a call made with `Prefer: respond-async` (202 + request_id).
+// Poll an async call (see "Async requests and webhooks" below).
 const state = await client.requests.get(requestId);
-if (!state.running) console.log(state.status, state.creditsUsed, state.data);
+if (state.status === "completed") console.log(state.statusCode, state.creditsUsed, state.body);
 
 // Report a bug or send feedback (pass the failing call's X-Request-ID).
 await client.agent.reportBug("Empty results for a valid query", { requestId });
@@ -152,7 +153,87 @@ const info = await client.account.getAccountInfo();
 const trial = info.agent_trial as AgentTrial | undefined;
 ```
 
-ScrapeBadger does not cache or store responses: every call is fetched fresh and billed, and `results.get` (the old free re-read) is deprecated because `GET /v1/results/{id}` was removed on 2026-11-09. To reshape a result, re-run the call with the `jq`, `fields` or `max_items` view parameters. `requests.get` returns `running: true` while the call is in progress — wait `retryAfterSeconds` and poll again; never re-submit the call. Once finished it returns the original body, or throws the original call's error. The SDK's own methods never send `Prefer: respond-async`; `requests.get` polls a request ID obtained elsewhere (raw HTTP, the CLI or MCP server).
+ScrapeBadger does not cache or store responses: every call is fetched fresh and billed, and `results.get` (the old free re-read) is deprecated because `GET /v1/results/{id}` was removed on 2026-11-09. To reshape a result, re-run the call with the `jq`, `fields` or `max_items` view parameters. `requests.get` returns `status: "running"` while the call is in progress — wait `retryAfterSeconds` and poll again; never re-submit the call. Once completed it returns the original status, headers and body, or throws the original call's error. The SDK's per-endpoint methods are synchronous; run any of them asynchronously with `requests.submit`.
+
+## Async requests and webhooks
+
+Any API call can run asynchronously. Submit it, then wait for it, poll it, or get a signed webhook when it completes. Submitting, polling and waiting are free; the call is billed once, when it completes, at its normal price. Results are kept for about 15 minutes.
+
+```typescript
+import { ScrapeBadger } from "scrapebadger";
+
+const client = new ScrapeBadger({ apiKey: process.env.SCRAPEBADGER_API_KEY! });
+
+// Wait up to 25 s for the answer; a slower call comes back running (HTTP 202).
+const run = await client.requests.submit("/v1/perplexity/ask", {
+  params: { prompt: "best crm for startups", country: "us" },
+  wait: 25,
+  idempotencyKey: "crm-us-2026-11-18", // a resubmit with this key is not run or billed again
+});
+
+// A call that completed within `wait` is not kept for polling: use it as it is.
+const done = run.status === "completed" ? run : await client.requests.wait(run.requestId);
+console.log(done.statusCode, done.creditsUsed, done.body);
+```
+
+At volume, skip the waiting: give each call a `callbackUrl` and ScrapeBadger POSTs the result to it when the call completes. Without a `wait`, a call with a callback answers 202 at once.
+
+```typescript
+const prompts = ["best crm for startups", "best crm for agencies", "best crm for nonprofits"];
+for (const [i, prompt] of prompts.entries()) {
+  const run = await client.requests.submit("/v1/perplexity/ask", {
+    params: { prompt, country: "us" },
+    callbackUrl: "https://your-server.example/scrapebadger/webhook",
+    idempotencyKey: `crm-run-42-${i}`, // safe to resubmit after a crash or a timeout
+  });
+  console.log(run.requestId, run.status, run.replayed);
+}
+```
+
+Every webhook is signed with your account's webhook secret (`client.account.webhookSecret()`, needs a full-access API key). `X-ScrapeBadger-Signature` is `sha256=` plus the hex HMAC-SHA256 of the **raw** request body, so read the body as bytes. A body parsed and re-serialised will not match.
+
+```typescript
+import express from "express";
+import { ScrapeBadger, parseWebhookEvent, verifyWebhookSignature } from "scrapebadger";
+import type { WebhookEvent } from "scrapebadger";
+
+const client = new ScrapeBadger({ apiKey: process.env.SCRAPEBADGER_API_KEY! });
+const { secret } = await client.account.webhookSecret(); // fetch once and keep it
+const seen = new Set<string>(); // use your database in production
+
+const app = express();
+
+// express.raw() keeps the exact bytes that were signed; express.json() would not.
+app.post("/scrapebadger/webhook", express.raw({ type: "application/json" }), (req, res) => {
+  let event: WebhookEvent<{ answer?: string }>;
+  try {
+    event = parseWebhookEvent(req.body);
+  } catch {
+    return res.sendStatus(400);
+  }
+  // Nothing in the event is trusted until this passes. sent_at is part of the
+  // signed body, so an old delivery replayed later fails the freshness check.
+  const signature = req.get("X-ScrapeBadger-Signature");
+  if (!verifyWebhookSignature(secret, req.body, signature, { sentAt: event.sent_at })) {
+    return res.sendStatus(401);
+  }
+  if (!seen.has(event.request_id)) {
+    seen.add(event.request_id); // deliveries can repeat: deduplicate on request_id
+    if (event.status === 200) console.log(event.request_id, event.body?.answer);
+    else console.warn(event.request_id, "failed with", event.status, event.body);
+  }
+  res.sendStatus(204);
+});
+
+app.listen(3000);
+```
+
+- `event.status` and `event.body` are the call's own, errors included. A body over 1 MB is left out (`body: null`, `body_omitted: true`): fetch it with `client.requests.get(event.request_id)` within about 15 minutes.
+- Answer with any 2xx, quickly. A timeout, a connection error, 408, 429 or 5xx is retried after 10 s, 60 s and 5 min (4 attempts in total).
+- Check deliveries with `client.requests.callbackStatus(requestId)` (one call) or `client.account.webhookDeliveries({ limit })` (the last 24 hours). Rotate the secret with `client.account.rotateWebhookSecret()`.
+- `submit` throws a refusal before anything runs: `invalid_callback_url`, `async_not_supported`, `invalid_idempotency_key` (400), or `ConflictError` when an `idempotencyKey` is reused for a different call (409). A call that completed within `wait` with an error status throws that error, like a normal call.
+- Without an `idempotencyKey`, the SDK does not retry a submit that timed out or hit a network fault, because the call may already be running. With a key, it retries, and the retry answers the existing call (`replayed: true`).
+- `wait` throws `WaitTimeoutError` (a `TimeoutError` with `requestId`) when the call is still running at `timeoutMs` (default ten minutes). The call keeps running: wait or poll again, never resubmit it.
 
 ## Error Handling
 
@@ -238,6 +319,7 @@ Pro: 1000/min, Enterprise: 5000/min).
 - `ValidationError` - Invalid request
 - `ServerError` - Server error
 - `TimeoutError` - Request timeout
+- `WaitTimeoutError` - `requests.wait()` deadline passed while the call still runs (a `TimeoutError`)
 - `InsufficientCreditsError` - Out of credits
 - `AccountRestrictedError` - Account restricted
 - `WebSocketStreamError` - WebSocket stream failure (auth, limit, or network)

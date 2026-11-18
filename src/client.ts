@@ -155,7 +155,7 @@ export class ScrapeBadger {
   readonly rufus: RufusClient;
 
   /** Amazon scraper API client — 14 endpoints */
-  /** Account API client. (Generated from the OpenAPI spec.) */
+  /** Account info, the webhook signing secret and the webhook delivery log. Free. */
   readonly account: AccountClient;
   /** Quote a call before making it, and report bugs or send feedback. Free. */
   readonly agent: AgentClient;
@@ -164,7 +164,11 @@ export class ScrapeBadger {
    * 410 Gone since 2026-11-09); see `ResultsClient.get`.
    */
   readonly results: ResultsClient;
-  /** Poll a call made with `Prefer: respond-async`. Free. */
+  /**
+   * Async requests: submit any call (optionally with a webhook and an
+   * idempotency key), poll it, wait for it, check its webhook delivery.
+   * Polling is free; the call is billed once, when it completes.
+   */
   readonly requests: RequestsClient;
   /** Airbnb API client. (Generated from the OpenAPI spec.) */
   readonly airbnb: AirbnbClient;

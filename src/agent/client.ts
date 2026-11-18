@@ -1,24 +1,22 @@
 /**
  * Agent platform API clients.
  *
- * Free helpers around the scraper APIs: quote a call before making it, report
- * a bug, and poll a call made with `Prefer: respond-async`. None of these calls
- * is ever billed. (`results.get` is deprecated: the API stopped storing results
- * on 2026-11-09.)
+ * Free helpers around the scraper APIs: quote a call before making it and
+ * report a bug. None of these calls is ever billed. (`results.get` is
+ * deprecated: the API stopped storing results on 2026-11-09.) Async requests
+ * (`client.requests`) live in `../requests/client.ts`.
  */
 
 import type { BaseClient } from "../internal/client.js";
 import type {
-  AsyncRequest,
-  BatchItem,
-  BatchOptions,
-  BatchSubmission,
   FeedbackOptions,
   FeedbackReceipt,
   Quote,
   QuoteOptions,
   ResultViewOptions,
 } from "./types.js";
+
+export { RequestsClient, WaitTimeoutError } from "../requests/client.js";
 
 /**
  * Client for quoting calls and sending feedback.
@@ -137,71 +135,6 @@ export class ResultsClient {
         max_items: maxItems,
         summary: summary ? true : undefined,
       },
-    });
-  }
-}
-
-/**
- * Client for polling calls made with `Prefer: respond-async`.
- *
- * A read sent with `Prefer: respond-async, wait=25` that doesn't finish within
- * `wait` seconds answers 202 with a `request_id`; poll it here until it is
- * done. Never re-submit the original call.
- */
-export class RequestsClient {
-  constructor(private readonly client: BaseClient) {}
-
-  /**
-   * Poll an async request. Free.
-   *
-   * @param requestId - `request_id` from the 202 response.
-   * @returns `running: true` while in progress; once done, `data` is the original body.
-   * @throws NotFoundError - Unknown or expired request (one that never completed was not billed).
-   * @throws ScrapeBadgerError - The original call finished with an error status (as the matching subclass).
-   */
-  async get<T = unknown>(requestId: string): Promise<AsyncRequest<T>> {
-    const { data, status, headers } = await this.client.requestWithHeaders<T>(
-      `/v1/requests/${encodeURIComponent(requestId)}`
-    );
-    const running = status === 202;
-    const retryAfter = running
-      ? (data as { retry_after_seconds?: number } | null)?.retry_after_seconds
-      : undefined;
-    const credits = headers?.get("X-Credits-Used");
-    return {
-      requestId,
-      running,
-      status: status ?? 200,
-      retryAfterSeconds: retryAfter ?? null,
-      resultId: null, // deprecated: the API no longer sends X-Result-ID
-      creditsUsed: credits && /^\d+$/.test(credits) ? Number(credits) : null,
-      data,
-    };
-  }
-
-  /**
-   * Submit up to 100 GET reads as async requests in one call. Submitting is free.
-   *
-   * Each item runs under this key with the same auth, credit check, rate limit
-   * and price as if sent alone; at most 10 of a batch run at a time.
-   *
-   * @example
-   * ```typescript
-   * const sub = await client.requests.batch(
-   *   prompts.map((prompt) => ({ path: "/v1/chatgpt/ask", query: { prompt } })),
-   *   { callbackUrl: "https://example.com/hook" }
-   * );
-   * const ids = sub.requests.filter((r) => r.accepted).map((r) => r.request_id);
-   * ```
-   *
-   * @param items - `{ path: "/v1/...", query: {...} }` (method defaults to GET).
-   * @param options - `callbackUrl` for one signed webhook per item.
-   * @returns A request_id (or the refusal) for every item.
-   */
-  async batch(items: BatchItem[], options: BatchOptions = {}): Promise<BatchSubmission> {
-    return this.client.request<BatchSubmission>("/v1/batch", {
-      method: "POST",
-      body: { requests: items, callback_url: options.callbackUrl },
     });
   }
 }

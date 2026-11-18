@@ -1,9 +1,9 @@
 /**
  * TypeScript types for the agent platform endpoints.
  *
- * Quote, feedback and async-request polling — the
- * account-level helpers an agent uses around the scraper APIs. None of these
- * calls is ever billed.
+ * Quote, feedback, async requests and batches — the account-level helpers an
+ * agent uses around the scraper APIs. None of these calls is ever billed
+ * (a submitted call is billed once, when it completes).
  */
 
 // =============================================================================
@@ -121,27 +121,129 @@ export interface FeedbackReceipt {
   message: string;
 }
 
-/** State of a call made with `Prefer: respond-async`. */
+/** HTTP methods {@link RequestsClient.submit} can send. */
+export type SubmitMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
+
+/** Options for {@link RequestsClient.submit}. */
+export interface SubmitOptions {
+  /** HTTP method of the call (default "GET"). */
+  method?: SubmitMethod;
+  /** Query parameters of the call; `undefined` and `null` values are left out. */
+  params?: Record<string, string | number | boolean | null | undefined>;
+  /** JSON body of the call (POST, PUT, PATCH). */
+  body?: unknown;
+  /**
+   * https URL that gets a signed `request.completed` webhook when the call
+   * completes (sent as `X-Callback-URL`). Verify it with
+   * `verifyWebhookSignature` and the secret from `account.webhookSecret()`.
+   * Without `wait`, a callback answers 202 at once (`wait=0`).
+   */
+  callbackUrl?: string;
+  /**
+   * Seconds (0-120) to wait for the call before answering 202 (sent as
+   * `Prefer: respond-async, wait=N`). A call done within `wait` comes back
+   * completed. Default: 0 with a `callbackUrl`, otherwise the API's 25.
+   */
+  wait?: number;
+  /**
+   * Your key for this call, 1-200 visible ASCII characters (sent as
+   * `Idempotency-Key`). Resubmitting the same call with the same key within
+   * 15 minutes runs and bills nothing: it answers what `requests.get` would
+   * (with `replayed: true`). The same key on a different call is refused
+   * with 409 `idempotency_key_reused` (`ConflictError`). With a key, the SDK
+   * also retries a submit that timed out or hit a network fault.
+   */
+  idempotencyKey?: string;
+}
+
+/** Options for {@link RequestsClient.wait}. */
+export interface WaitOptions {
+  /** Give up after this many milliseconds (default 600000, ten minutes). */
+  timeoutMs?: number;
+}
+
+/** Where to poll a running request. */
+export interface AsyncNextAction {
+  method: "GET";
+  /** "/v1/requests/<request_id>" */
+  url: string;
+}
+
+/**
+ * Body of the 202 an async call answers while it runs, on every route.
+ * Comes with `Location` and `Retry-After` headers.
+ */
+export interface AsyncAccepted {
+  request_id: string;
+  status: "running";
+  retry_after_seconds: number;
+  next_action: AsyncNextAction;
+  /** Reminder to poll instead of re-submitting. */
+  detail?: string;
+  /** Webhook delivery state, on a poll of a call submitted with a callback. */
+  callback?: Record<string, unknown>;
+}
+
+/**
+ * State of an async call, from {@link RequestsClient.submit},
+ * {@link RequestsClient.get} or {@link RequestsClient.wait}.
+ */
 export interface AsyncRequest<T = unknown> {
   requestId: string;
   /**
-   * true while the call is still in progress (HTTP 202). Poll again after
-   * `retryAfterSeconds`; never re-submit the call.
+   * "running" while the call is in progress (HTTP 202): poll again after
+   * `retryAfterSeconds`, never re-submit the call. "completed" once it has
+   * finished: `statusCode`, `headers` and `body` are the call's own.
    */
+  status: "running" | "completed";
+  /** `status === "running"`. */
   running: boolean;
-  /** 202 while running, otherwise the original call's status. */
-  status: number;
-  /** Suggested wait before the next poll (running only). */
+  /** Seconds to wait before the next poll (running only), from `Retry-After`. */
   retryAfterSeconds: number | null;
+  /** HTTP status: 202 while running, otherwise the original call's status. */
+  statusCode: number;
+  /** Response headers, names lower-cased. */
+  headers: Record<string, string>;
+  /**
+   * The original call's body once completed: JSON-decoded when it is JSON,
+   * otherwise text. While running, the 202 body ({@link AsyncAccepted}).
+   */
+  body: T;
+  /**
+   * true when the API answered from an earlier submit with the same
+   * `Idempotency-Key` (`Idempotent-Replayed: true`): nothing ran or was billed again.
+   */
+  replayed: boolean;
+  /** `X-Credits-Used` of the finished call. */
+  creditsUsed: number | null;
   /**
    * @deprecated Always `null`: the API stopped sending `X-Result-ID` (and
    * storing results for re-reads) on 2026-11-09.
    */
   resultId: string | null;
-  /** `X-Credits-Used` of the finished call. */
-  creditsUsed: number | null;
-  /** The original response body once finished, or the 202 status body while running. */
+  /** @deprecated Same as `body`; use `body`. */
   data: T;
+}
+
+/** Delivery state of the webhook of a call submitted with a callback. */
+export type CallbackState = "pending" | "delivering" | "delivered" | "failed";
+
+/** Result of {@link RequestsClient.callbackStatus}. */
+export interface CallbackStatus {
+  request_id: string;
+  state: CallbackState;
+  /** Delivery attempts made so far (at most 4). */
+  attempts: number;
+  /** HTTP status your endpoint answered on the last attempt. */
+  last_status: number | null;
+  /** Short error class of the last failed attempt, e.g. "timeout". */
+  last_error: string | null;
+  /** When the next attempt is due (unix seconds), while retrying. */
+  next_attempt_at: number | null;
+  /** When the webhook was delivered (unix seconds). */
+  delivered_at: number | null;
+  /** Host of the callback URL (its path and query are never kept). */
+  callback_host: string;
 }
 
 /** One item of `requests.batch`: a GET read, as if sent alone. */
@@ -159,7 +261,7 @@ export interface BatchOptions {
   /**
    * https URL that gets one signed webhook per item when it completes. Verify
    * it with `verifyWebhookSignature` and the secret from
-   * `GET /v1/account/webhook-secret`.
+   * `account.webhookSecret()`.
    */
   callbackUrl?: string;
 }
