@@ -100,8 +100,7 @@ const NOT_SENT_CODES = new Set([
 /** Whether a `fetch` failure happened while connecting, before the request was sent. */
 function failedBeforeSend(error: unknown): boolean {
   const cause = (error as { cause?: unknown } | null)?.cause as
-    | { code?: unknown; errors?: unknown }
-    | undefined;
+    { code?: unknown; errors?: unknown } | undefined;
   if (!cause) return false;
   if (typeof cause.code === "string") return NOT_SENT_CODES.has(cause.code);
   // Happy-eyeballs connects fail with an AggregateError of one error per address.
