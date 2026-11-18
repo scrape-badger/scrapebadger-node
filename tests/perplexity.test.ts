@@ -135,3 +135,24 @@ describe("PerplexityClient location", () => {
     expect(capturedUrl().searchParams.has("location")).toBe(false);
   });
 });
+
+describe("PerplexityClient html/raw", () => {
+  beforeEach(() => {
+    vi.unstubAllGlobals();
+    mockFetch();
+  });
+
+  it("omits html and raw by default and when false", async () => {
+    await makeClient().perplexity.askPerplexityAQuestion({ prompt: "q", html: false });
+    const url = capturedUrl();
+    expect(url.searchParams.has("html")).toBe(false);
+    expect(url.searchParams.has("raw")).toBe(false);
+  });
+
+  it("sends html=true and raw=true", async () => {
+    await makeClient().perplexity.askPerplexityAQuestion({ prompt: "q", html: true, raw: true });
+    const url = capturedUrl();
+    expect(url.searchParams.get("html")).toBe("true");
+    expect(url.searchParams.get("raw")).toBe("true");
+  });
+});
