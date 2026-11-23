@@ -119,6 +119,53 @@ export interface GoogleSearchParams {
   mode?: "full" | "fast";
 }
 
+/**
+ * One result to resolve. Only `link_token` is read; every other field is
+ * returned unchanged on its row, so an `organic_results` item can be sent as
+ * it is.
+ */
+export interface GoogleResolveItem {
+  /** The `link_token` of a search result. */
+  link_token: string;
+  [key: string]: unknown;
+}
+
+export interface GoogleResolveParams {
+  /** 1 to 25 results, each with a `link_token`. */
+  results: GoogleResolveItem[];
+}
+
+/**
+ * One row of a resolve response. It is one of:
+ * - resolved: `link` is the result's own URL; no `link_token`,
+ *   `retry_after_seconds` or `error`.
+ * - not ready: `link_token` and `retry_after_seconds`; `link` is as sent.
+ * - failed: `link_token` as sent and `error`. Do not send it again.
+ */
+export interface GoogleResolvedItem {
+  /** The result's own URL once resolved; until then, the value that was sent. */
+  link?: string;
+  /** Token to send next time. It can differ from the one sent: keep the latest. */
+  link_token?: string;
+  /** Seconds to wait before sending `link_token` again (1 or more). */
+  retry_after_seconds?: number;
+  /** Why the link could not be resolved. A row with `error` is final. */
+  error?: string;
+  [key: string]: unknown;
+}
+
+export interface GoogleResolveResponse {
+  /** One row per result sent, in the order sent. */
+  results: GoogleResolvedItem[];
+  /** Smallest wait among the rows that are not ready; `null` when no row is waiting. */
+  retry_after_seconds: number | null;
+}
+
+export interface GoogleResolveAllOptions {
+  /** Longest time to keep polling, in milliseconds (default 240000). */
+  maxWaitMs?: number;
+}
+
 // ===== Maps =====
 
 export interface MapsSearchParams {

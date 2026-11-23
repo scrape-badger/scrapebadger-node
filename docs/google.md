@@ -32,7 +32,8 @@ const advanced = await client.google.search.search({
   safe: "off",
 });
 // Structured sections:
-//   organic_results (with date, sitelinks, rich_snippet, read_more_link),
+//   organic_results (with date, sitelinks, rich_snippet, read_more_link, and
+//   link_token + retry_after_seconds when link is a Google redirect),
 //   knowledge_graph, ai_overview (text_blocks with reference_indexes, references),
 //   related_questions (question, rank, type), shopping_results, perspectives,
 //   discussions_and_forums, short_videos, things_to_know, related_searches,
@@ -67,6 +68,85 @@ Each answered question bills as one more Search request (credits = 20 x (1 +
 answered) at today's price); a question that does not come back is not billed.
 It adds about a second per question and upgrades `mode: "fast"` to full. Light
 Search does not accept it.
+
+#### Resolving result links
+
+Google can return a result's `link` as a redirect
+(`https://www.google.com/goto?url=...`) instead of the result's own URL. It
+also limits how fast the links of one result page can be followed. In
+`search()` and `light()` responses, each `organic_results` item has two fields
+for this:
+
+| Field | Type | Description |
+|---|---|---|
+| `link_token` | `string \| null` | Token that resolves this result's link. `null` when `link` is already the result's own URL. |
+| `retry_after_seconds` | `number \| null` | Seconds until the token can be resolved. `0` means right away. `null` when `link` is already the result's own URL. |
+
+`resolveAll()` takes the `organic_results` list, polls until every link is
+known and returns the rows in the same order:
+
+```typescript
+import { ScrapeBadger } from "scrapebadger";
+
+const client = new ScrapeBadger({ apiKey: "your-api-key" });
+
+const serp = await client.google.search.search({ q: "python 3.13" });
+const results = await client.google.search.resolveAll(
+  serp.organic_results as Record<string, unknown>[]
+);
+for (const r of results) {
+  if (r.error) console.log("failed:", r.title, r.error);
+  else if (r.link_token) console.log("not ready yet:", r.title);
+  else console.log(r.title, r.link);
+}
+```
+
+Each returned row is one of:
+
+| Row | Fields | What to do |
+|---|---|---|
+| Resolved | `link` is the result's own URL. No `link_token`, `retry_after_seconds` or `error`. | Use `link`. |
+| Not ready | `link_token` and `retry_after_seconds` (1 or more). `link` is as sent. | Wait that many seconds, then send the row again. The `link_token` can differ from the one sent, so always keep the latest. |
+| Failed | `link_token` as sent, and `error`. | Do not send it again. |
+
+How `resolveAll(results, { maxWaitMs })` works:
+
+- Rows without a `link_token` are returned as they are and never sent.
+- It sends at most 25 rows per request. Between rounds it waits the
+  `retry_after_seconds` the API returned, at least one second.
+- It stops when no row is waiting, or when `maxWaitMs` (default `240000`) has
+  passed. It does not throw for rows that are still not ready. They are
+  returned with their latest `link_token` and `retry_after_seconds`, and you
+  can pass them to `resolveAll()` again.
+- It returns a new array. The input array and its objects are not changed.
+
+Polling this way, all ten links of a result page are usually known 45 to 70
+seconds after the search. Once the result page is about 160 seconds old, every
+remaining link resolves in one call.
+
+To run the loop yourself, call `resolve()`. It makes one
+`POST /v1/google/resolve` request with 1 to 25 results, each with a
+`link_token`. Every other field of an item is returned unchanged on its row, so
+`organic_results` items can be sent as they are:
+
+```typescript
+const pending = (serp.organic_results as any[]).filter((r) => r.link_token);
+const { results: rows, retry_after_seconds } = await client.google.search.resolve({
+  results: pending.slice(0, 25),
+});
+// rows: one row per result sent, in the order sent.
+// retry_after_seconds: the smallest wait among the rows that are not ready,
+// or null when no row is waiting.
+```
+
+- A token sent before its wait is over is not an error. Its row comes back not
+  ready with the wait that is left.
+- An invalid body (no results, more than 25, or an item without a
+  `link_token`) throws `ValidationError` (422).
+- When links cannot be resolved right now, the API answers 503 with
+  `Retry-After`. The SDK retries it like any other 503 and then throws
+  `ServerError`. Try again later.
+- Resolving costs 0 credits.
 
 ### Maps (Search, Place, Reviews, Photos, Posts)
 
@@ -365,6 +445,8 @@ responses (`GoogleAdsSearchResponse`, `GoogleAdsAdvertisersResponse`, …).
 | Sub-client | Method | Description |
 |---|---|---|
 | `search` | `search(params)` | Web search with 21 parameters |
+| `search` | `resolve(params)` | Resolve 1 to 25 result links in one call (returns `GoogleResolveResponse`) |
+| `search` | `resolveAll(results, options?)` | Resolve every link in a result list, polling until done or `maxWaitMs` (returns the rows) |
 | `maps` | `search(params)` | Place search by query |
 | `maps` | `place(params)` | Place detail (place_id or data_id) |
 | `maps` | `reviews(params)` | Paginated reviews |
@@ -408,6 +490,11 @@ All parameter types are strictly typed via TypeScript interfaces. The full list 
 ```typescript
 import type {
   GoogleSearchParams,
+  GoogleResolveParams,
+  GoogleResolveItem,
+  GoogleResolvedItem,
+  GoogleResolveResponse,
+  GoogleResolveAllOptions,
   MapsSearchParams,
   MapsPlaceParams,
   MapsReviewsParams,
@@ -500,6 +587,7 @@ import type {
 | `ads/search` | **25** |
 | `ads/advertisers` with `fuzzy=true` (billed as 3 lookups) | **45** |
 | `shopping/product`, `shopping/product/click` | **1** |
+| `resolve` (`POST /v1/google/resolve`) | **0** |
 | Failed requests | **0** |
 
 Prices change; `GET /api/public/pricing` (or the [pricing page](https://scrapebadger.com/pricing)) always has the live per-endpoint cost.
