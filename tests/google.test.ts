@@ -5,7 +5,7 @@
  * the correct path and query params.
  */
 
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { ScrapeBadger } from "../src/client.js";
 import { ValidationError } from "../src/internal/exceptions.js";
 import type { AiModeLocation } from "../src/index.js";
@@ -184,6 +184,390 @@ describe("SearchClient", () => {
     expect(url.searchParams.has("mode")).toBe(false);
     expect(url.searchParams.has("ai_overview")).toBe(false);
     expect(url.searchParams.has("expand_related_questions")).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Search: resolving result links
+// ---------------------------------------------------------------------------
+
+describe("SearchClient link resolving", () => {
+  const GOTO = "https://www.google.com/goto?url=abc";
+
+  type Row = Record<string, unknown>;
+  type Answer = { results: Row[]; retry_after_seconds: number | null };
+
+  function jsonResponse(body: unknown): unknown {
+    return {
+      ok: true,
+      status: 200,
+      headers: { get: () => "application/json" },
+      json: () => Promise.resolve(body),
+      text: () => Promise.resolve(JSON.stringify(body)),
+    };
+  }
+
+  /** Answer each resolve call in turn with the next response. */
+  function mockResolve(...answers: Answer[]): ReturnType<typeof vi.fn> {
+    const fn = vi.fn();
+    for (const answer of answers) fn.mockResolvedValueOnce(jsonResponse(answer));
+    vi.stubGlobal("fetch", fn);
+    return fn;
+  }
+
+  /** Answer each resolve call from the rows it sent. */
+  function mockResolveWith(
+    answer: (sent: Row[], call: number) => Answer
+  ): ReturnType<typeof vi.fn> {
+    let call = 0;
+    const fn = vi.fn((_url: string, init: RequestInit) => {
+      const sent = (JSON.parse(init.body as string) as { results: Row[] }).results;
+      return Promise.resolve(jsonResponse(answer(sent, call++)));
+    });
+    vi.stubGlobal("fetch", fn);
+    return fn;
+  }
+
+  /** The rows the n-th resolve call sent. */
+  function sentRows(fn: ReturnType<typeof vi.fn>, n: number): Row[] {
+    const [url, init] = fn.mock.calls[n] as [string, RequestInit];
+    expect(url).toBe("https://api.scrapebadger.com/v1/google/resolve");
+    expect(init.method).toBe("POST");
+    return (JSON.parse(init.body as string) as { results: Row[] }).results;
+  }
+
+  function deepFreeze<T>(value: T): T {
+    if (value !== null && typeof value === "object") {
+      for (const inner of Object.values(value)) deepFreeze(inner);
+      Object.freeze(value);
+    }
+    return value;
+  }
+
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+  afterEach(() => vi.useRealTimers());
+
+  it("resolve POSTs the results to /v1/google/resolve and returns the response", async () => {
+    const answer: Answer = {
+      results: [
+        { position: 1, title: "A", link: "https://a.example/page" },
+        { position: 2, title: "B", link: GOTO, link_token: "tok-b2", retry_after_seconds: 12 },
+        { position: 3, title: "C", link: GOTO, link_token: "tok-c", error: "link_unavailable" },
+      ],
+      retry_after_seconds: 12,
+    };
+    const fn = mockResolve(answer);
+    const items = [
+      { position: 1, title: "A", link: GOTO, link_token: "tok-a" },
+      { position: 2, title: "B", link: GOTO, link_token: "tok-b" },
+      { position: 3, title: "C", link: GOTO, link_token: "tok-c" },
+    ];
+
+    const result = await makeClient().google.search.resolve({ results: items });
+
+    expect(fn).toHaveBeenCalledOnce();
+    const [url, init] = fn.mock.calls[0] as [string, RequestInit];
+    expect(url).toBe("https://api.scrapebadger.com/v1/google/resolve");
+    expect(init.method).toBe("POST");
+    expect(JSON.parse(init.body as string)).toEqual({ results: items });
+    expect(result).toEqual(answer);
+    expect(result.results[1].link_token).toBe("tok-b2");
+    expect(result.retry_after_seconds).toBe(12);
+  });
+
+  it("resolveAll returns the rows when all resolve on the first call", async () => {
+    const fn = mockResolve({
+      results: [
+        { position: 1, title: "A", link: "https://a.example/" },
+        { position: 2, title: "B", link: "https://b.example/" },
+      ],
+      retry_after_seconds: null,
+    });
+    const input = [
+      { position: 1, title: "A", link: GOTO, link_token: "tok-a", retry_after_seconds: 0 },
+      { position: 2, title: "B", link: GOTO, link_token: "tok-b", retry_after_seconds: 0 },
+    ];
+
+    const result = await makeClient().google.search.resolveAll(input);
+
+    expect(fn).toHaveBeenCalledOnce();
+    expect(sentRows(fn, 0)).toEqual(input);
+    expect(result).toEqual([
+      { position: 1, title: "A", link: "https://a.example/" },
+      { position: 2, title: "B", link: "https://b.example/" },
+    ]);
+  });
+
+  it("resolveAll waits the returned time, then sends the new token", async () => {
+    const fn = mockResolve(
+      {
+        results: [
+          { position: 1, link: "https://one.example/" },
+          { position: 2, link: GOTO, link_token: "tok-2-new", retry_after_seconds: 7 },
+        ],
+        retry_after_seconds: 7,
+      },
+      { results: [{ position: 2, link: "https://two.example/" }], retry_after_seconds: null }
+    );
+    const promise = makeClient().google.search.resolveAll([
+      { position: 1, link: GOTO, link_token: "tok-1", retry_after_seconds: 0 },
+      { position: 2, link: GOTO, link_token: "tok-2", retry_after_seconds: 8 },
+    ]);
+
+    await vi.advanceTimersByTimeAsync(0);
+    expect(fn).toHaveBeenCalledTimes(1);
+    await vi.advanceTimersByTimeAsync(6_999);
+    expect(fn).toHaveBeenCalledTimes(1);
+    await vi.advanceTimersByTimeAsync(1);
+    expect(fn).toHaveBeenCalledTimes(2);
+
+    // Only the row that was not ready goes out again, with the token from the first answer.
+    expect(sentRows(fn, 1)).toEqual([
+      { position: 2, link: GOTO, link_token: "tok-2-new", retry_after_seconds: 7 },
+    ]);
+    expect(await promise).toEqual([
+      { position: 1, link: "https://one.example/" },
+      { position: 2, link: "https://two.example/" },
+    ]);
+  });
+
+  it("resolveAll waits at least one second between rounds", async () => {
+    const fn = mockResolve(
+      {
+        results: [{ link: GOTO, link_token: "tok-1b", retry_after_seconds: 0 }],
+        retry_after_seconds: 0,
+      },
+      { results: [{ link: "https://one.example/" }], retry_after_seconds: null }
+    );
+    const promise = makeClient().google.search.resolveAll([{ link: GOTO, link_token: "tok-1" }]);
+
+    await vi.advanceTimersByTimeAsync(999);
+    expect(fn).toHaveBeenCalledTimes(1);
+    await vi.advanceTimersByTimeAsync(1);
+    expect(fn).toHaveBeenCalledTimes(2);
+    expect(await promise).toEqual([{ link: "https://one.example/" }]);
+  });
+
+  it("resolveAll returns a failed row and does not send it again", async () => {
+    const fn = mockResolve(
+      {
+        results: [
+          { position: 1, link: "https://a.example/" },
+          { position: 2, link: GOTO, link_token: "tok-b", error: "link_unavailable" },
+          { position: 3, link: GOTO, link_token: "tok-c2", retry_after_seconds: 3 },
+        ],
+        retry_after_seconds: 3,
+      },
+      { results: [{ position: 3, link: "https://c.example/" }], retry_after_seconds: null }
+    );
+    const promise = makeClient().google.search.resolveAll([
+      { position: 1, link: GOTO, link_token: "tok-a" },
+      { position: 2, link: GOTO, link_token: "tok-b" },
+      { position: 3, link: GOTO, link_token: "tok-c" },
+      // Failed in an earlier call: never sent.
+      { position: 4, link: GOTO, link_token: "tok-d", error: "link_unavailable" },
+    ]);
+
+    await vi.advanceTimersByTimeAsync(3_000);
+    const result = await promise;
+
+    expect(fn).toHaveBeenCalledTimes(2);
+    expect(sentRows(fn, 0).map((r) => r.link_token)).toEqual(["tok-a", "tok-b", "tok-c"]);
+    expect(sentRows(fn, 1).map((r) => r.link_token)).toEqual(["tok-c2"]);
+    expect(result).toEqual([
+      { position: 1, link: "https://a.example/" },
+      { position: 2, link: GOTO, link_token: "tok-b", error: "link_unavailable" },
+      { position: 3, link: "https://c.example/" },
+      { position: 4, link: GOTO, link_token: "tok-d", error: "link_unavailable" },
+    ]);
+  });
+
+  it("resolveAll sends more than 25 rows in requests of at most 25", async () => {
+    const fn = mockResolveWith((sent) => ({
+      results: sent.map((r) => ({
+        position: r.position,
+        link: `https://site.example/${String(r.position)}`,
+      })),
+      retry_after_seconds: null,
+    }));
+    const input = Array.from({ length: 60 }, (_, i) => ({
+      position: i + 1,
+      link: GOTO,
+      link_token: `tok-${i + 1}`,
+    }));
+
+    const result = await makeClient().google.search.resolveAll(input);
+
+    expect(fn).toHaveBeenCalledTimes(3);
+    expect([0, 1, 2].map((n) => sentRows(fn, n).length)).toEqual([25, 25, 10]);
+    expect(sentRows(fn, 0)[0].link_token).toBe("tok-1");
+    expect(sentRows(fn, 1)[0].link_token).toBe("tok-26");
+    expect(sentRows(fn, 2)[9].link_token).toBe("tok-60");
+    expect(result).toEqual(
+      input.map((r) => ({ position: r.position, link: `https://site.example/${r.position}` }))
+    );
+  });
+
+  it("resolveAll waits the smallest time returned by any of its requests", async () => {
+    // Round one: rows 1 and 30 are not ready (9 s and 4 s). Round two: both resolve.
+    const waits: Record<number, number> = { 1: 9, 30: 4 };
+    const fn = mockResolveWith((sent, call) => {
+      const results = sent.map((r) => {
+        const wait = call < 2 ? waits[r.position as number] : undefined;
+        return wait === undefined
+          ? { position: r.position, link: `https://site.example/${String(r.position)}` }
+          : { ...r, link_token: `${String(r.link_token)}-new`, retry_after_seconds: wait };
+      });
+      const pending = results.flatMap((r) =>
+        "retry_after_seconds" in r ? [r.retry_after_seconds] : []
+      );
+      return { results, retry_after_seconds: pending.length ? Math.min(...pending) : null };
+    });
+    const input = Array.from({ length: 30 }, (_, i) => ({
+      position: i + 1,
+      link: GOTO,
+      link_token: `tok-${i + 1}`,
+    }));
+    const promise = makeClient().google.search.resolveAll(input);
+
+    await vi.advanceTimersByTimeAsync(3_999);
+    expect(fn).toHaveBeenCalledTimes(2);
+    await vi.advanceTimersByTimeAsync(1);
+    expect(fn).toHaveBeenCalledTimes(3);
+
+    expect(sentRows(fn, 2).map((r) => r.link_token)).toEqual(["tok-1-new", "tok-30-new"]);
+    const result = await promise;
+    expect(result).toHaveLength(30);
+    expect(result.every((r, i) => r.link === `https://site.example/${i + 1}`)).toBe(true);
+  });
+
+  it("resolveAll stops at the deadline and returns waiting rows with their latest token", async () => {
+    const fn = mockResolveWith((sent, call) => ({
+      results: sent.map((r) => ({
+        ...r,
+        link_token: `tok-${call + 1}`,
+        retry_after_seconds: 4,
+      })),
+      retry_after_seconds: 4,
+    }));
+    const promise = makeClient().google.search.resolveAll(
+      [{ position: 1, title: "A", link: GOTO, link_token: "tok-0", retry_after_seconds: 0 }],
+      { maxWaitMs: 10_000 }
+    );
+    let settled: Row[] | undefined;
+    void promise.then((rows) => (settled = rows));
+
+    await vi.advanceTimersByTimeAsync(9_999);
+    // Calls at 0, 4 s and 8 s.
+    expect(fn).toHaveBeenCalledTimes(3);
+    expect(settled).toBeUndefined();
+    // The last wait is cut to the deadline: one more call at 10 s, then it returns.
+    await vi.advanceTimersByTimeAsync(1);
+    expect(fn).toHaveBeenCalledTimes(4);
+
+    await expect(promise).resolves.toEqual([
+      { position: 1, title: "A", link: GOTO, link_token: "tok-4", retry_after_seconds: 4 },
+    ]);
+    expect(sentRows(fn, 3)[0].link_token).toBe("tok-3");
+    // Nothing more is sent after the deadline.
+    await vi.advanceTimersByTimeAsync(60_000);
+    expect(fn).toHaveBeenCalledTimes(4);
+  });
+
+  it("resolveAll defaults to a 240 second deadline", async () => {
+    const fn = mockResolveWith((sent) => ({
+      results: sent.map((r) => ({ ...r, retry_after_seconds: 60 })),
+      retry_after_seconds: 60,
+    }));
+    const promise = makeClient().google.search.resolveAll([{ link: GOTO, link_token: "tok" }]);
+
+    await vi.advanceTimersByTimeAsync(240_000);
+    // Calls at 0, 60, 120, 180 and 240 s.
+    expect(fn).toHaveBeenCalledTimes(5);
+    await expect(promise).resolves.toEqual([
+      { link: GOTO, link_token: "tok", retry_after_seconds: 60 },
+    ]);
+  });
+
+  it("resolveAll never sends rows without a link_token and keeps their position", async () => {
+    const fn = mockResolve({
+      results: [
+        { position: 2, link: "https://b.example/" },
+        { position: 4, link: "https://d.example/" },
+      ],
+      retry_after_seconds: null,
+    });
+    const input = [
+      { position: 1, link: "https://a.example/", link_token: null, retry_after_seconds: null },
+      { position: 2, link: GOTO, link_token: "tok-b", retry_after_seconds: 0 },
+      { position: 3, link: "https://c.example/" },
+      { position: 4, link: GOTO, link_token: "tok-d", retry_after_seconds: 0 },
+    ];
+
+    const result = await makeClient().google.search.resolveAll(input);
+
+    expect(fn).toHaveBeenCalledOnce();
+    expect(sentRows(fn, 0).map((r) => r.link_token)).toEqual(["tok-b", "tok-d"]);
+    expect(result).toEqual([
+      { position: 1, link: "https://a.example/", link_token: null, retry_after_seconds: null },
+      { position: 2, link: "https://b.example/" },
+      { position: 3, link: "https://c.example/" },
+      { position: 4, link: "https://d.example/" },
+    ]);
+  });
+
+  it("resolveAll makes no request when no row has a link_token", async () => {
+    const fn = mockResolve();
+    const input = [
+      { position: 1, link: "https://a.example/", link_token: null },
+      { position: 2, link: "https://b.example/" },
+    ];
+
+    expect(await makeClient().google.search.resolveAll(input)).toEqual(input);
+    expect(await makeClient().google.search.resolveAll([])).toEqual([]);
+    expect(fn).not.toHaveBeenCalled();
+  });
+
+  it("resolveAll does not change the input array or its objects", async () => {
+    mockResolve(
+      {
+        results: [
+          { position: 2, link: "https://b.example/", sitelinks: [{ title: "Docs" }] },
+          { position: 3, link: GOTO, link_token: "tok-c2", retry_after_seconds: 2 },
+        ],
+        retry_after_seconds: 2,
+      },
+      { results: [{ position: 3, link: "https://c.example/" }], retry_after_seconds: null }
+    );
+    const input = [
+      { position: 1, link: "https://a.example/", link_token: null, retry_after_seconds: null },
+      {
+        position: 2,
+        link: GOTO,
+        link_token: "tok-b",
+        retry_after_seconds: 0,
+        sitelinks: [{ title: "Docs" }],
+      },
+      { position: 3, link: GOTO, link_token: "tok-c", retry_after_seconds: 5 },
+    ];
+    const before = structuredClone(input);
+    // A write to the frozen input would throw.
+    deepFreeze(input);
+
+    const promise = makeClient().google.search.resolveAll(input);
+    await vi.advanceTimersByTimeAsync(2_000);
+    const result = await promise;
+
+    expect(input).toEqual(before);
+    expect(result).not.toBe(input);
+    result.forEach((row, i) => expect(row).not.toBe(input[i]));
+    expect(result).toEqual([
+      { position: 1, link: "https://a.example/", link_token: null, retry_after_seconds: null },
+      { position: 2, link: "https://b.example/", sitelinks: [{ title: "Docs" }] },
+      { position: 3, link: "https://c.example/" },
+    ]);
   });
 });
 

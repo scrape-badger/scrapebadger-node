@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.82.0] - 2026-11-23
+
+### Added
+- **Google Search: resolve result links.** Google can return a result's `link` as a redirect (`https://www.google.com/goto?url=...`) and limits how fast the links of one result page can be followed.
+  - `google.search.search()` and `google.search.light()`: an `organic_results` item whose `link` is still a Google redirect now also has `link_token` (string) and `retry_after_seconds` (number, `0` = can be resolved right away). Both are `null` when `link` is already the result's own URL. The responses are untyped, so no signature changes.
+  - `google.search.resolve({ results })`: one `POST /v1/google/resolve` call, 0 credits. It takes 1 to 25 results, each with a `link_token`; other fields are returned unchanged on their row. The response is `{ results, retry_after_seconds }`, with the rows in the order sent. A row is resolved (`link` is the result's own URL; no `link_token`, `retry_after_seconds` or `error`), not ready (`link_token` and `retry_after_seconds`; the token can differ from the one sent, so keep the latest) or failed (`link_token` and `error`; do not send it again). The top-level `retry_after_seconds` is the smallest wait among the rows that are not ready, or `null`.
+  - `google.search.resolveAll(results, { maxWaitMs })`: polls `resolve` for a list of results, normally `organic_results`. It sends the rows that have a `link_token` and no `error`, at most 25 per request, and waits the returned `retry_after_seconds` between rounds (at least one second). It stops when no row is waiting or after `maxWaitMs` (default 240000). Rows that are still not ready are returned with their latest `link_token` and `retry_after_seconds`; it does not throw for them. Rows without a `link_token` are returned as they are. The input is not changed.
+  - New types: `GoogleResolveItem`, `GoogleResolveParams`, `GoogleResolvedItem`, `GoogleResolveResponse`, `GoogleResolveAllOptions`.
+
 ## [0.81.0] - 2026-11-18
 
 ### Added
