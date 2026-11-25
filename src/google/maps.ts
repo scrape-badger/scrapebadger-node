@@ -48,10 +48,12 @@ export class MapsClient {
    * Get full place detail by `place_id` or `data_id`.
    *
    * Returns title, address, phone, website, GPS, rating, reviews_count,
-   * rating_summary (per-star distribution), categories, extensions
-   * (service_options, accessibility, offerings, payments), weekly
-   * operating hours, popular_times graph, provider_id,
-   * permanently_closed, thumbnail, and photo list.
+   * categories, extensions (amenity groups such as accessibility),
+   * opening hours (`open_state`, today's `hours`, and `operating_hours`
+   * for the coming seven days), `price_level` (Google's price per person,
+   * e.g. "฿2,000+"), popular_times, provider_id, `thumbnail`/`image`, and
+   * up to 20 photo URLs. `service_options` is null: Google no longer
+   * exposes those flags to signed-out clients.
    */
   async place(params: MapsPlaceParams): Promise<GoogleResponse> {
     if (!params.place_id && !params.data_id) {
@@ -76,12 +78,13 @@ export class MapsClient {
   }
 
   /**
-   * Get photos for a place with place-specific categories.
+   * Get photos for a place.
    *
-   * Returns place-specific categories (Menu, Vibe, Comfort food, dish
-   * names) and photo URLs from all CDN families. Use `category_id` to
-   * scope to a category, or `page_size: 200` to fetch all photos in
-   * one call (Google caps at ~120 photos per response).
+   * Returns the photos Google exposes to signed-out clients (usually the
+   * first 8 of the gallery) as `thumbnail` and `image` URLs.
+   * `pagination.total_results` is the place's total photo count on Google;
+   * there is one page (`next` is null). To get another size, replace a
+   * URL's `=w..-h..-k-no` suffix and keep its path.
    */
   async photos(params: MapsPhotosParams): Promise<GoogleResponse> {
     return this.client.request<GoogleResponse>("/v1/google/maps/photos", {

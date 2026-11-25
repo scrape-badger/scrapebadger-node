@@ -206,6 +206,7 @@ export interface MapsReviewsParams {
 export interface MapsPhotosParams {
   data_id: string;
   hl?: string;
+  /** Accepted for compatibility; the photos endpoint returns a single page. */
   next_page_token?: string;
 }
 
