@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.83.0] - 2026-11-26
+
+### Added
+- **Wallapop subcategories.** `wallapop.search(query, { subcategoryIds })` narrows a search to Wallapop subcategories: the `subcategories` ids of `wallapop.listCategories()`, at any depth (e.g. `24200` Technology & electronics → `24201` Phones → `9447` Smartphones). Pass an array (`[9447, 10310]`) or a comma-separated string (`"9447,10310"`); a listing matching any of them is returned. Works with or without `categoryId`, and on its own is enough to search (no query needed). A `nextPage` cursor keeps the subcategories.
+- `wallapop.listFilters()` and `wallapop.listFilterOptions()` take the same `subcategoryIds`, so filters and option lists match the subcategory (e.g. `listFilterOptions("brand", { subcategoryIds: [9447] })` returns phone brands only).
+- New optional fields on the existing options objects, so existing calls are unchanged.
+
 ## [0.82.1] - 2026-11-25
 
 ### Changed

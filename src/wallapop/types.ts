@@ -464,7 +464,10 @@ export interface WallapopAutocompleteResponse {
 
 /** One category (recursive tree node). */
 export interface WallapopCategory {
-  /** Category id — usable as the search `categoryId`. */
+  /**
+   * Category id — a top-level id is usable as the search `categoryId`,
+   * a nested one in `subcategoryIds`.
+   */
   id: number;
   /** Localised category name. */
   name: string | null;
@@ -542,12 +545,19 @@ export interface WallapopMarketsResponse {
 
 /** Sort order for /search. */
 export type WallapopOrderBy =
-  "most_relevance" | "newest" | "closest" | "price_low_to_high" | "price_high_to_low";
+  | "most_relevance"
+  | "newest"
+  | "closest"
+  | "price_low_to_high"
+  | "price_high_to_low";
 
 /** Listing-age window for /search. */
 export type WallapopTimeFilter = "today" | "lastWeek" | "lastMonth";
 
-/** Options for the /search endpoint. Needs a query, a `categoryId`, or both. */
+/**
+ * Options for the /search endpoint. Needs a query, a `categoryId`,
+ * `subcategoryIds`, or a combination.
+ */
 export interface WallapopSearchParams {
   /** Market code: es, it, pt (default: "es"). */
   market?: string;
@@ -559,6 +569,13 @@ export interface WallapopSearchParams {
   distanceKm?: number;
   /** Category id (see `listCategories`). */
   categoryId?: number;
+  /**
+   * Subcategory ids from `listCategories` (a category's `subcategories`, at
+   * any depth), e.g. `[9447]` (Smartphones) or `[9447, 10310]`; a listing
+   * matching any of them is returned. Also accepts a comma-separated string.
+   * Works with or without `categoryId`.
+   */
+  subcategoryIds?: ReadonlyArray<number | string> | string;
   /** Minimum price (EUR). */
   minPrice?: number;
   /** Maximum price (EUR). */
@@ -629,6 +646,8 @@ export interface WallapopMarketParams {
 export interface WallapopFiltersParams {
   /** Category the filters apply to. */
   categoryId?: number;
+  /** Subcategory ids the filters apply to (array or comma-separated string). */
+  subcategoryIds?: ReadonlyArray<number | string> | string;
   /** Search text the filters apply to. */
   query?: string;
   /** Market code: es, it, pt (default: "es"). Localises labels. */
