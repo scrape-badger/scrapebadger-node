@@ -32,6 +32,12 @@ import type {
 /** `true` when set, otherwise omitted — the API only filters on `true`. */
 const onlyTrue = (value: boolean | undefined): true | undefined => (value ? true : undefined);
 
+/** `subcategory_ids` as the API takes it: comma-separated, or undefined. */
+const idList = (ids: ReadonlyArray<number | string> | string | undefined): string | undefined => {
+  if (ids === undefined || typeof ids === "string") return ids;
+  return ids.length > 0 ? ids.join(",") : undefined;
+};
+
 /**
  * Client for all Wallapop API operations.
  *
@@ -71,15 +77,26 @@ export class WallapopClient {
   /**
    * Search Wallapop listings (40 per page).
    *
-   * Needs a query, a `categoryId`, or both — unless `nextPage` is given, in
-   * which case every other parameter is ignored.
+   * Needs a query, a `categoryId`, `subcategoryIds`, or a combination —
+   * unless `nextPage` is given, in which case every other parameter is
+   * ignored (the cursor already carries them).
    *
    * @param query - Search text, e.g. "iphone 14" (optional with `categoryId` or `nextPage`).
    * @param options - Optional parameters (market, location/radius, category,
-   *   price, condition, brand/model/colour, cars filters, sort, cursor).
+   *   subcategories, price, condition, brand/model/colour, cars filters,
+   *   sort, cursor).
    * @returns Search response with matching listings and the next-page cursor.
    * @throws AuthenticationError - If the API key is invalid.
-   * @throws ValidationError - If neither a query nor a category is given.
+   * @throws ValidationError - If neither a query nor a category/subcategory is given.
+   *
+   * @example
+   * ```typescript
+   * // Smartphones (9447) under Technology & electronics (24200)
+   * const phones = await client.wallapop.search("iphone", {
+   *   categoryId: 24200,
+   *   subcategoryIds: [9447],
+   * });
+   * ```
    */
   async search(
     query?: string,
@@ -93,6 +110,7 @@ export class WallapopClient {
         longitude: options.longitude,
         distance_km: options.distanceKm,
         category_id: options.categoryId,
+        subcategory_ids: idList(options.subcategoryIds),
         min_price: options.minPrice,
         max_price: options.maxPrice,
         condition: options.condition,
@@ -215,13 +233,14 @@ export class WallapopClient {
    * Get the search filters Wallapop offers for a category and/or query,
    * with their option ids.
    *
-   * @param options - Optional parameters (categoryId, query, market).
+   * @param options - Optional parameters (categoryId, subcategoryIds, query, market).
    * @returns Available filters.
    */
   async listFilters(options: WallapopFiltersParams = {}): Promise<WallapopFiltersResponse> {
     return this.client.request<WallapopFiltersResponse>("/v1/wallapop/filters", {
       params: {
         category_id: options.categoryId,
+        subcategory_ids: idList(options.subcategoryIds),
         query: options.query,
         market: options.market,
       },
@@ -233,7 +252,8 @@ export class WallapopClient {
    * separately — filters flagged `options_endpoint` in `listFilters`.
    *
    * @param filterId - Filter id, e.g. "brand".
-   * @param options - Optional parameters (categoryId, query, market).
+   * @param options - Optional parameters (categoryId, subcategoryIds, query,
+   *   market); e.g. `subcategoryIds: [9447]` returns phone brands only.
    * @returns The filter's options.
    * @throws ValidationError - If the filter id is invalid.
    */
@@ -246,6 +266,7 @@ export class WallapopClient {
       {
         params: {
           category_id: options.categoryId,
+          subcategory_ids: idList(options.subcategoryIds),
           query: options.query,
           market: options.market,
         },

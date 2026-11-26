@@ -567,6 +567,23 @@ describe("WallapopClient", () => {
       expect(params.has("has_warranty")).toBe(false);
     });
 
+    it("sends subcategoryIds as comma-separated subcategory_ids", async () => {
+      mockFetch(SEARCH);
+      await client.wallapop.search(undefined, { categoryId: 24200, subcategoryIds: [9447, 10310] });
+      expect(Object.fromEntries(capturedUrl().searchParams)).toEqual({
+        category_id: "24200",
+        subcategory_ids: "9447,10310",
+      });
+
+      mockFetch(SEARCH);
+      await client.wallapop.search(undefined, { subcategoryIds: "9447" });
+      expect(Object.fromEntries(capturedUrl().searchParams)).toEqual({ subcategory_ids: "9447" });
+
+      mockFetch(SEARCH);
+      await client.wallapop.search("iphone", { subcategoryIds: [] });
+      expect(Object.fromEntries(capturedUrl().searchParams)).toEqual({ query: "iphone" });
+    });
+
     it("pages with nextPage and no query", async () => {
       mockFetch(SEARCH);
       await client.wallapop.search(undefined, { nextPage: "cursor-token" });
@@ -674,6 +691,21 @@ describe("WallapopClient", () => {
       const brand = result.filters.find((f) => f.id === "brand");
       expect(brand?.options_endpoint).toBe(true);
       expect(result.filters.find((f) => f.id === "condition")?.options.length).toBe(2);
+    });
+
+    it("listFilters and listFilterOptions scope to subcategoryIds", async () => {
+      mockFetch(FILTERS);
+      await client.wallapop.listFilters({ categoryId: 24200, subcategoryIds: [9447] });
+      expect(Object.fromEntries(capturedUrl().searchParams)).toEqual({
+        category_id: "24200",
+        subcategory_ids: "9447",
+      });
+
+      mockFetch(FILTER_OPTIONS);
+      await client.wallapop.listFilterOptions("brand", { subcategoryIds: [9447, "10310"] });
+      expect(Object.fromEntries(capturedUrl().searchParams)).toEqual({
+        subcategory_ids: "9447,10310",
+      });
     });
 
     it("listFilterOptions URL-encodes the filter id", async () => {
