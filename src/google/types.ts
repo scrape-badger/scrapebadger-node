@@ -64,6 +64,8 @@ export interface GoogleSearchParams {
   /** Custom User-Agent override. */
   user_agent?: string;
   /** json returns structured results; html returns the raw page. */
+  /** Skip inline URL lookups; redeem result link_tokens with resolve() or resolveAll(). */
+  defer_links?: boolean;
   output?: "json" | "html";
   q: string;
   gl?: string;
