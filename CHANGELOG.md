@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.84.0
+
+- Search and Light accept `defer_links: true`; resolve returned link tokens separately with `resolve()` or `resolveAll()`.
+
 ## [0.83.1] - 2026-11-26
 
 ### Changed
