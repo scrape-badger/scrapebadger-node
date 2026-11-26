@@ -646,7 +646,10 @@ export interface WallapopMarketParams {
 export interface WallapopFiltersParams {
   /** Category the filters apply to. */
   categoryId?: number;
-  /** Subcategory ids the filters apply to (array or comma-separated string). */
+  /**
+   * Subcategory ids the filters apply to (array or comma-separated string).
+   * Needs the `categoryId` they belong to; without it the API answers 422.
+   */
   subcategoryIds?: ReadonlyArray<number | string> | string;
   /** Search text the filters apply to. */
   query?: string;

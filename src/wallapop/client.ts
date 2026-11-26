@@ -234,6 +234,7 @@ export class WallapopClient {
    * with their option ids.
    *
    * @param options - Optional parameters (categoryId, subcategoryIds, query, market).
+   *   `subcategoryIds` needs the `categoryId` they belong to (422 without it).
    * @returns Available filters.
    */
   async listFilters(options: WallapopFiltersParams = {}): Promise<WallapopFiltersResponse> {
@@ -253,7 +254,9 @@ export class WallapopClient {
    *
    * @param filterId - Filter id, e.g. "brand".
    * @param options - Optional parameters (categoryId, subcategoryIds, query,
-   *   market); e.g. `subcategoryIds: [9447]` returns phone brands only.
+   *   market). `subcategoryIds` needs the `categoryId` they belong to (422
+   *   without it); e.g. `{ categoryId: 24200, subcategoryIds: [9447] }` returns
+   *   phone brands only.
    * @returns The filter's options.
    * @throws ValidationError - If the filter id is invalid.
    */
